@@ -56,12 +56,9 @@ export const Input = React.forwardRef<HTMLInputElement, Props>(
 
         <Box height={8}>
           {error != null && (
-            <>
-              <Box height={1} />
-              <Text color="red.500" fontWeight={500}>
-                {error}
-              </Text>
-            </>
+            <Text color="red.500" fontWeight={500}>
+              {error}
+            </Text>
           )}
         </Box>
       </Box>

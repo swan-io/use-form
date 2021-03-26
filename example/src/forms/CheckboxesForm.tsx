@@ -1,21 +1,32 @@
 import { Button } from "@chakra-ui/button";
+import { Checkbox } from "@chakra-ui/checkbox";
 import { Box, HStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
-import validator from "validator";
 import { useForm } from "../../../src";
-import { Input } from "../components/Input";
 import { Page } from "../components/Page";
 
-export const IBANForm = () => {
+export const CheckboxesForm = () => {
   const { Field, resetForm, submitForm } = useForm({
-    iban: {
-      strategy: "onFirstSuccessOrFirstBlur",
-      initialValue: "",
-      sanitize: (value) => value.trim(),
+    termsAndConditions: {
+      strategy: "onSubmit",
+      initialValue: false,
       validate: (value) => {
-        if (!validator.isIBAN(value)) {
-          return "Value is not a valid IBAN";
+        // console.log({ value });
+
+        if (!value) {
+          return "You must accept terms and conditions";
+        }
+      },
+    },
+    emailsFromPartners: {
+      strategy: "onSubmit",
+      initialValue: false,
+      validate: (value) => {
+        // console.log({ value });
+
+        if (!value) {
+          return "You must accept to receive email from partners";
         }
       },
     },
@@ -51,20 +62,33 @@ export const IBANForm = () => {
   const toast = useToast();
 
   return (
-    <Page title="IBAN">
+    <Page title="Checkboxes">
       <form onSubmit={onSubmit}>
-        <Field name="iban">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
-            <Input
-              label="IBAN"
-              error={error}
-              onBlur={onBlur}
-              onChange={onChange}
-              ref={ref}
-              valid={valid}
-              validating={validating}
-              value={value}
-            />
+        <Field name="termsAndConditions">
+          {({ onChange, value, error }) => (
+            <Checkbox
+              display="flex"
+              isInvalid={error != null}
+              isChecked={value}
+              onChange={(e) => onChange(e.target.checked)}
+            >
+              Accept terms and conditions
+            </Checkbox>
+          )}
+        </Field>
+
+        <Box height={1} />
+
+        <Field name="emailsFromPartners">
+          {({ onChange, value, error }) => (
+            <Checkbox
+              display="flex"
+              isInvalid={error != null}
+              isChecked={value}
+              onChange={(e) => onChange(e.target.checked)}
+            >
+              Receive emails from partners
+            </Checkbox>
           )}
         </Field>
 

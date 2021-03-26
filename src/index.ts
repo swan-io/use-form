@@ -158,7 +158,12 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
 
       return !talkative || validity.type === "unknown"
         ? // Avoid giving feedback too soon
-          { value, validating: false, valid: !getValidate(name), error: undefined }
+          {
+            value,
+            validating: false,
+            valid: !getValidate(name),
+            error: undefined,
+          }
         : {
             value,
             validating: validity.type === "validating",
@@ -217,6 +222,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       const sanitizeAtStart = getSanitize(name);
       const validate = getValidate(name);
       const valueAtStart = sanitizeAtStart(states.current[name].value);
+
       const promiseOrError = validate(valueAtStart, {
         getFieldState,
         focusField,

@@ -56,7 +56,7 @@ export const AsyncSubmissionForm = () => {
     <Page title="Async submission">
       <form onSubmit={onSubmit}>
         <Field name="emailAddress">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
+          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="Email address"
               error={error}
@@ -72,15 +72,13 @@ export const AsyncSubmissionForm = () => {
 
         <Box height={4} />
 
-        <HStack display="flex" align="initial" spacing={3}>
-          <Button alignSelf="flex-end" onClick={resetForm}>
-            Reset
-          </Button>
+        <HStack spacing={3}>
+          <Button onClick={resetForm}>Reset</Button>
 
           <Button
-            isLoading={formStatus === "submitting"}
-            disabled={formStatus === "submitting"}
             colorScheme="green"
+            disabled={formStatus === "submitting"}
+            isLoading={formStatus === "submitting"}
             onClick={onSubmit}
             type="submit"
           >

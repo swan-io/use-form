@@ -61,7 +61,7 @@ export const CheckboxesForm = () => {
     <Page title="Checkboxes">
       <form onSubmit={onSubmit}>
         <Field name="termsAndConditions">
-          {({ onChange, value, error }) => (
+          {({ error, onChange, value }) => (
             <Checkbox
               display="flex"
               isInvalid={error != null}
@@ -76,7 +76,7 @@ export const CheckboxesForm = () => {
         <Box height={1} />
 
         <Field name="emailsFromPartners">
-          {({ onChange, value, error }) => (
+          {({ error, onChange, value }) => (
             <Checkbox
               display="flex"
               isInvalid={error != null}
@@ -90,10 +90,8 @@ export const CheckboxesForm = () => {
 
         <Box height={4} />
 
-        <HStack display="flex" align="initial" spacing={3}>
-          <Button alignSelf="flex-end" onClick={resetForm}>
-            Reset
-          </Button>
+        <HStack spacing={3}>
+          <Button onClick={resetForm}>Reset</Button>
 
           <Button colorScheme="green" onClick={onSubmit} type="submit">
             Submit

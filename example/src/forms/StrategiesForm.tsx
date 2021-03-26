@@ -79,7 +79,7 @@ export const StrategiesForm = () => {
     <Page title="Validation strategies">
       <form onSubmit={onSubmit}>
         <Field name="onFirstChange">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
+          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstChange"
               error={error}
@@ -94,7 +94,7 @@ export const StrategiesForm = () => {
         </Field>
 
         <Field name="onFirstSuccess">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
+          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstSuccess"
               error={error}
@@ -109,7 +109,7 @@ export const StrategiesForm = () => {
         </Field>
 
         <Field name="onFirstBlur">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
+          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstBlur"
               error={error}
@@ -124,7 +124,7 @@ export const StrategiesForm = () => {
         </Field>
 
         <Field name="onFirstSuccessOrFirstBlur">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
+          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstSuccessOrFirstBlur (default)"
               error={error}
@@ -139,7 +139,7 @@ export const StrategiesForm = () => {
         </Field>
 
         <Field name="onSubmit">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
+          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onSubmit"
               error={error}
@@ -155,10 +155,8 @@ export const StrategiesForm = () => {
 
         <Box height={4} />
 
-        <HStack display="flex" align="initial" spacing={3}>
-          <Button alignSelf="flex-end" onClick={resetForm}>
-            Reset
-          </Button>
+        <HStack spacing={3}>
+          <Button onClick={resetForm}>Reset</Button>
 
           <Button colorScheme="green" onClick={onSubmit} type="submit">
             Submit

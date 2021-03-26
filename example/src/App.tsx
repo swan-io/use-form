@@ -3,6 +3,7 @@ import * as React from "react";
 import { Route } from "wouter";
 import { Link } from "./components/Link";
 import { BasicForm } from "./forms/BasicForm";
+import { IBANForm } from "./forms/IBANForm";
 import { StrategiesForm } from "./forms/StrategiesForm";
 
 export const App = () => (
@@ -30,11 +31,13 @@ export const App = () => (
       <VStack align="initial" spacing={1}>
         <Link href="/">Basic</Link>
         <Link href="/strategies">Validation strategies</Link>
+        <Link href="/iban">IBAN</Link>
         <Link href="/credit-card">Credit card</Link>
       </VStack>
     </Flex>
 
     <Route path="/" component={BasicForm} />
     <Route path="/strategies" component={StrategiesForm} />
+    <Route path="/iban" component={IBANForm} />
   </Flex>
 );

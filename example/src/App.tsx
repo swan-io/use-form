@@ -35,8 +35,8 @@ export const Link = (props: LinkProps & { href: string }) => {
         flexGrow: 1,
         fontWeight: 500,
         paddingBottom: 5,
-        paddingLeft: 8,
-        paddingRight: 8,
+        paddingLeft: 12,
+        paddingRight: 12,
         paddingTop: 5,
         ...(active && {
           backgroundColor: colors.green[100],
@@ -61,7 +61,7 @@ export const App = () => (
         color="gray.500"
         fontSize={12}
         fontWeight={600}
-        marginLeft={2}
+        marginLeft={3}
         textTransform="uppercase"
       >
         Examples

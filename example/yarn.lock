@@ -1532,6 +1532,11 @@ use-subscription@^1.5.1:
   dependencies:
     object-assign "^4.1.1"
 
+validator@^13.5.2:
+  version "13.5.2"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.5.2.tgz#c97ae63ed4224999fb6f42c91eaca9567fe69a46"
+  integrity sha512-mD45p0rvHVBlY2Zuy3F3ESIe1h5X58GPfAtslBjY7EtTqGquZTj+VX/J4RnHWN8FKq0C9WRVt1oWAcytWRuYLQ==
+
 vite@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/vite/-/vite-2.1.2.tgz#0aecaf6d34112b24536df1a14cd8d74fdcab6e20"
@@ -1550,6 +1555,11 @@ warning@^4.0.3:
   integrity sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==
   dependencies:
     loose-envify "^1.0.0"
+
+wouter@^2.7.4:
+  version "2.7.4"
+  resolved "https://registry.yarnpkg.com/wouter/-/wouter-2.7.4.tgz#d528122cacf6e9805d7b953bbddfb90226850977"
+  integrity sha512-shJIsHR+gcn69L2zR+0eKquOvAcjfIEdhzf8iAP502DlrAwg5lO2Q90DqIvXryNz/mk1fe2crTB40ZHXjoF1Bg==
 
 yaml@^1.7.2:
   version "1.10.2"

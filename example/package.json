@@ -17,7 +17,9 @@
     "framer-motion": "^4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-ux-form": "../"
+    "react-ux-form": "../",
+    "validator": "^13.5.2",
+    "wouter": "^2.7.4"
   },
   "devDependencies": {
     "@types/react": "^17.0.3",

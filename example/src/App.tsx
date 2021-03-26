@@ -6,6 +6,7 @@ import { BasicForm } from "./forms/BasicForm";
 import { CheckboxesForm } from "./forms/CheckboxesForm";
 import { AsyncSubmissionForm } from "./forms/AsyncSubmissionForm";
 import { AsyncValidationForm } from "./forms/AsyncValidationForm";
+import { CreditCardForm } from "./forms/CreditCardForm";
 import { IBANForm } from "./forms/IBANForm";
 import { StrategiesForm } from "./forms/StrategiesForm";
 
@@ -48,5 +49,6 @@ export const App = () => (
     <Route path="/strategies" component={StrategiesForm} />
     <Route path="/checkboxes" component={CheckboxesForm} />
     <Route path="/iban" component={IBANForm} />
+    <Route path="/credit-card" component={CreditCardForm} />
   </Flex>
 );

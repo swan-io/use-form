@@ -4,7 +4,9 @@
   "scripts": {
     "build": "tsc && vite build",
     "clean": "rm -rf ./node_modules",
+    "clean-modules": "rm -rf ./node_modules/react-ux-form/{example,node_modules}",
     "dev": "vite",
+    "postinstall": "yarn clean-modules",
     "serve": "vite preview",
     "update": "yarn clean && cd .. && yarn build && cd example && yarn"
   },

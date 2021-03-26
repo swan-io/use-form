@@ -6,46 +6,17 @@ import validator from "validator";
 import { useForm } from "../../../src";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
-
-const checkEmail = (value: string): Promise<string | void> =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      if (validator.isEmail(value)) {
-        resolve();
-      } else {
-        resolve("A valid email is required");
-      }
-    }, 1000);
-  });
+import { resolveAfter } from "../utils/promises";
 
 export const AsyncValidationForm = () => {
   const { Field, resetForm, submitForm } = useForm({
-    firstName: {
-      strategy: "onFirstBlur",
-      initialValue: "",
-      sanitize: (value) => value.trim(),
-      validate: (value) => {
-        if (value === "") {
-          return "First name is required";
-        }
-      },
-    },
-    lastName: {
-      strategy: "onFirstBlur",
-      initialValue: "",
-      sanitize: (value) => value.trim(),
-      validate: (value) => {
-        if (value === "") {
-          return "Last name is required";
-        }
-      },
-    },
     emailAddress: {
       strategy: "onFirstChange",
       initialValue: "",
       debounceInterval: 250,
       sanitize: (value) => value.trim(),
-      validate: (value) => checkEmail(value),
+      validate: (value) =>
+        resolveAfter(1000, !validator.isEmail(value) ? "A valid email is required" : undefined),
     },
   });
 
@@ -81,36 +52,6 @@ export const AsyncValidationForm = () => {
   return (
     <Page title="Async validation">
       <form onSubmit={onSubmit}>
-        <Field name="firstName">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
-            <Input
-              label="First name"
-              error={error}
-              onBlur={onBlur}
-              onChange={onChange}
-              ref={ref}
-              valid={valid}
-              validating={validating}
-              value={value}
-            />
-          )}
-        </Field>
-
-        <Field name="lastName">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
-            <Input
-              label="Last name"
-              error={error}
-              onBlur={onBlur}
-              onChange={onChange}
-              ref={ref}
-              valid={valid}
-              validating={validating}
-              value={value}
-            />
-          )}
-        </Field>
-
         <Field name="emailAddress">
           {({ ref, onBlur, onChange, value, valid, validating, error }) => (
             <Input

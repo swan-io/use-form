@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/button";
 import { Box, HStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
-import { isExpirationDateValid, isValid } from "creditcard.js";
+import cardValidator from "card-validator";
 import * as React from "react";
 import { useForm } from "../../../src";
 import { Input } from "../components/Input";
@@ -10,31 +10,22 @@ import { Page } from "../components/Page";
 export const CreditCardForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     cardNumber: {
-      strategy: "onFirstBlur",
+      strategy: "onFirstSuccessOrFirstBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
-        if (value === "") {
-          return "Card number is required";
-        }
-        if (!isValid(value)) {
+        if (!cardValidator.number(value).isValid) {
           return "Card number is invalid";
         }
       },
     },
-    expiryDate: {
-      strategy: "onFirstBlur",
+    expirationDate: {
+      strategy: "onFirstSuccessOrFirstBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
-        if (value === "") {
-          return "Expiry date is required";
-        }
-
-        const [month, year] = value.split("/");
-
-        if (!isExpirationDateValid(month, year)) {
-          return "Expiry date is invalid";
+        if (!cardValidator.expirationDate(value).isValid) {
+          return "Expiration date is invalid";
         }
       },
     },
@@ -43,7 +34,7 @@ export const CreditCardForm = () => {
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
-        if (value.length !== 3) {
+        if (!cardValidator.cvv(value).isValid) {
           return "CVC should have 3 characters";
         }
       },
@@ -80,7 +71,7 @@ export const CreditCardForm = () => {
   const toast = useToast();
 
   return (
-    <Page title="Basic">
+    <Page title="Credit card">
       <form onSubmit={onSubmit}>
         <Field name="cardNumber">
           {({ ref, onBlur, onChange, value, valid, validating, error }) => (
@@ -97,10 +88,10 @@ export const CreditCardForm = () => {
           )}
         </Field>
 
-        <Field name="expiryDate">
+        <Field name="expirationDate">
           {({ ref, onBlur, onChange, value, valid, validating, error }) => (
             <Input
-              label="Expiry date"
+              label="Expiration date"
               error={error}
               onBlur={onBlur}
               onChange={onChange}

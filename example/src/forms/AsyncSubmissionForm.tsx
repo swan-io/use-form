@@ -6,29 +6,10 @@ import validator from "validator";
 import { useForm } from "../../../src";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
+import { resolveAfter } from "../utils/promises";
 
 export const AsyncSubmissionForm = () => {
   const { Field, resetForm, submitForm, formStatus } = useForm({
-    firstName: {
-      strategy: "onFirstBlur",
-      initialValue: "",
-      sanitize: (value) => value.trim(),
-      validate: (value) => {
-        if (value === "") {
-          return "First name is required";
-        }
-      },
-    },
-    lastName: {
-      strategy: "onFirstBlur",
-      initialValue: "",
-      sanitize: (value) => value.trim(),
-      validate: (value) => {
-        if (value === "") {
-          return "Last name is required";
-        }
-      },
-    },
     emailAddress: {
       strategy: "onFirstSuccessOrFirstBlur",
       initialValue: "",
@@ -41,23 +22,21 @@ export const AsyncSubmissionForm = () => {
     },
   });
 
-  const submitting = formStatus === "submitting";
-
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     submitForm(
-      async (values) => {
-        console.log("values", values);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+      (values) =>
+        resolveAfter(2000).then(() => {
+          console.log("values", values);
 
-        toast({
-          title: "Submission succeeded",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-      },
+          toast({
+            title: "Submission succeeded",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+        }),
       (errors) => {
         console.log("errors", errors);
 
@@ -76,36 +55,6 @@ export const AsyncSubmissionForm = () => {
   return (
     <Page title="Async submission">
       <form onSubmit={onSubmit}>
-        <Field name="firstName">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
-            <Input
-              label="First name"
-              error={error}
-              onBlur={onBlur}
-              onChange={onChange}
-              ref={ref}
-              valid={valid}
-              validating={validating}
-              value={value}
-            />
-          )}
-        </Field>
-
-        <Field name="lastName">
-          {({ ref, onBlur, onChange, value, valid, validating, error }) => (
-            <Input
-              label="Last name"
-              error={error}
-              onBlur={onBlur}
-              onChange={onChange}
-              ref={ref}
-              valid={valid}
-              validating={validating}
-              value={value}
-            />
-          )}
-        </Field>
-
         <Field name="emailAddress">
           {({ ref, onBlur, onChange, value, valid, validating, error }) => (
             <Input
@@ -129,8 +78,8 @@ export const AsyncSubmissionForm = () => {
           </Button>
 
           <Button
-            isLoading={submitting}
-            disabled={submitting}
+            isLoading={formStatus === "submitting"}
+            disabled={formStatus === "submitting"}
             colorScheme="green"
             onClick={onSubmit}
             type="submit"

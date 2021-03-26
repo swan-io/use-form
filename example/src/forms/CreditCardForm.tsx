@@ -22,17 +22,19 @@ export const CreditCardForm = () => {
         }
       },
     },
-    expireDate: {
+    expiryDate: {
       strategy: "onFirstBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
         if (value === "") {
-          return "Expire date is required";
+          return "Expiry date is required";
         }
+
         const [month, year] = value.split("/");
+
         if (!isExpirationDateValid(month, year)) {
-          return "Expire date is invalid";
+          return "Expiry date is invalid";
         }
       },
     },
@@ -95,10 +97,10 @@ export const CreditCardForm = () => {
           )}
         </Field>
 
-        <Field name="expireDate">
+        <Field name="expiryDate">
           {({ ref, onBlur, onChange, value, valid, validating, error }) => (
             <Input
-              label="Expire date"
+              label="Expiry date"
               error={error}
               onBlur={onBlur}
               onChange={onChange}

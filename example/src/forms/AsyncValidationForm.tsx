@@ -7,6 +7,17 @@ import { useForm } from "../../../src";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
 
+const checkEmail = (value: string): Promise<string | void> =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      if (validator.isEmail(value)) {
+        resolve();
+      } else {
+        resolve("A valid email is required");
+      }
+    }, 1000);
+  });
+
 export const AsyncValidationForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     firstName: {
@@ -30,23 +41,11 @@ export const AsyncValidationForm = () => {
       },
     },
     emailAddress: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onFirstChange",
       initialValue: "",
+      debounceInterval: 250,
       sanitize: (value) => value.trim(),
-      validate: async (value) => {
-        if (!validator.isEmail(value)) {
-          return "A valid email is required";
-        }
-
-        return new Promise<string | void>((resolve) =>
-          setTimeout(() => {
-            if (value.includes("@yopmail")) {
-              resolve("Yopmail address is forbidden");
-            }
-            resolve();
-          }, 2000),
-        );
-      },
+      validate: (value) => checkEmail(value),
     },
   });
 

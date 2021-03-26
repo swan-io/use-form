@@ -9,22 +9,18 @@ import { Page } from "../components/Page";
 export const CheckboxesForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     termsAndConditions: {
-      strategy: "onSubmit",
+      strategy: "onFirstChange",
       initialValue: false,
       validate: (value) => {
-        // console.log({ value });
-
         if (!value) {
           return "You must accept terms and conditions";
         }
       },
     },
     emailsFromPartners: {
-      strategy: "onSubmit",
+      strategy: "onFirstChange",
       initialValue: false,
       validate: (value) => {
-        // console.log({ value });
-
         if (!value) {
           return "You must accept to receive email from partners";
         }

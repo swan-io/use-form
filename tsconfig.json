@@ -1,4 +1,5 @@
 {
+  "include": ["src/**/*"],
   "compilerOptions": {
     "target": "ES2015",
     "module": "ES2015",
@@ -11,7 +12,5 @@
     "declaration": true,
     "sourceMap": true,
     "stripInternal": true
-  },
-  "include": ["src/**/*", "./jest-setup.ts"],
-  "exclude": ["node_modules", "__tests__/**/*"]
+  }
 }

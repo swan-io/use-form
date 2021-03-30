@@ -46,6 +46,9 @@
       "<rootDir>/__tests__/utils/"
     ]
   },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
   "dependencies": {
     "use-subscription": "^1.5.1"
   },

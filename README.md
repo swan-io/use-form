@@ -96,7 +96,7 @@ const {
     debounceInterval: 0,
     equalityFn: (value1: string, value2: string) => Object.is(value1, value2),
     sanitize: (value) => value,
-    validate: (value) => {},
+    validate: (value, { focusField, getFieldState }) => {},
   },
 });
 ```

@@ -1,8 +1,9 @@
-import * as React from "react";
+import type { MutableRefObject, ReactElement } from "react";
+import { useEffect, useLayoutEffect, useMemo, useReducer, useRef } from "react";
 import { useSubscription } from "use-subscription";
 
 // For server-side rendering / react-native
-const useIsoLayoutEffect = typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
+const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 type ValidateResult<ErrorMessage> = ErrorMessage | void | Promise<ErrorMessage | void>;
 
@@ -38,13 +39,13 @@ type FieldComponent<Values extends Record<string, any>, ErrorMessage = string> =
   name: N;
   children: (
     props: FieldState<Values[N], ErrorMessage> & {
-      ref: React.MutableRefObject<any>;
+      ref: MutableRefObject<any>;
       onChange: (value: Values[N]) => void;
       onBlur: () => void;
       focusNextField: () => void;
     },
-  ) => React.ReactElement | null;
-}) => React.ReactElement | null) & {
+  ) => ReactElement | null;
+}) => ReactElement | null) & {
   displayName?: string;
 };
 
@@ -101,9 +102,9 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
   type Contract = Form<Values, ErrorMessage>;
   type Name = keyof Values;
 
-  const [, forceUpdate] = React.useReducer(() => [], []);
-  const config = React.useRef(fields);
-  const formStatus = React.useRef<FormStatus>("untouched");
+  const [, forceUpdate] = useReducer(() => [], []);
+  const config = useRef(fields);
+  const formStatus = useRef<FormStatus>("untouched");
 
   useIsoLayoutEffect(() => {
     config.current = fields;
@@ -121,21 +122,21 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     };
   };
 
-  const states = React.useRef() as React.MutableRefObject<StateMap>;
+  const states = useRef() as MutableRefObject<StateMap>;
 
   type CallbackMap = Record<Name, Set<() => void>>;
   type MountedMap = Record<Name, boolean>;
-  type RefMap = Record<Name, React.MutableRefObject<any>>;
+  type RefMap = Record<Name, MutableRefObject<any>>;
   type TimeoutMap = Record<Name, number | undefined>;
 
-  const callbacks = React.useRef() as React.MutableRefObject<CallbackMap>;
-  const mounteds = React.useRef() as React.MutableRefObject<MountedMap>;
-  const refs = React.useRef() as React.MutableRefObject<RefMap>;
-  const timeouts = React.useRef() as React.MutableRefObject<TimeoutMap>;
+  const callbacks = useRef() as MutableRefObject<CallbackMap>;
+  const mounteds = useRef() as MutableRefObject<MountedMap>;
+  const refs = useRef() as MutableRefObject<RefMap>;
+  const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
-  const field = React.useRef() as React.MutableRefObject<FieldComponent<Values, ErrorMessage>>;
+  const field = useRef() as MutableRefObject<FieldComponent<Values, ErrorMessage>>;
 
-  const api = React.useMemo(() => {
+  const api = useMemo(() => {
     const getConfig = (name: Name) => config.current[name];
 
     const getDebounceInterval = (name: Name) => getConfig(name).debounceInterval ?? 0;
@@ -492,7 +493,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
 
     const Field: FieldComponent<Values, ErrorMessage> = ({ name, children }) => {
       const state = useSubscription(
-        React.useMemo(
+        useMemo(
           () => ({
             getCurrentValue: () => states.current[name],
             subscribe: (callback) => {
@@ -507,7 +508,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
         ),
       );
 
-      React.useEffect(() => {
+      useEffect(() => {
         const isFirstMounting = !mounteds.current[name];
 
         if (isFirstMounting) {
@@ -530,9 +531,9 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       return children({
         ...api.transformState(name, state, { sanitize: false }),
         ref: refs.current[name],
-        focusNextField: React.useMemo(() => api.getFocusNextField(name), [name]),
-        onBlur: React.useMemo(() => api.getOnBlur(name), [name]),
-        onChange: React.useMemo(() => api.getOnChange(name), [name]),
+        focusNextField: useMemo(() => api.getFocusNextField(name), [name]),
+        onBlur: useMemo(() => api.getOnBlur(name), [name]),
+        onChange: useMemo(() => api.getOnChange(name), [name]),
       });
     };
 

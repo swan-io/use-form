@@ -6,27 +6,6 @@
 
 A simple, blazing fast and opinionated form library for React & React Native.
 
-## Features
-
-- Subscription based field updates (avoid rerendering the whole form on each keystroke 🔥)
-- Validation strategies ✨
-- Field sanitization
-- Mounted-only fields validation
-- Sync & async field validation
-- Sync & async form submission
-- Advanced focus handling
-- First-in-class TypeScript support
-
-## Motivation
-
-Why another React form library 🤔?<br>Because, as silly as it seems, we didn't found any existing library which fits our needs:
-
-- With validation strategies - because we fell in love for them ([re-formality](https://github.com/MinimaHQ/re-formality) is only available for ReScript)
-- **and** which is subscription based (for performances with some huge forms)
-- **and** with simple validation (functions are easily testables and reusables)
-- **and** which don't try to validate unmounted fields
-- **and** with built-in focus management (to improve the flow of our React Native forms)
-
 ## Setup
 
 ```bash
@@ -35,45 +14,68 @@ $ npm install --save react-ux-form
 $ yarn add react-ux-form
 ```
 
+## Features
+
+- Subscription based field updates (avoid rerendering the whole form on each keystroke 🔥)
+- Validation strategies ✨
+- Field sanitization
+- Mounted only fields validation
+- Advanced focus handling
+- Best-in-class TypeScript support
+- Sync and async field validation
+- Sync and async form submission
+
+## Motivation
+
+Why another React form library 🤔?<br>
+Because, as silly as it seems, we didn't found any existing library which fits our existing needs:
+
+- We wanted validation strategies per field, because we fell in love with them when we read the [re-formality](https://github.com/MinimaHQ/re-formality) documentation (which is unfortunately only available for [ReScript](https://rescript-lang.org/)).
+- It should be able to handle huge forms without a single performance hiccups.
+- Validation should be simple, reusable and testable (aka just functions).
+- It shouldn't even try to validate unmounted fields.
+- It should have some sort of built-in focus management (to improve the keyboard flow of our React Native forms).
+
 ## ✨ Validation strategies
 
 The key of **good UX** is simple: validation should be executed **in continue**, feedback should be provided **when it makes sense**.
 
-#### Quick example: The credit card field 💳
+### Quick example: 💳 A credit card field
 
-We would like to display some sort of valid state icon when the input value match a valid credit card number, but don't want to display an error until the user blur the field and let the value in an invalid state.
+Let's say we want to display some sort of valid state icon (✔) when the input value is a valid credit card number but don't want to display an error until the user blur the field (and let the value in an invalid state).
 
 #### Something like this:
 
 ![Valid credit card](docs/credit-card-valid.gif)
 ![Invalid credit card](docs/credit-card-error.gif)
 
-How do we achieve such magic? With the `onFirstSuccessOrFirstBlur` strategy 🧙‍♂️.<br>
+How do we easily achieve such magic? With the `onFirstSuccessOrFirstBlur` strategy 🧙‍♂️<br>
 
 ```tsx
-const { Field } = useForm({
+const {} = useForm({
   cardNumber: { initialValue: "", strategy: "onFirstSuccessOrFirstBlur" },
 });
 ```
 
 Of course, `onFirstSuccessOrFirstBlur` will not fit perfectly every use-case!<br>
-That's why every field could have its own `strategy`:
+That's precisely why every field config could declare its own `strategy`:
 
-| Strategy                    | When feedback will be emitted?                                 |
-| --------------------------- | -------------------------------------------------------------- |
-| `onFirstChange`             | On first change (as the user types)                            |
-| `onFirstSuccess`            | On first validation success                                    |
-| `onFirstBlur`               | On first field blur                                            |
-| `onFirstSuccessOrFirstBlur` | On first validation success or first field blur. **(default)** |
-| `onSubmit`                  | On form submit                                                 |
+| Strategy                    | When feedback will be available?                              |
+| --------------------------- | ------------------------------------------------------------- |
+| `onFirstChange`             | On first change (as the user types or update the value)       |
+| `onFirstSuccess`            | On first validation success                                   |
+| `onFirstBlur`               | On first field blur                                           |
+| `onFirstSuccessOrFirstBlur` | On first validation success or first field blur **(default)** |
+| `onSubmit`                  | On form submit                                                |
 
-👉 Note that once the first feedback is given (the field is `valid` or has an `error` message), the field switches to what we call a `talkative` state: feedback will be updated on each value change until field or form is reset.
+👉 Note that once the first feedback is given (the field is `valid` or should display an `error` message), the field switches to what we call a _"talkative"_ state.<br>
+After that, feedback will be updated on each value change until this field or the form is reset.
 
 ## API
 
 ### useForm()
 
-`useForm` takes one argument (your fields config) and returns a set of helpers (functions, components and values) to manage your form state.
+`useForm` takes one argument (a map of your fields configs) and returns a set of helpers (functions, components and values) to manage your form state.
 
 ```tsx
 const {
@@ -87,9 +89,9 @@ const {
   resetForm,
   submitForm,
 } = useForm({
-  fieldName: {
-    // Default values
+  fieldName: { // Keys are used as fields names
     initialValue: "",
+    // Properties below are optional (those are the default values)
     strategy: "onFirstSuccessOrFirstBlur",
     debounceInterval: 0,
     equalityFn: (value1: string, value2: string) => Object.is(value1, value2),
@@ -97,6 +99,42 @@ const {
     validate: (value) => {},
   },
 });
+```
+
+### Field config detail
+
+```tsx
+type fieldConfig<T> = {
+  // The initial field value. It could be anything (string, number, boolean…)
+  initialValue: T;
+
+  // The chosen strategy. See "validation strategies" paragraph
+  strategy: Strategy;
+
+  // An amount of time (in ms) to wait before triggering validation
+  debounceInterval: number;
+
+  // When performing async validation, it might happen that the value has changed between the start and the end of its execution
+  // That's why we compare the two values: to ensure that the feedback given to the user is correct
+  equalityFn: (value1: T, value2: T) => boolean;
+
+  // Will be run on value before validation and submission. Useful from trimming whitespaces
+  sanitize: (value: T) => T;
+
+  // Used to perform field validation. It could return an error message or nothing
+  // It also handle async: simply return a Promise that resolves with an error message or nothing
+  validate: (value: T) => ErrorMessage | void | Promise<ErrorMessage | void>;
+};
+```
+
+### formStatus
+
+```tsx
+type formStatus =
+  | "untouched" // no field has been updated yet
+  | "editing" // some fields has been updated, but the form has never been submitted
+  | "submitting" // the form is currently submitting
+  | "submitted"; // the form has been submitted
 ```
 
 TODO

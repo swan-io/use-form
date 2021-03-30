@@ -19,8 +19,7 @@ A simple, blazing fast and opinionated form library for React & React Native.
 
 ## Motivation
 
-Why another React form library 🤔?<br>
-Because, as silly as it seems, we didn't found any existing library which fits our needs:
+Why another React form library 🤔? Because, as silly as it seems, we didn't found any existing library which fits our needs:
 
 - With validation strategies - because we fell in love for them ♥️ ([re-formality](https://github.com/MinimaHQ/re-formality) is unfortunately only available for ReScript)
 - **and** which is subscription based (for performances with potential huge forms)

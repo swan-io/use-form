@@ -52,7 +52,6 @@
     "@babel/preset-typescript": "^7.13.0",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^13.0.14",
     "@types/jest": "^26.0.21",
     "@types/react": "^17.0.3",
     "@types/use-subscription": "^1.0.0",

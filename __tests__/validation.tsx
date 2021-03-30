@@ -36,6 +36,7 @@ test("input validation evolve though time", async () => {
                 }}
               />
 
+              {!(valid || error) && <div>idle</div>}
               {valid && <div>valid</div>}
               {validating && <div>validating</div>}
               {error && <div>error</div>}
@@ -55,8 +56,8 @@ test("input validation evolve though time", async () => {
 
   const input = await findByLabelText("First name");
 
-  fireEvent.focus(input)
-  fireEvent.blur(input)
+  fireEvent.focus(input);
+  fireEvent.blur(input);
 
   await findByText("error");
 
@@ -97,6 +98,7 @@ test("input validation evolve though time with async validation", async () => {
                 }}
               />
 
+              {!(valid || error) && <div>idle</div>}
               {valid && <div>valid</div>}
               {validating && <div>validating</div>}
               {error && <div>error</div>}
@@ -116,8 +118,8 @@ test("input validation evolve though time with async validation", async () => {
 
   const input = await findByLabelText("First name");
 
-  fireEvent.focus(input)
-  fireEvent.blur(input)
+  fireEvent.focus(input);
+  fireEvent.blur(input);
 
   await findByText("validating");
   await findByText("error");

@@ -175,5 +175,5 @@ export const BasicForm = () => {
 # Acknowledgements
 
 - [re-formality](https://github.com/MinimaHQ/re-formality) for the [validation strategies](https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md) idea.
-- [react-hook-form](https://react-hook-form.com/) and [react-final-form](https://github.com/final-form/react-final-form) for their subscription pattern implementations.
 - [react-jeff](https://github.com/jamiebuilds/react-jeff) for its simple and testable validation API.
+- [react-hook-form](https://react-hook-form.com/) and [react-final-form](https://github.com/final-form/react-final-form) for their subscription pattern implementations.

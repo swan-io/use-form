@@ -1,12 +1,7 @@
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import * as React from "react";
 import { useForm } from "../src";
-
-function resolveAfter<T>(delay: number, value?: T): Promise<T | void> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(value), delay);
-  });
-}
+import { resolveAfter } from "./utils/promises";
 
 afterEach(cleanup);
 

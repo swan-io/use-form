@@ -19,10 +19,10 @@ A simple, blazing fast and opinionated form library for React & React Native.
 
 ## Motivation
 
-Why another React form library 🤔? Because, as silly as it seems, we didn't found any existing library which fits our needs:
+Why another React form library 🤔?<br>Because, as silly as it seems, we didn't found any existing library which fits our needs:
 
-- With validation strategies - because we fell in love for them ♥️ ([re-formality](https://github.com/MinimaHQ/re-formality) is only available for ReScript)
-- **and** which is subscription based (for performances with potential huge forms)
+- With validation strategies - because we fell in love for them ([re-formality](https://github.com/MinimaHQ/re-formality) is only available for ReScript)
+- **and** which is subscription based (for performances with some huge forms)
 - **and** with simple validation (functions are easily testables and reusables)
 - **and** which don't try to validate unmounted fields
 - **and** with built-in focus management (to improve the flow of our React Native forms)
@@ -37,9 +37,9 @@ $ yarn add react-ux-form
 
 ## ✨ Validation strategies
 
-The key of **good UX** is simple: validation should be executed **in continue**, user feedback should be provided **when required**.
+The key of **good UX** is simple: validation should be executed **in continue**, feedback should be provided **when it makes sense**.
 
-### Quick example: The credit card field
+#### Quick example: The credit card field 💳
 
 We would like to display some sort of valid state icon when the input value match a valid credit card number, but don't want to display an error until the user blur the field and let the value in an invalid state.
 

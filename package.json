@@ -37,6 +37,11 @@
     "printWidth": 100,
     "trailingComma": "all"
   },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest-setup.ts"
+    ]
+  },
   "dependencies": {
     "use-subscription": "^1.5.1"
   },
@@ -45,6 +50,7 @@
     "@babel/plugin-transform-react-jsx": "^7.13.12",
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-typescript": "^7.13.0",
+    "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.0.14",
     "@types/jest": "^26.0.21",

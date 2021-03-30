@@ -387,7 +387,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       name && focusField(name);
     };
 
-    const handleSyncEffect = (effect: Promise<void> | void) => {
+    const handleSyncEffect = (effect: Promise<void> | void, wasEditing: boolean) => {
       if (isPromise(effect)) {
         forceUpdate();
 
@@ -397,6 +397,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
         });
       } else {
         formStatus.current = "submitted";
+        wasEditing && forceUpdate(); // Only needed to rerender and switch from editing to submitted
       }
     };
 
@@ -405,6 +406,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
         return; // Avoid concurrent submissions
       }
 
+      const wasEditing = formStatus.current === "editing";
       formStatus.current = "submitting";
 
       const names: Name[] = Object.keys(mounteds.current);
@@ -420,12 +422,12 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
 
       if (isSyncSubmission(results)) {
         if (results.every((result) => result == null)) {
-          return handleSyncEffect(onSuccess(values));
+          return handleSyncEffect(onSuccess(values), wasEditing);
         }
 
         focusFirstError(names, results);
         names.forEach((name, index) => (errors[name] = results[index]));
-        return handleSyncEffect(onFailure(errors));
+        return handleSyncEffect(onFailure(errors), wasEditing);
       }
 
       forceUpdate(); // Async validation flow: we need to give visual feedback

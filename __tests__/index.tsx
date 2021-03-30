@@ -77,7 +77,7 @@ test("Sync formStatus evolve though time", async () => {
   await findByText("formStatus: untouched");
 });
 
-test.only("Async formStatus evolve though time", async () => {
+test("Async formStatus evolve though time", async () => {
   const Test = () => {
     const { Field, formStatus, resetForm, submitForm } = useForm({
       firstName: {

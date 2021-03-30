@@ -61,7 +61,7 @@ export const AsyncSubmissionForm = () => {
               label="Email address"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}

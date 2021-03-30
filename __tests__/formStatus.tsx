@@ -20,12 +20,11 @@ test("formStatus evolve though time", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ error, onBlur, onChange, valid, validating, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
               <input
-                ref={ref}
                 type="text"
                 id="firstName"
                 value={value}
@@ -84,12 +83,11 @@ test("formStatus evolve though time with async validation", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ error, onBlur, onChange, valid, validating, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
               <input
-                ref={ref}
                 type="text"
                 id="firstName"
                 value={value}
@@ -152,12 +150,11 @@ test("formStatus evolve though time with async submission", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ error, onBlur, onChange, valid, validating, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
               <input
-                ref={ref}
                 type="text"
                 id="firstName"
                 value={value}

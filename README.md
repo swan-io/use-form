@@ -19,7 +19,7 @@ $ yarn add react-ux-form
 - Subscription based field updates (avoid rerendering the whole form on each keystroke 🔥)
 - Validation strategies ✨
 - Field sanitization
-- Mounted only fields validation
+- Mounted-only fields validation
 - Advanced focus handling
 - Best-in-class TypeScript support
 - Sync and async field validation
@@ -30,8 +30,8 @@ $ yarn add react-ux-form
 Why another React form library 🤔?<br>
 Because, as silly as it seems, we didn't found any existing library which fits our existing needs:
 
-- We wanted validation strategies per field, because we fell in love with them when we read the [re-formality](https://github.com/MinimaHQ/re-formality) documentation (which is unfortunately only available for [ReScript](https://rescript-lang.org/)).
-- It should be able to handle huge forms without a single performance hiccups.
+- We want validation strategies per field, because we fell in love with them when we read the [re-formality](https://github.com/MinimaHQ/re-formality) documentation (which is unfortunately only available for [ReScript](https://rescript-lang.org/)).
+- It should be able to handle huge forms without a single performance hiccup.
 - Validation should be simple, reusable and testable (aka just functions).
 - It shouldn't even try to validate unmounted fields.
 - It should have some sort of built-in focus management (to improve the keyboard flow of our React Native forms).
@@ -68,7 +68,7 @@ That's precisely why every field config could declare its own `strategy`:
 | `onFirstSuccessOrFirstBlur` | On first validation success or first field blur **(default)** |
 | `onSubmit`                  | On form submit                                                |
 
-👉 Note that once the first feedback is given (the field is `valid` or should display an `error` message), the field switches to what we call a _"talkative"_ state.<br>
+👉 Note that once the first feedback is given (the field is `valid` or should display an `error` message), the field switches to what we call _"talkative"_ state.<br>
 After that, feedback will be updated on each value change until this field or the form is reset.
 
 ## API

@@ -3,39 +3,38 @@ import { Box, HStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import cardValidator from "card-validator";
 import * as React from "react";
+import { Rifm } from "rifm";
 import { useForm } from "../../../src";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
 
-export const CreditCardForm = () => {
+const formatCardNumber = (string: string) => {
+  const digits = (string.match(/\d+/g) || []).join("");
+  const chars = digits.split("");
+
+  const res = chars
+    .reduce(
+      (acc, char, index) => ([4, 8, 12, 16].includes(index) ? `${acc} ${char}` : `${acc}${char}`),
+      "",
+    )
+    .substr(0, 19);
+
+  return string.endsWith(" ") && [4, 9, 14, 19].includes(res.length) ? `${res} ` : res;
+};
+
+const appendSpace = (res: string) => ([4, 9, 14].includes(res.length) ? `${res} ` : res);
+
+export const InputMaskingForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     cardNumber: {
       strategy: "onFirstSuccessOrFirstBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
+        console.log({ value });
+
         if (!cardValidator.number(value).isValid) {
           return "Card number is invalid";
-        }
-      },
-    },
-    expirationDate: {
-      strategy: "onFirstSuccessOrFirstBlur",
-      initialValue: "",
-      sanitize: (value) => value.trim(),
-      validate: (value) => {
-        if (!cardValidator.expirationDate(value).isValid) {
-          return "Expiration date is invalid";
-        }
-      },
-    },
-    cvc: {
-      strategy: "onFirstSuccessOrFirstBlur",
-      initialValue: "",
-      sanitize: (value) => value.trim(),
-      validate: (value) => {
-        if (!cardValidator.cvv(value).isValid) {
-          return "CVC should have 3 characters";
         }
       },
     },
@@ -71,50 +70,31 @@ export const CreditCardForm = () => {
   const toast = useToast();
 
   return (
-    <Page title="Credit card">
+    <Page title="Input masking">
       <form onSubmit={onSubmit}>
         <Field name="cardNumber">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
-            <Input
-              label="Card number"
-              error={error}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              ref={ref}
-              valid={valid}
-              validating={validating}
+            <Rifm
+              accept={/\d+/g}
+              mask={19 <= value.length}
+              format={formatCardNumber}
               value={value}
-            />
-          )}
-        </Field>
-
-        <Field name="expirationDate">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
-            <Input
-              label="Expiration date"
-              error={error}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              ref={ref}
-              valid={valid}
-              validating={validating}
-              value={value}
-            />
-          )}
-        </Field>
-
-        <Field name="cvc">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
-            <Input
-              label="CVC"
-              error={error}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              ref={ref}
-              valid={valid}
-              validating={validating}
-              value={value}
-            />
+              onChange={onChange}
+              append={appendSpace}
+            >
+              {({ value, onChange }) => (
+                <Input
+                  label="Card number"
+                  error={error}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  ref={ref}
+                  valid={valid}
+                  validating={validating}
+                  value={value}
+                />
+              )}
+            </Rifm>
           )}
         </Field>
 

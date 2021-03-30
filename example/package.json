@@ -15,6 +15,7 @@
     "framer-motion": "^4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "rifm": "^0.12.0",
     "validator": "^13.5.2",
     "wouter": "^2.7.4"
   },

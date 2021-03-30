@@ -84,7 +84,7 @@ export const StrategiesForm = () => {
               label="onFirstChange"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}
@@ -99,7 +99,7 @@ export const StrategiesForm = () => {
               label="onFirstSuccess"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}
@@ -114,7 +114,7 @@ export const StrategiesForm = () => {
               label="onFirstBlur"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}
@@ -129,7 +129,7 @@ export const StrategiesForm = () => {
               label="onFirstSuccessOrFirstBlur (default)"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}
@@ -144,7 +144,7 @@ export const StrategiesForm = () => {
               label="onSubmit"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}

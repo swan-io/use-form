@@ -8,6 +8,7 @@ import { BasicForm } from "./forms/BasicForm";
 import { CheckboxesForm } from "./forms/CheckboxesForm";
 import { CreditCardForm } from "./forms/CreditCardForm";
 import { IBANForm } from "./forms/IBANForm";
+import { InputMaskingForm } from "./forms/InputMaskingForm";
 import { StrategiesForm } from "./forms/StrategiesForm";
 
 export const App = () => (
@@ -40,6 +41,7 @@ export const App = () => (
         <Link href="/checkboxes">Checkboxes</Link>
         <Link href="/iban">IBAN</Link>
         <Link href="/credit-card">Credit card</Link>
+        <Link href="/input-masking">Input masking</Link>
       </VStack>
     </Flex>
 
@@ -50,5 +52,6 @@ export const App = () => (
     <Route path="/checkboxes" component={CheckboxesForm} />
     <Route path="/iban" component={IBANForm} />
     <Route path="/credit-card" component={CreditCardForm} />
+    <Route path="/input-masking" component={InputMaskingForm} />
   </Flex>
 );

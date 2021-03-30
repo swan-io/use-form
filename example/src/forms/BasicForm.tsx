@@ -79,7 +79,7 @@ export const BasicForm = () => {
               label="First name"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}
@@ -94,7 +94,7 @@ export const BasicForm = () => {
               label="Last name"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}
@@ -109,7 +109,7 @@ export const BasicForm = () => {
               label="Email address"
               error={error}
               onBlur={onBlur}
-              onChange={onChange}
+              onChangeText={onChange}
               ref={ref}
               valid={valid}
               validating={validating}

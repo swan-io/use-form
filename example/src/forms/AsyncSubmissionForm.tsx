@@ -79,8 +79,8 @@ export const AsyncSubmissionForm = () => {
             colorScheme="green"
             disabled={formStatus === "submitting"}
             isLoading={formStatus === "submitting"}
-            onClick={onSubmit}
             type="submit"
+            onClick={onSubmit}
           >
             Submit
           </Button>

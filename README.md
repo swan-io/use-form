@@ -11,7 +11,7 @@ npm install --save react-ux-form
 
 ## Basic example
 
-```typescript
+```tsx
 import * as React from "react";
 import validator from "validator";
 import { useForm } from "../../../src";

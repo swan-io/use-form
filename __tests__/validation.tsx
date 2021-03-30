@@ -5,7 +5,7 @@ import { resolveAfter } from "./utils/promises";
 
 test("input validation evolve though time", async () => {
   const Test = () => {
-    const { Field, formStatus, resetForm, submitForm } = useForm({
+    const { Field, resetForm, submitForm } = useForm({
       firstName: {
         strategy: "onFirstBlur",
         initialValue: "",
@@ -44,8 +44,6 @@ test("input validation evolve though time", async () => {
           )}
         </Field>
 
-        <div>formStatus: {formStatus}</div>
-
         <button onClick={(e) => resetForm()}>Reset</button>
         <button onClick={(e) => submitForm((values) => {})}>Submit</button>
       </form>
@@ -70,7 +68,7 @@ test("input validation evolve though time", async () => {
 
 test("input validation evolve though time with async validation", async () => {
   const Test = () => {
-    const { Field, formStatus, resetForm, submitForm } = useForm({
+    const { Field, resetForm, submitForm } = useForm({
       firstName: {
         strategy: "onFirstBlur",
         initialValue: "",
@@ -105,8 +103,6 @@ test("input validation evolve though time with async validation", async () => {
             </>
           )}
         </Field>
-
-        <div>formStatus: {formStatus}</div>
 
         <button onClick={(e) => resetForm()}>Reset</button>
         <button onClick={(e) => submitForm((values) => {})}>Submit</button>

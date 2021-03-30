@@ -6,6 +6,7 @@ import { useForm } from "../../../src";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
 
+const sanitize = (value: string) => value.trim();
 const validate = (value: string) => {
   if (value.length < 3) {
     return "Must be at least 3 characters";
@@ -17,31 +18,31 @@ export const StrategiesForm = () => {
     onFirstChange: {
       strategy: "onFirstChange",
       initialValue: "",
-      sanitize: (value) => value.trim(),
+      sanitize,
       validate,
     },
     onFirstSuccess: {
       strategy: "onFirstSuccess",
       initialValue: "",
-      sanitize: (value) => value.trim(),
+      sanitize,
       validate,
     },
     onFirstBlur: {
       strategy: "onFirstBlur",
       initialValue: "",
-      sanitize: (value) => value.trim(),
+      sanitize,
       validate,
     },
     onFirstSuccessOrFirstBlur: {
       strategy: "onFirstSuccessOrFirstBlur",
       initialValue: "",
-      sanitize: (value) => value.trim(),
+      sanitize,
       validate,
     },
     onSubmit: {
       strategy: "onSubmit",
       initialValue: "",
-      sanitize: (value) => value.trim(),
+      sanitize,
       validate,
     },
   });

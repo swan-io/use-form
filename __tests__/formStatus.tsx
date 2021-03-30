@@ -35,6 +35,7 @@ test("formStatus evolve though time", async () => {
                 }}
               />
 
+              {!(valid || error) && <div>idle</div>}
               {valid && <div>valid</div>}
               {validating && <div>validating</div>}
               {error && <div>error</div>}
@@ -98,6 +99,7 @@ test("formStatus evolve though time with async validation", async () => {
                 }}
               />
 
+              {!(valid || error) && <div>idle</div>}
               {valid && <div>valid</div>}
               {validating && <div>validating</div>}
               {error && <div>error</div>}
@@ -165,6 +167,7 @@ test("formStatus evolve though time with async submission", async () => {
                 }}
               />
 
+              {!(valid || error) && <div>idle</div>}
               {valid && <div>valid</div>}
               {validating && <div>validating</div>}
               {error && <div>error</div>}

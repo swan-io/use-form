@@ -107,15 +107,20 @@ const {
 type fieldConfig<T> = {
   // The initial field value. It could be anything (string, number, boolean…)
   initialValue: T;
+
   // The chosen strategy. See "validation strategies" paragraph
   strategy: Strategy;
+
   // An amount of time (in ms) to wait before triggering validation
   debounceInterval: number;
+
   // When performing async validation, it might happen that the value has changed between the start and the end of its execution
   // That's why we compare the two values: to ensure that the feedback given to the user is correct
   equalityFn: (value1: T, value2: T) => boolean;
+
   // Will be run on value before validation and submission. Useful from trimming whitespaces
   sanitize: (value: T) => T;
+
   // Used to perform field validation. It could return an error message (or nothing)
   // It also handle async: simply return a Promise that resolves with an error message (or nothing)
   validate: (value: T) => ErrorMessage | void | Promise<ErrorMessage | void>;

@@ -224,66 +224,50 @@ TODO
 ```tsx
 import * as React from "react";
 import { useForm } from "react-ux-form";
-import validator from "validator";
 
-export const BasicForm = () => {
-  const { Field, resetForm, submitForm } = useForm({
-    // Define form fields
-    emailAddress: {
-      strategy: "onFirstSuccessOrFirstBlur",
+const MyAwesomeForm = () => {
+  const { Field, submitForm } = useForm({
+    firstName: {
       initialValue: "",
-      sanitize: (value) => value.trim(), // trim value before validation and submit
-      validate: (value) => { // validation function
-        if (!validator.isEmail(value)) {
-          return "A valid email is required";
+      strategy: "onFirstSuccessOrFirstBlur",
+      sanitize: (value) => value.trim(), // we trim value before validation and submit
+      validate: (value) => {
+        if (value === "") {
+          return "First name is required";
         }
       },
     },
   });
 
-  const onSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    submitForm(
-      (values) => { // called if all fields are valid
-        console.log("values", values);
-      },
-      (errors) => { // called if at least 1 field is invalid
-        console.log("errors", errors);
-      },
-    );
-  };
-
   return (
-    <form onSubmit={onSubmit}>
-      <Field name="emailAddress">
-        {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+
+        submitForm(
+          (values) => console.log("values", values), // all fields are valid
+          (errors) => console.log("errors", errors), // at least 1 field is invalid
+        );
+      }}
+    >
+      <Field name="firstName">
+        {({ error, onBlur, onChange, valid, value }) => (
           <>
-            <label>Email address</label>
+            <label>First name</label>
 
             <input
-              ref={ref}
-              value={value}
               onBlur={onBlur}
-              onChange={(e) => onChange(e.currentTarget.value)}
+              onChange={(event) => onChange(event.target.value)}
+              value={value}
             />
 
             {valid && <span>Valid</span>}
-            {validating && <span>Validating...</span>}
             {error && <span>Invalid</span>}
           </>
         )}
       </Field>
 
-      <div>
-        <button type="button" onClick={resetForm}>
-          Reset
-        </button>
-
-        <button type="submit">
-          Submit
-        </button>
-      </div>
+      <button type="submit">Submit</button>
     </form>
   );
 };

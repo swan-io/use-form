@@ -253,9 +253,10 @@ const MyAwesomeForm = () => {
       <Field name="firstName">
         {({ error, onBlur, onChange, valid, value }) => (
           <>
-            <label>First name</label>
+            <label htmlFor="firstName">First name</label>
 
             <input
+              id="firstName"
               onBlur={onBlur}
               value={value}
               onChange={(event) => onChange(event.target.value)}

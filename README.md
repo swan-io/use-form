@@ -97,7 +97,7 @@ const {
     // Properties below are optional (those are the default values)
     strategy: "onFirstSuccessOrFirstBlur",
     debounceInterval: 0,
-    equalityFn: (value1: string, value2: string) => Object.is(value1, value2),
+    equalityFn: (value1, value2) => Object.is(value1, value2),
     sanitize: (value) => value,
     validate: (value, { focusField, getFieldState }) => {},
   },

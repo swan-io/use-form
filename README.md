@@ -73,7 +73,8 @@ After that, feedback will be updated on each value change until this field or th
 
 ## API
 
-⚠️ The API are described using TypeScript pseudocode. These types does not necessarily exists / are not always valid.
+⚠️ The API are described using TypeScript pseudocode.<br>
+These types does not necessarily exists / are not always valid.
 
 ### useForm()
 

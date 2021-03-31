@@ -257,8 +257,8 @@ const MyAwesomeForm = () => {
 
             <input
               onBlur={onBlur}
-              onChange={(event) => onChange(event.target.value)}
               value={value}
+              onChange={(event) => onChange(event.target.value)}
             />
 
             {valid && <span>Valid</span>}

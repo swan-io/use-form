@@ -246,7 +246,7 @@ const MyAwesomeForm = () => {
 
         submitForm(
           (values) => console.log("values", values), // all fields are valid
-          (errors) => console.log("errors", errors), // at least 1 field is invalid
+          (errors) => console.log("errors", errors), // at least one field is invalid
         );
       }}
     >

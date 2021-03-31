@@ -73,6 +73,8 @@ After that, feedback will be updated on each value change until this field or th
 
 ## API
 
+⚠️ The API are described using TypeScript pseudocode. These types does not necessarily exists / are not always valid.
+
 ### useForm()
 
 `useForm` takes one argument (a map of your fields configs) and returns a set of helpers (functions, components and values) to manage your form state.
@@ -101,12 +103,12 @@ const {
 });
 ```
 
-### Field config detail
+### Field config
 
 ```tsx
-type fieldConfig<T> = {
+type fieldConfig = {
   // The initial field value. It could be anything (string, number, boolean…)
-  initialValue: T;
+  initialValue: Value;
 
   // The chosen strategy. See "validation strategies" paragraph
   strategy: Strategy;
@@ -116,16 +118,103 @@ type fieldConfig<T> = {
 
   // When performing async validation, it might happen that the value has changed between the start and the end of its execution
   // That's why we compare the two values: to ensure that the feedback given to the user is correct
-  equalityFn: (value1: T, value2: T) => boolean;
+  equalityFn: (value1: Value, value2: Value) => boolean;
 
   // Will be run on value before validation and submission. Useful from trimming whitespaces
-  sanitize: (value: T) => T;
+  sanitize: (value: Value) => Value;
 
   // Used to perform field validation. It could return an error message (or nothing)
   // It also handle async: simply return a Promise that resolves with an error message (or nothing)
-  validate: (value: T) => ErrorMessage | void | Promise<ErrorMessage | void>;
+  validate: (value: Value) => ErrorMessage | void | Promise<ErrorMessage | void>;
 };
 ```
+
+### formStatus
+
+```tsx
+type formStatus =
+  | "untouched" // no field has been updated
+  | "editing"
+  | "submitting"
+  | "submitted";
+```
+
+### getFieldState
+
+By setting `sanitize: true`, you will enforce sanitization.
+
+```tsx
+type getFieldState = (
+  name: FieldName,
+  options?: {
+    sanitize?: boolean;
+  },
+) => {
+  value: Value;
+  validating: boolean;
+  valid: boolean;
+  error?: ErrorMessage;
+};
+```
+
+### setFieldValue
+
+By setting `validate: true`, you will enforce validation. It has no effect if the field is already _talkative_.
+
+```tsx
+type setFieldValue = (
+  name: FieldName,
+  value: Value,
+  options?: {
+    validate?: boolean;
+  },
+) => void;
+```
+
+### focusField
+
+Will only works if you forward the `Field` provided `ref` to your input.
+
+```tsx
+type focusField = (name: FieldName) => void;
+```
+
+### resetField
+
+Value will be set to `initialValue` and user feedback will be hidden (the field is not _talkative_ anymore).
+
+```tsx
+type resetField = (name: FieldName) => void;
+```
+
+### validateField
+
+Once you manually call validation, the switch automatically switch to _talkative_ state.
+
+```tsx
+type validateField = (name: FieldName) => Promise<ErrorMessage | void>;
+```
+
+### resetForm
+
+Will reset all fields states and the `formStatus`.
+
+```tsx
+type resetForm = () => void;
+```
+
+### submitForm
+
+Submit your form. Each callback could return a `Promise` to keep `formStatus` in `submitting` state.
+
+```tsx
+type submitForm = (
+  onSuccess: (values: Partial<Values>) => Promise<void> | void,
+  onFailure?: (errors: Partial<ErrorMessages>) => Promise<void> | void,
+) => void;
+```
+
+### <Field />
 
 TODO
 

@@ -4,7 +4,7 @@
 [![npm version](https://img.shields.io/npm/v/react-ux-form?style=for-the-badge)](https://www.npmjs.org/package/react-ux-form)
 [![bundlephobia](https://img.shields.io/bundlephobia/minzip/react-ux-form?label=size&style=for-the-badge)](https://bundlephobia.com/result?p=react-ux-form)
 
-A simple, fast and opinionated form library for React & React Native that focus on UX.
+A simple, fast and opinionated form library for React & React Native that focuses on UX.
 
 ## Setup
 

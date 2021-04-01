@@ -304,7 +304,7 @@ const MyAwesomeForm = () => {
 
 A full set of examples in available in the [`/example` directory](https://github.com/swan-io/react-ux-form/tree/main/example) project. Just clone the repository, install its dependencies and start it!
 
-# Acknowledgements
+## Acknowledgements
 
 - [re-formality](https://github.com/MinimaHQ/re-formality) for the [validation strategies](https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md) idea.
 - [react-jeff](https://github.com/jamiebuilds/react-jeff) for its simple and testable validation API.

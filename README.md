@@ -214,7 +214,7 @@ type submitForm = (
 ) => void;
 ```
 
-### <Field />
+### `<Field />`
 
 A component that exposes everything you need locally as a children render prop.
 

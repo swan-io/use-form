@@ -31,8 +31,6 @@ export const InputMaskingForm = () => {
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
-        console.log({ value });
-
         if (!cardValidator.number(value).isValid) {
           return "Card number is invalid";
         }

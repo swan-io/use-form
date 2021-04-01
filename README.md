@@ -241,8 +241,8 @@ const MyAwesomeForm = () => {
 
   return (
     <form
-      onSubmit={(event) => {
-        event.preventDefault();
+      onSubmit={({ preventDefault }) => {
+        preventDefault();
 
         submitForm(
           (values) => console.log("values", values), // all fields are valid
@@ -259,7 +259,9 @@ const MyAwesomeForm = () => {
               id="firstName"
               onBlur={onBlur}
               value={value}
-              onChange={(event) => onChange(event.target.value)}
+              onChange={({ target }) => {
+                onChange(target.value);
+              }}
             />
 
             {valid && <span>Valid</span>}

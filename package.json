@@ -21,8 +21,12 @@
     "dist"
   ],
   "keywords": [
+    "form",
+    "hook",
     "react",
-    "form"
+    "typescript",
+    "ux",
+    "validation"
   ],
   "scripts": {
     "build": "yarn clean && microbundle -f cjs,es",

@@ -300,7 +300,7 @@ const MyAwesomeForm = () => {
 };
 ```
 
-## More examples
+## 👉 More examples
 
 A full set of examples in available in the [`/example` directory](https://github.com/swan-io/react-ux-form/tree/main/example) project. Just clone the repository, install its dependencies and start it!
 

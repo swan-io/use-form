@@ -73,8 +73,7 @@ After that, feedback will be updated on each value change until this field or th
 
 ## API
 
-⚠️ The API are described using TypeScript pseudocode.<br>
-These types does not necessarily exists / are not always valid.
+⚠️ The API are described using TypeScript pseudocode.<br>These types are not exported by the library / are not even always valid.
 
 ### useForm()
 
@@ -217,7 +216,32 @@ type submitForm = (
 
 ### <Field />
 
-TODO
+A component that exposes everything you need locally as a children render prop.
+
+```tsx
+<Field name="emailAddress">
+  {
+    (props: {
+      // A ref to pass to your element (only required for focus handling)
+      ref: MutableRefObject;
+      // The field value
+      value: Value;
+      // Is the field validating? (only happen on async operations)
+      validating: boolean;
+      // Is the field valid?
+      valid: boolean;
+      // The field is invalid: here its error message.
+      error?: ErrorMessage;
+      // The onBlur handler (required for onBlur and onFirstSuccessOrFirstBlur strategies)
+      onBlur: () => void;
+      // The onChange handler (required)
+      onChange: (value: Value) => void;
+      // Focus the next field (uses the field config declaration order in useForm)
+      focusNextField: () => void;
+    }) => /* … */
+  }
+</Field>
+```
 
 ## Quickstart
 
@@ -275,6 +299,10 @@ const MyAwesomeForm = () => {
   );
 };
 ```
+
+## More examples
+
+A full set of examples in available in the [`/example` directory](https://github.com/swan-io/react-ux-form/tree/main/example) project. Just clone the repository, install its dependencies and start it!
 
 # Acknowledgements
 

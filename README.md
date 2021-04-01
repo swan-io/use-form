@@ -254,7 +254,7 @@ const MyAwesomeForm = () => {
     firstName: {
       initialValue: "",
       strategy: "onFirstSuccessOrFirstBlur",
-      sanitize: (value) => value.trim(), // we trim value before validation and submit
+      sanitize: (value) => value.trim(), // we trim value before validation and submission
       validate: (value) => {
         if (value === "") {
           return "First name is required";

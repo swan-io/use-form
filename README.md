@@ -325,7 +325,7 @@ const MyAwesomeForm = () => {
       initialValue: "",
       // will run each validation function until an error is returned
       validate: combineValidators(
-        isEmailRequired && validateRequired, // we can make a validation conditionnal like this
+        isEmailRequired && validateRequired, // we can make a validation conditional like this
         validateEmail,
       ),
     },

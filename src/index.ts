@@ -107,7 +107,7 @@ export const combineValidators = <T, ErrorMessage = string>(
 
     if (isPromise(result)) {
       return result.then((error) => {
-        if (error) {
+        if (error != null) {
           return error;
         }
         if (nextFns.length > 0) {

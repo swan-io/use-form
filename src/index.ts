@@ -88,6 +88,10 @@ export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
   ) => void;
 };
 
+export type ValidatorFn<T, ErrorMessage extends string = string> = (
+  value: T,
+) => ErrorMessage | undefined | Promise<ErrorMessage | undefined>;
+
 const identity = <T>(value: T) => value;
 const noop = () => {};
 
@@ -95,6 +99,34 @@ const isPromise = <T>(value: any): value is Promise<T> =>
   !!value &&
   (typeof value === "object" || typeof value === "function") &&
   typeof value.then === "function";
+
+export const combineValidators = <T, ErrorMessage extends string = string>(
+  ...fns: (ValidatorFn<T, ErrorMessage> | false)[]
+): ValidatorFn<T, ErrorMessage> => (value) => {
+  const [fn, ...nextFns] = fns;
+
+  if (fn) {
+    const error = fn(value);
+    if (isPromise(error)) {
+      return error.then((err) => {
+        if (err) {
+          return err;
+        }
+        if (nextFns.length > 0) {
+          return combineValidators(...nextFns)(value);
+        }
+      });
+    }
+
+    if (error) {
+      return error;
+    }
+  }
+
+  if (nextFns.length > 0) {
+    return combineValidators(...nextFns)(value);
+  }
+};
 
 export const useForm = <Values extends Record<string, any>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,

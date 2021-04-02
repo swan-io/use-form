@@ -300,6 +300,39 @@ const MyAwesomeForm = () => {
 };
 ```
 
+## Validation helper
+
+As it's a very common case to use several validation functions per field, we also export a `combineValidators` helper function that allow you to chain sync and async validation functions: it will run them sequentially until an error is returned.
+
+```tsx
+import { useForm, combineValidators } from "react-ux-form";
+
+const validateRequired = (value: string) => {
+  if (!value) {
+    return "required";
+  }
+};
+
+const validateEmail = (email: string) => {
+  if (!/.+@.+\..{2,}/.test(email)) {
+    return "invalid email";
+  }
+};
+
+const MyAwesomeForm = () => {
+  const { Field, submitForm } = useForm({
+    email: {
+      initialValue: "",
+      // will run each validation function until an error is returned
+      validate: combineValidators(
+        isEmailRequired && validateRequired, // we can make a validation conditional like this
+        validateEmail,
+      ),
+    },
+  });
+...
+```
+
 ## 👉 More examples
 
 A full set of examples in available in the [`/example` directory](https://github.com/swan-io/react-ux-form/tree/main/example) project. Just clone the repository, install its dependencies and start it!

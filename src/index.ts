@@ -5,7 +5,8 @@ import { useSubscription } from "use-subscription";
 // For server-side rendering / react-native
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-type ValidateResult<ErrorMessage> = ErrorMessage | void | Promise<ErrorMessage | void>;
+export type ValidateResult<ErrorMessage> = ErrorMessage | void | Promise<ErrorMessage | void>;
+export type ValidateFn<T, ErrorMessage = string> = (value: T) => ValidateResult<ErrorMessage>;
 
 type Helpers<Values extends Record<string, any>, ErrorMessage> = {
   getFieldState: <N extends keyof Values>(
@@ -95,6 +96,35 @@ const isPromise = <T>(value: any): value is Promise<T> =>
   !!value &&
   (typeof value === "object" || typeof value === "function") &&
   typeof value.then === "function";
+
+export const combineValidators = <T, ErrorMessage = string>(
+  ...fns: (ValidateFn<T, ErrorMessage> | false)[]
+): ValidateFn<T, ErrorMessage> => (value) => {
+  const [fn, ...nextFns] = fns;
+
+  if (fn) {
+    const result = fn(value);
+
+    if (isPromise(result)) {
+      return result.then((error) => {
+        if (error != null) {
+          return error;
+        }
+        if (nextFns.length > 0) {
+          return combineValidators(...nextFns)(value);
+        }
+      });
+    }
+
+    if (result != null) {
+      return result;
+    }
+  }
+
+  if (nextFns.length > 0) {
+    return combineValidators(...nextFns)(value);
+  }
+};
 
 export const useForm = <Values extends Record<string, any>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,

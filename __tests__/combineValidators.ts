@@ -7,8 +7,8 @@ const validateRequired = (value: string) => {
   }
 };
 
-const validateMinLength = (maxLength: number) => (value: string) => {
-  if (value.length < maxLength) {
+const validateMinLength = (minLength: number) => (value: string) => {
+  if (value.length < minLength) {
     return "too short value";
   }
 };

@@ -381,14 +381,12 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     };
 
     const getOnBlur = (name: Name) => (): void => {
-      if (isTalkative(name)) {
-        return; // Avoid validating a field validated on each change
-      }
+      const { validity } = states.current[name];
 
-      setTalkative(name, ["onFirstBlur", "onFirstSuccessOrFirstBlur"]);
-
-      if (isMounted(name)) {
-        internalValidateField(name);
+      // Avoid validating an untouched / already valid field
+      if (validity.type !== "unknown" && !isTalkative(name)) {
+        setTalkative(name, ["onFirstBlur", "onFirstSuccessOrFirstBlur"]);
+        isMounted(name) && internalValidateField(name);
       }
     };
 

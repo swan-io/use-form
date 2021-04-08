@@ -386,7 +386,10 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       // Avoid validating an untouched / already valid field
       if (validity.type !== "unknown" && !isTalkative(name)) {
         setTalkative(name, ["onFirstBlur", "onFirstSuccessOrFirstBlur"]);
-        isMounted(name) && internalValidateField(name);
+
+        if (isMounted(name)) {
+          internalValidateField(name);
+        }
       }
     };
 

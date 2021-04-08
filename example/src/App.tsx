@@ -21,6 +21,10 @@ export const App = () => (
       paddingBottom={6}
       paddingLeft={4}
       paddingRight={4}
+      borderColor="gray.100"
+      borderStyle="solid"
+      borderBottomWidth={1}
+      minHeight={{ base: 175, md: "auto" }}
       width={{ base: "auto", md: 300 }}
     >
       <Text

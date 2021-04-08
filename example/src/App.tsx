@@ -17,8 +17,10 @@ export const App = () => (
       backgroundColor="gray.50"
       flexDirection="column"
       overflowY="scroll"
-      paddingBlock={6}
-      paddingInline={4}
+      paddingTop={6}
+      paddingBottom={6}
+      paddingLeft={4}
+      paddingRight={4}
       width={300}
     >
       <Text

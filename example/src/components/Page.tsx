@@ -7,8 +7,10 @@ export const Page = ({ children, title }: { children: React.ReactNode; title: st
     flexGrow={1}
     flexShrink={0}
     overflowY="scroll"
-    paddingBlock={8}
-    paddingInline={10}
+    paddingTop={8}
+    paddingBottom={8}
+    paddingLeft={10}
+    paddingRight={10}
   >
     <main style={{ maxWidth: 500 }}>
       <Heading>{title}</Heading>

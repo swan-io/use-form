@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { useForm } from "../src";
 
@@ -172,73 +172,73 @@ test("validation strategies give feedback at the right time", async () => {
     );
   };
 
-  const { debug, findByLabelText, findByText } = render(<Test />);
+  render(<Test />);
 
-  let input = await findByLabelText("onFirstChange");
-  const resetButton = await findByText("Reset");
-  const submitButton = await findByText("Submit");
+  let input = await screen.findByLabelText("onFirstChange");
+  const resetButton = await screen.findByText("Reset");
+  const submitButton = await screen.findByText("Submit");
 
-  await findByText("onFirstChange idle");
+  await screen.findByText("onFirstChange idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstChange error");
+  await screen.findByText("onFirstChange error");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await findByText("onFirstChange valid");
+  await screen.findByText("onFirstChange valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstChange error");
+  await screen.findByText("onFirstChange error");
 
   fireEvent.click(resetButton);
-  input = await findByLabelText("onFirstSuccess");
+  input = await screen.findByLabelText("onFirstSuccess");
 
-  await findByText("onFirstSuccess idle");
+  await screen.findByText("onFirstSuccess idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstSuccess idle");
+  await screen.findByText("onFirstSuccess idle");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await findByText("onFirstSuccess valid");
+  await screen.findByText("onFirstSuccess valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstSuccess error");
+  await screen.findByText("onFirstSuccess error");
 
   fireEvent.click(resetButton);
-  input = await findByLabelText("onFirstBlur");
+  input = await screen.findByLabelText("onFirstBlur");
 
-  await findByText("onFirstBlur idle");
+  await screen.findByText("onFirstBlur idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstBlur idle");
+  await screen.findByText("onFirstBlur idle");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await findByText("onFirstBlur idle");
+  await screen.findByText("onFirstBlur idle");
   fireEvent.blur(input);
-  await findByText("onFirstBlur valid");
+  await screen.findByText("onFirstBlur valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstBlur error");
+  await screen.findByText("onFirstBlur error");
 
   fireEvent.click(resetButton);
-  input = await findByLabelText("onFirstSuccessOrFirstBlur");
+  input = await screen.findByLabelText("onFirstSuccessOrFirstBlur");
 
-  await findByText("onFirstSuccessOrFirstBlur idle");
+  await screen.findByText("onFirstSuccessOrFirstBlur idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstSuccessOrFirstBlur idle");
+  await screen.findByText("onFirstSuccessOrFirstBlur idle");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await findByText("onFirstSuccessOrFirstBlur valid");
+  await screen.findByText("onFirstSuccessOrFirstBlur valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstSuccessOrFirstBlur error");
+  await screen.findByText("onFirstSuccessOrFirstBlur error");
 
   fireEvent.click(resetButton);
 
-  await findByText("onFirstSuccessOrFirstBlur idle");
+  await screen.findByText("onFirstSuccessOrFirstBlur idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onFirstSuccessOrFirstBlur idle");
+  await screen.findByText("onFirstSuccessOrFirstBlur idle");
   fireEvent.blur(input);
-  await findByText("onFirstSuccessOrFirstBlur error");
+  await screen.findByText("onFirstSuccessOrFirstBlur error");
 
   fireEvent.click(resetButton);
-  input = await findByLabelText("onSubmit");
+  input = await screen.findByLabelText("onSubmit");
 
-  await findByText("onSubmit idle");
+  await screen.findByText("onSubmit idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onSubmit idle");
+  await screen.findByText("onSubmit idle");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await findByText("onSubmit idle");
+  await screen.findByText("onSubmit idle");
   fireEvent.click(submitButton);
-  await findByText("onSubmit valid");
+  await screen.findByText("onSubmit valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await findByText("onSubmit error");
+  await screen.findByText("onSubmit error");
 });

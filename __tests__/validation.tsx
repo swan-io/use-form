@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { useForm } from "../src";
 import { resolveAfter } from "./utils/promises";
@@ -50,20 +50,19 @@ test("input validation evolve though time", async () => {
     );
   };
 
-  const { findByLabelText, findByText } = render(<Test />);
+  render(<Test />);
 
-  const input = await findByLabelText("First name");
+  const input = await screen.findByLabelText("First name");
 
   fireEvent.focus(input);
+  fireEvent.input(input, { target: { value: "Ni" } });
   fireEvent.blur(input);
 
-  await findByText("error");
+  await screen.findByText("error");
 
-  fireEvent.input(input, {
-    target: { value: "Nicolas" },
-  });
+  fireEvent.input(input, { target: { value: "Nicolas" } });
 
-  await findByText("valid");
+  await screen.findByText("valid");
 });
 
 test("input validation evolve though time with async validation", async () => {
@@ -110,20 +109,19 @@ test("input validation evolve though time with async validation", async () => {
     );
   };
 
-  const { findByLabelText, findByText } = render(<Test />);
+  render(<Test />);
 
-  const input = await findByLabelText("First name");
+  const input = await screen.findByLabelText("First name");
 
   fireEvent.focus(input);
+  fireEvent.input(input, { target: { value: "Ni" } });
   fireEvent.blur(input);
 
-  await findByText("validating");
-  await findByText("error");
+  await screen.findByText("validating");
+  await screen.findByText("error");
 
-  fireEvent.input(input, {
-    target: { value: "Nicolas" },
-  });
+  fireEvent.input(input, { target: { value: "Nicolas" } });
 
-  await findByText("validating");
-  await findByText("valid");
+  await screen.findByText("validating");
+  await screen.findByText("valid");
 });

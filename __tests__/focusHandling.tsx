@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { useForm } from "../src";
 
@@ -83,20 +83,20 @@ test("the first errored field is focused after submission", async () => {
     );
   };
 
-  const { findByLabelText, findByText } = render(<Test />);
+  render(<Test />);
 
-  const firstNameInput = await findByLabelText("First name");
-  const lastNameInput = await findByLabelText("Last name");
+  const firstNameInput = await screen.findByLabelText("First name");
+  const lastNameInput = await screen.findByLabelText("Last name");
 
-  const submitButton = await findByText("Submit");
+  const submitButton = await screen.findByText("Submit");
 
   fireEvent.input(firstNameInput, { target: { value: "Nicolas" } });
   fireEvent.input(lastNameInput, { target: { value: "Ni" } });
 
   fireEvent.click(submitButton);
 
-  await findByText("firstName valid");
-  await findByText("lastName error");
+  await screen.findByText("firstName valid");
+  await screen.findByText("lastName error");
 
   expect(lastNameInput).toHaveFocus();
 });
@@ -170,12 +170,12 @@ test("focusField and focusNextField behave like expected", async () => {
     );
   };
 
-  const { findByLabelText, findByText } = render(<Test />);
+  render(<Test />);
 
-  const firstNameInput = await findByLabelText("First name");
-  const lastNameInput = await findByLabelText("Last name");
+  const firstNameInput = await screen.findByLabelText("First name");
+  const lastNameInput = await screen.findByLabelText("Last name");
 
-  const focusFirstNameButton = await findByText("Focus firstName");
+  const focusFirstNameButton = await screen.findByText("Focus firstName");
 
   fireEvent.click(focusFirstNameButton);
   expect(firstNameInput).toHaveFocus();

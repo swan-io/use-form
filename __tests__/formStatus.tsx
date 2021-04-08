@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { useForm } from "../src";
 import { resolveAfter } from "./utils/promises";
@@ -51,23 +51,23 @@ test("formStatus evolve though time", async () => {
     );
   };
 
-  const { findByLabelText, findByText } = render(<Test />);
+  render(<Test />);
 
-  const input = await findByLabelText("First name");
-  const resetButton = await findByText("Reset");
-  const submitButton = await findByText("Submit");
+  const input = await screen.findByLabelText("First name");
+  const resetButton = await screen.findByText("Reset");
+  const submitButton = await screen.findByText("Submit");
 
-  await findByText("formStatus: untouched");
+  await screen.findByText("formStatus: untouched");
 
   fireEvent.input(input, {
     target: { value: "Nicolas" },
   });
 
-  await findByText("formStatus: editing");
+  await screen.findByText("formStatus: editing");
   fireEvent.click(submitButton);
-  await findByText("formStatus: submitted");
+  await screen.findByText("formStatus: submitted");
   fireEvent.click(resetButton);
-  await findByText("formStatus: untouched");
+  await screen.findByText("formStatus: untouched");
 });
 
 test("formStatus evolve though time with async validation", async () => {
@@ -115,24 +115,24 @@ test("formStatus evolve though time with async validation", async () => {
     );
   };
 
-  const { findByLabelText, findByText } = render(<Test />);
+  render(<Test />);
 
-  const input = await findByLabelText("First name");
-  const resetButton = await findByText("Reset");
-  const submitButton = await findByText("Submit");
+  const input = await screen.findByLabelText("First name");
+  const resetButton = await screen.findByText("Reset");
+  const submitButton = await screen.findByText("Submit");
 
-  await findByText("formStatus: untouched");
+  await screen.findByText("formStatus: untouched");
 
   fireEvent.input(input, {
     target: { value: "Nicolas" },
   });
 
-  await findByText("formStatus: editing");
+  await screen.findByText("formStatus: editing");
   fireEvent.click(submitButton);
-  await findByText("formStatus: submitting");
-  await findByText("formStatus: submitted");
+  await screen.findByText("formStatus: submitting");
+  await screen.findByText("formStatus: submitted");
   fireEvent.click(resetButton);
-  await findByText("formStatus: untouched");
+  await screen.findByText("formStatus: untouched");
 });
 
 test("formStatus evolve though time with async submission", async () => {
@@ -183,22 +183,22 @@ test("formStatus evolve though time with async submission", async () => {
     );
   };
 
-  const { findByLabelText, findByText } = render(<Test />);
+  render(<Test />);
 
-  const input = await findByLabelText("First name");
-  const resetButton = await findByText("Reset");
-  const submitButton = await findByText("Submit");
+  const input = await screen.findByLabelText("First name");
+  const resetButton = await screen.findByText("Reset");
+  const submitButton = await screen.findByText("Submit");
 
-  await findByText("formStatus: untouched");
+  await screen.findByText("formStatus: untouched");
 
   fireEvent.input(input, {
     target: { value: "Nicolas" },
   });
 
-  await findByText("formStatus: editing");
+  await screen.findByText("formStatus: editing");
   fireEvent.click(submitButton);
-  await findByText("formStatus: submitting");
-  await findByText("formStatus: submitted");
+  await screen.findByText("formStatus: submitting");
+  await screen.findByText("formStatus: submitted");
   fireEvent.click(resetButton);
-  await findByText("formStatus: untouched");
+  await screen.findByText("formStatus: untouched");
 });

@@ -28,6 +28,8 @@ export const CheckboxesForm = () => {
     },
   });
 
+  const toast = useToast();
+
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -54,8 +56,6 @@ export const CheckboxesForm = () => {
       },
     );
   };
-
-  const toast = useToast();
 
   return (
     <Page title="Checkboxes">

@@ -38,6 +38,8 @@ export const InputMaskingForm = () => {
     },
   });
 
+  const toast = useToast();
+
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -64,8 +66,6 @@ export const InputMaskingForm = () => {
       },
     );
   };
-
-  const toast = useToast();
 
   return (
     <Page title="Input masking">

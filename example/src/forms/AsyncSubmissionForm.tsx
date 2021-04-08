@@ -22,6 +22,8 @@ export const AsyncSubmissionForm = () => {
     },
   });
 
+  const toast = useToast();
+
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -49,8 +51,6 @@ export const AsyncSubmissionForm = () => {
       },
     );
   };
-
-  const toast = useToast();
 
   return (
     <Page title="Async submission">

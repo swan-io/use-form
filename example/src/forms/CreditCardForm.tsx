@@ -41,6 +41,8 @@ export const CreditCardForm = () => {
     },
   });
 
+  const toast = useToast();
+
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -67,8 +69,6 @@ export const CreditCardForm = () => {
       },
     );
   };
-
-  const toast = useToast();
 
   return (
     <Page title="Credit card">

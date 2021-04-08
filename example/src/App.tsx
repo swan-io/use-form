@@ -24,7 +24,8 @@ export const App = () => (
       borderColor="gray.100"
       borderStyle="solid"
       borderBottomWidth={1}
-      minHeight={{ base: 175, md: "auto" }}
+      flexShrink={0}
+      height={{ base: 175, md: "auto" }}
       width={{ base: "auto", md: 300 }}
     >
       <Text

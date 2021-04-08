@@ -5,12 +5,12 @@ export const Page = ({ children, title }: { children: React.ReactNode; title: st
   <Flex
     flexDirection="column"
     flexGrow={1}
-    flexShrink={0}
+    flexShrink={1}
     overflowY="scroll"
-    paddingTop={8}
-    paddingBottom={8}
-    paddingLeft={10}
-    paddingRight={10}
+    paddingTop={{ base: 6, md: 8 }}
+    paddingBottom={{ base: 6, md: 8 }}
+    paddingLeft={{ base: 5, md: 10 }}
+    paddingRight={{ base: 5, md: 10 }}
   >
     <main style={{ maxWidth: 500 }}>
       <Heading>{title}</Heading>

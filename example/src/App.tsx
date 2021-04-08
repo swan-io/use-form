@@ -12,7 +12,7 @@ import { InputMaskingForm } from "./forms/InputMaskingForm";
 import { StrategiesForm } from "./forms/StrategiesForm";
 
 export const App = () => (
-  <Flex flex={1} flexDirection="row">
+  <Flex flex={1} flexDirection={{ base: "column", md: "row" }}>
     <Flex
       backgroundColor="gray.50"
       flexDirection="column"
@@ -21,7 +21,7 @@ export const App = () => (
       paddingBottom={6}
       paddingLeft={4}
       paddingRight={4}
-      width={300}
+      width={{ base: "auto", md: 300 }}
     >
       <Text
         color="gray.500"

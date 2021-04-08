@@ -68,7 +68,7 @@ That's precisely why every field config could declare its own `strategy`:
 | `onFirstSuccessOrFirstBlur` | On first validation success or first field blur **(default)** |
 | `onSubmit`                  | On form submit                                                |
 
-👉 Note that:
+#### Note that:
 
 - The strategies will only be activated after the field value update / the form submission.
 - Once the first feedback is given (the field is `valid` or should display an `error` message), the field switches to what we call _"talkative"_ state. After that, feedback will be updated on each value change until this field or the form is reset.

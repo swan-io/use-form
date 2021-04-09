@@ -146,7 +146,9 @@ test("the user can disable autofocus on first error", async () => {
             submitForm(
               (values) => {},
               () => {},
-              { focusError: false },
+              {
+                avoidFocusOnError: true,
+              },
             )
           }
         >

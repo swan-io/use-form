@@ -86,7 +86,7 @@ export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<void> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<void> | void,
-    options?: { focusError?: boolean },
+    options?: { avoidFocusOnError?: boolean },
   ) => void;
 };
 
@@ -448,7 +448,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       const results: ValidateResult<ErrorMessage>[] = [];
 
       // autofocusing first error is the default behaviour
-      const skipFocusError = options.focusError === false;
+      const shouldFocusOnError = !options.avoidFocusOnError;
 
       names.forEach((name: Name, index) => {
         setTalkative(name);
@@ -460,7 +460,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
         if (results.every((result) => result == null)) {
           return handleSyncEffect(onSuccess(values), wasEditing);
         }
-        if (!skipFocusError) {
+        if (shouldFocusOnError) {
           focusFirstError(names, results);
         }
 
@@ -477,7 +477,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
           if (results.every((result) => result == null)) {
             return onSuccess(values);
           }
-          if (!skipFocusError) {
+          if (shouldFocusOnError) {
             focusFirstError(names, results);
           }
 

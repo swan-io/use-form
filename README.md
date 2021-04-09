@@ -213,7 +213,7 @@ Submit your form. Each callback could return a `Promise` to keep `formStatus` in
 type submitForm = (
   onSuccess: (values: Partial<Values>) => Promise<void> | void,
   onFailure?: (errors: Partial<ErrorMessages>) => Promise<void> | void,
-  options?: { focusError?: boolean }, // By default, it will try to focus the first errored field
+  options?: { avoidFocusOnError?: boolean }, // by default, it will try to focus the first errored field (which is a good practice)
 ) => void;
 ```
 

@@ -86,6 +86,7 @@ export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<void> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<void> | void,
+    options?: { avoidFocusOnError?: boolean },
   ) => void;
 };
 
@@ -433,7 +434,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       }
     };
 
-    const submitForm: Contract["submitForm"] = (onSuccess, onFailure = noop) => {
+    const submitForm: Contract["submitForm"] = (onSuccess, onFailure = noop, options = {}) => {
       if (formStatus.current === "submitting") {
         return; // Avoid concurrent submissions
       }
@@ -446,6 +447,9 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidateResult<ErrorMessage>[] = [];
 
+      // autofocusing first error is the default behaviour
+      const shouldFocusOnError = !options.avoidFocusOnError;
+
       names.forEach((name: Name, index) => {
         setTalkative(name);
         values[name] = getFieldState(name, { sanitize: true }).value;
@@ -456,8 +460,10 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
         if (results.every((result) => result == null)) {
           return handleSyncEffect(onSuccess(values), wasEditing);
         }
+        if (shouldFocusOnError) {
+          focusFirstError(names, results);
+        }
 
-        focusFirstError(names, results);
         names.forEach((name, index) => (errors[name] = results[index]));
         return handleSyncEffect(onFailure(errors), wasEditing);
       }
@@ -471,8 +477,10 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
           if (results.every((result) => result == null)) {
             return onSuccess(values);
           }
+          if (shouldFocusOnError) {
+            focusFirstError(names, results);
+          }
 
-          focusFirstError(names, results);
           names.forEach((name, index) => (errors[name] = results[index]));
           return onFailure(errors);
         })

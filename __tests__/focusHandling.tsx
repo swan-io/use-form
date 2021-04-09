@@ -101,6 +101,74 @@ test("the first errored field is focused after submission", async () => {
   expect(lastNameInput).toHaveFocus();
 });
 
+test("the user can disable autofocus on first error", async () => {
+  const Test = () => {
+    const { Field, resetForm, submitForm } = useForm({
+      firstName: {
+        initialValue: "",
+        validate: (value) => {
+          if (value.length < 3) {
+            return "Must be at least 3 characters";
+          }
+        },
+      },
+    });
+
+    return (
+      <form onSubmit={(e) => e.preventDefault()}>
+        <Field name="firstName">
+          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+            <>
+              <label htmlFor="firstName">First name</label>
+
+              <input
+                type="text"
+                id="firstName"
+                ref={ref}
+                value={value}
+                onBlur={onBlur}
+                onChange={(e) => {
+                  e.preventDefault();
+                  onChange(e.target.value);
+                }}
+              />
+
+              {!(valid || error) && <div>idle</div>}
+              {valid && <div>valid</div>}
+              {validating && <div>validating</div>}
+              {error && <div>error</div>}
+            </>
+          )}
+        </Field>
+
+        <button
+          onClick={(e) =>
+            submitForm(
+              (values) => {},
+              () => {},
+              { focusError: false },
+            )
+          }
+        >
+          Submit
+        </button>
+      </form>
+    );
+  };
+
+  render(<Test />);
+
+  const input = await screen.findByLabelText("First name");
+  const submitButton = await screen.findByText("Submit");
+
+  fireEvent.input(input, { target: { value: "Ni" } });
+  fireEvent.click(submitButton);
+
+  await screen.findByText("error");
+
+  expect(input).not.toHaveFocus();
+});
+
 test("focusField and focusNextField behave like expected", async () => {
   const Test = () => {
     const { Field, focusField } = useForm({

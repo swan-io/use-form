@@ -86,6 +86,7 @@ export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<void> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<void> | void,
+    options?: { focusError: boolean },
   ) => void;
 };
 
@@ -433,7 +434,11 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       }
     };
 
-    const submitForm: Contract["submitForm"] = (onSuccess, onFailure = noop) => {
+    const submitForm: Contract["submitForm"] = (
+      onSuccess,
+      onFailure = noop,
+      { focusError } = { focusError: true },
+    ) => {
       if (formStatus.current === "submitting") {
         return; // Avoid concurrent submissions
       }
@@ -456,8 +461,10 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
         if (results.every((result) => result == null)) {
           return handleSyncEffect(onSuccess(values), wasEditing);
         }
+        if (focusError) {
+          focusFirstError(names, results);
+        }
 
-        focusFirstError(names, results);
         names.forEach((name, index) => (errors[name] = results[index]));
         return handleSyncEffect(onFailure(errors), wasEditing);
       }
@@ -471,8 +478,10 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
           if (results.every((result) => result == null)) {
             return onSuccess(values);
           }
+          if (focusError) {
+            focusFirstError(names, results);
+          }
 
-          focusFirstError(names, results);
           names.forEach((name, index) => (errors[name] = results[index]));
           return onFailure(errors);
         })

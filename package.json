@@ -1,6 +1,6 @@
 {
   "name": "react-ux-form",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "license": "MIT",
   "description": "A simple, fast and opinionated form library for React & React Native focusing on UX.",
   "author": "Mathieu Acthernoene <mathieu.acthernoene@swan.io>",

@@ -28,7 +28,7 @@ $ yarn add react-ux-form
 ## Motivation
 
 Why another React form library 🤔?<br>
-Because, as silly as it seems, we didn't found any existing library which fits our existing needs:
+Because, as silly as it seems, we couldn't find any existing library which fits our existing needs:
 
 - We want validation strategies per field, because we fell in love with them when we read the [re-formality](https://github.com/MinimaHQ/re-formality) documentation (which is unfortunately only available for [ReScript](https://rescript-lang.org/)).
 - It should be able to handle huge forms without a single performance hiccup.

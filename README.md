@@ -36,11 +36,11 @@ Because, as silly as it seems, we couldn't find any existing library which fits 
 - It shouldn't even try to validate unmounted fields.
 - It should have some sort of built-in focus management (to improve the keyboard flow of our React Native forms).
 
-## ✨ Validation strategies
+## Validation strategies ✨
 
 The key of **good UX** is simple: validation should be executed **in continue**, feedback should be provided **when it makes sense**.
 
-### Quick example: 💳 A credit card field
+### Quick example: A credit card field 💳
 
 Let's say we want to display some sort of valid state icon (✔) when the input value is a valid credit card number but don't want to display an error until the user blur the field (and let the value in an invalid state).
 
@@ -82,6 +82,8 @@ That's precisely why every field config could declare its own `strategy`:
 `useForm` takes one argument (a map of your fields configs) and returns a set of helpers (functions, components and values) to manage your form state.
 
 ```tsx
+import { useForm } from "react-ux-form";
+
 const {
   formStatus,
   Field,
@@ -366,7 +368,7 @@ const MyAwesomeForm = () => {
 };
 ```
 
-## 👉 More examples
+## More examples
 
 A full set of examples is available on [CodeSandbox](https://0jszi.csb.app/) or in the [`/example` directory](https://github.com/swan-io/react-ux-form/tree/main/example) project. Just clone the repository, install its dependencies and start it!
 

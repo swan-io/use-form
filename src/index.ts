@@ -127,6 +127,14 @@ export const combineValidators = <T, ErrorMessage = string>(
   }
 };
 
+export const hasDefinedKeys = <T extends Record<string, any>, K extends keyof T = keyof T>(
+  object: T,
+  keys: K[],
+): object is T &
+  {
+    [K1 in K]-?: Exclude<T[K1], undefined>;
+  } => keys.every((key) => object[key] !== undefined);
+
 export const useForm = <Values extends Record<string, any>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
 ): Form<Values, ErrorMessage> => {

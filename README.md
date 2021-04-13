@@ -77,7 +77,7 @@ That's precisely why every field config could declare its own `strategy`:
 
 ⚠️ The API is described using TypeScript pseudocode.<br>These types are not exported by the library / are not even always valid.
 
-### useForm()
+### useForm
 
 `useForm` takes one argument (a map of your fields configs) and returns a set of helpers (functions, components and values) to manage your form state.
 
@@ -105,7 +105,7 @@ const {
 });
 ```
 
-### Field config
+#### Field config
 
 ```tsx
 type fieldConfig = {
@@ -131,7 +131,7 @@ type fieldConfig = {
 };
 ```
 
-### formStatus
+#### formStatus
 
 ```tsx
 type formStatus =
@@ -141,85 +141,7 @@ type formStatus =
   | "submitted";
 ```
 
-### getFieldState
-
-By setting `sanitize: true`, you will enforce sanitization.
-
-```tsx
-type getFieldState = (
-  name: FieldName,
-  options?: {
-    sanitize?: boolean;
-  },
-) => {
-  value: Value;
-  validating: boolean;
-  valid: boolean;
-  error?: ErrorMessage;
-};
-```
-
-### setFieldValue
-
-By setting `validate: true`, you will enforce validation. It has no effect if the field is already _talkative_.
-
-```tsx
-type setFieldValue = (
-  name: FieldName,
-  value: Value,
-  options?: {
-    validate?: boolean;
-  },
-) => void;
-```
-
-### focusField
-
-Will only works if you forward the `Field` provided `ref` to your input.
-
-```tsx
-type focusField = (name: FieldName) => void;
-```
-
-### resetField
-
-Value will be set to `initialValue` and user feedback will be hidden (the field is not _talkative_ anymore).
-
-```tsx
-type resetField = (name: FieldName) => void;
-```
-
-### validateField
-
-Once you manually call validation, the switch automatically switch to _talkative_ state.
-
-```tsx
-type validateField = (name: FieldName) => Promise<ErrorMessage | void>;
-```
-
-### resetForm
-
-Will reset all fields states and the `formStatus`.
-
-```tsx
-type resetForm = () => void;
-```
-
-### submitForm
-
-Submit your form. Each callback could return a `Promise` to keep `formStatus` in `submitting` state.
-
-```tsx
-type submitForm = (
-  onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
-  onFailure?: (errors: Partial<ErrorMessages>) => Promise<unknown> | void,
-  options?: {
-    avoidFocusOnError?: boolean; // by default, it will try to focus the first errored field (which is a good practice)
-  },
-) => void;
-```
-
-### `<Field />`
+#### `<Field />`
 
 A component that exposes everything you need locally as a children render prop.
 
@@ -248,64 +170,84 @@ A component that exposes everything you need locally as a children render prop.
 </Field>
 ```
 
-## Quickstart
+#### getFieldState
+
+By setting `sanitize: true`, you will enforce sanitization.
 
 ```tsx
-import * as React from "react";
-import { useForm } from "react-ux-form";
-
-const MyAwesomeForm = () => {
-  const { Field, submitForm } = useForm({
-    firstName: {
-      initialValue: "",
-      strategy: "onFirstSuccessOrFirstBlur",
-      sanitize: (value) => value.trim(), // we trim value before validation and submission
-      validate: (value) => {
-        if (value === "") {
-          return "First name is required";
-        }
-      },
-    },
-  });
-
-  return (
-    <form
-      onSubmit={({ preventDefault }) => {
-        preventDefault();
-
-        submitForm(
-          (values) => console.log("values", values), // all fields are valid
-          (errors) => console.log("errors", errors), // at least one field is invalid
-        );
-      }}
-    >
-      <Field name="firstName">
-        {({ error, onBlur, onChange, valid, value }) => (
-          <>
-            <label htmlFor="firstName">First name</label>
-
-            <input
-              id="firstName"
-              onBlur={onBlur}
-              value={value}
-              onChange={({ target }) => {
-                onChange(target.value);
-              }}
-            />
-
-            {valid && <span>Valid</span>}
-            {error && <span>Invalid</span>}
-          </>
-        )}
-      </Field>
-
-      <button type="submit">Submit</button>
-    </form>
-  );
+type getFieldState = (
+  name: FieldName,
+  options?: {
+    sanitize?: boolean;
+  },
+) => {
+  value: Value;
+  validating: boolean;
+  valid: boolean;
+  error?: ErrorMessage;
 };
 ```
 
-## Helpers
+#### setFieldValue
+
+By setting `validate: true`, you will enforce validation. It has no effect if the field is already _talkative_.
+
+```tsx
+type setFieldValue = (
+  name: FieldName,
+  value: Value,
+  options?: {
+    validate?: boolean;
+  },
+) => void;
+```
+
+#### focusField
+
+Will only works if you forward the `Field` provided `ref` to your input.
+
+```tsx
+type focusField = (name: FieldName) => void;
+```
+
+#### resetField
+
+Value will be set to `initialValue` and user feedback will be hidden (the field is not _talkative_ anymore).
+
+```tsx
+type resetField = (name: FieldName) => void;
+```
+
+#### validateField
+
+Once you manually call validation, the switch automatically switch to _talkative_ state.
+
+```tsx
+type validateField = (name: FieldName) => Promise<ErrorMessage | void>;
+```
+
+#### resetForm
+
+Will reset all fields states and the `formStatus`.
+
+```tsx
+type resetForm = () => void;
+```
+
+#### submitForm
+
+Submit your form. Each callback could return a `Promise` to keep `formStatus` in `submitting` state.
+
+```tsx
+type submitForm = (
+  onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
+  onFailure?: (errors: Partial<ErrorMessages>) => Promise<unknown> | void,
+  options?: {
+    // by default, it will try to focus the first errored field (which is a good practice)
+    avoidFocusOnError?: boolean;
+  },
+) => void;
+```
 
 ### combineValidators
 
@@ -364,6 +306,63 @@ const MyAwesomeForm = () => {
   };
 
   // …
+};
+```
+
+## Quickstart
+
+```tsx
+import * as React from "react";
+import { useForm } from "react-ux-form";
+
+const MyAwesomeForm = () => {
+  const { Field, submitForm } = useForm({
+    firstName: {
+      initialValue: "",
+      strategy: "onFirstSuccessOrFirstBlur",
+      sanitize: (value) => value.trim(), // we trim value before validation and submission
+      validate: (value) => {
+        if (value === "") {
+          return "First name is required";
+        }
+      },
+    },
+  });
+
+  return (
+    <form
+      onSubmit={({ preventDefault }) => {
+        preventDefault();
+
+        submitForm(
+          (values) => console.log("values", values), // all fields are valid
+          (errors) => console.log("errors", errors), // at least one field is invalid
+        );
+      }}
+    >
+      <Field name="firstName">
+        {({ error, onBlur, onChange, valid, value }) => (
+          <>
+            <label htmlFor="firstName">First name</label>
+
+            <input
+              id="firstName"
+              onBlur={onBlur}
+              value={value}
+              onChange={({ target }) => {
+                onChange(target.value);
+              }}
+            />
+
+            {valid && <span>Valid</span>}
+            {error && <span>Invalid</span>}
+          </>
+        )}
+      </Field>
+
+      <button type="submit">Submit</button>
+    </form>
+  );
 };
 ```
 

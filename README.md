@@ -305,12 +305,14 @@ const MyAwesomeForm = () => {
 };
 ```
 
-## Validation helper
+## Helpers
 
-As it's a very common case to use several validation functions per field, we also export a `combineValidators` helper function that allow you to chain sync and async validation functions: it will run them sequentially until an error is returned.
+### combineValidators
+
+As it's a very common case to use several validation functions per field, we export a `combineValidators` helper function that allow you to chain sync and async validation functions: it will run them sequentially until an error is returned.
 
 ```tsx
-import { useForm, combineValidators } from "react-ux-form";
+import { combineValidators, useForm } from "react-ux-form";
 
 const validateRequired = (value: string) => {
   if (!value) {
@@ -326,16 +328,43 @@ const validateEmail = (email: string) => {
 
 const MyAwesomeForm = () => {
   const { Field, submitForm } = useForm({
-    email: {
+    emailAddress: {
       initialValue: "",
       // will run each validation function until an error is returned
       validate: combineValidators(
-        isEmailRequired && validateRequired, // we can make a validation conditional like this
+        isEmailRequired && validateRequired, // validation checks could be applied conditionally
         validateEmail,
       ),
     },
   });
-...
+
+  // …
+};
+```
+
+### hasDefinedKeys
+
+As some of your fields might be unmounted on submit, the `submitForm` method could not guarantee that every field value is defined and valid, we export `hasDefinedKeys` helper function that allow you to test if some object keys are defined.
+
+```tsx
+import { hasDefinedKeys, useForm } from "react-ux-form";
+
+const MyAwesomeForm = () => {
+  const { Field, submitForm } = useForm({
+    firstName: { initialValue: "" },
+    lastName: { initialValue: "" },
+  });
+
+  const handleSubmit = () => {
+    submitForm((values) => {
+      if (hasDefinedKeys(values, ["firstName", "lastName"])) {
+        // values.firstName and values.lastName are defined (the fields are mounted)
+      }
+    });
+  };
+
+  // …
+};
 ```
 
 ## 👉 More examples

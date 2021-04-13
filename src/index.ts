@@ -84,8 +84,8 @@ export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
 
   resetForm: () => void;
   submitForm: (
-    onSuccess: (values: Partial<Values>) => Promise<void> | void,
-    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<void> | void,
+    onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
+    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
     options?: { avoidFocusOnError?: boolean },
   ) => void;
 };
@@ -420,7 +420,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       name && focusField(name);
     };
 
-    const handleSyncEffect = (effect: Promise<void> | void, wasEditing: boolean) => {
+    const handleSyncEffect = (effect: Promise<unknown> | void, wasEditing: boolean) => {
       if (isPromise(effect)) {
         forceUpdate();
 

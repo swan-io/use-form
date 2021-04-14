@@ -446,10 +446,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       const wasEditing = formStatus.current === "editing";
       formStatus.current = "submitting";
 
-      const names = Object.keys(mounteds.current).reduce<Name[]>((acc, name) => {
-        return mounteds.current[name] ? [...acc, name] : acc;
-      }, []);
-
+      const names: Name[] = Object.keys(mounteds.current).filter((name) => mounteds.current[name]);
       const values: Partial<Values> = {};
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidateResult<ErrorMessage>[] = [];

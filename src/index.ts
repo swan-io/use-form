@@ -347,8 +347,12 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     };
 
     const validateField: Contract["validateField"] = (name) => {
+      if (!isMounted(name)) {
+        return Promise.resolve(undefined);
+      }
+
       setTalkative(name);
-      return Promise.resolve(isMounted(name) ? internalValidateField(name) : undefined);
+      return Promise.resolve(internalValidateField(name));
     };
 
     const getOnChange = <N extends Name>(name: N) => (value: Values[N]): void => {
@@ -360,11 +364,6 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       };
 
       setTalkative(name, ["onFirstChange"]);
-
-      if (!isMounted(name)) {
-        return; // Skip validation
-      }
-
       clearDebounceTimeout(name);
 
       if (formStatus.current === "untouched") {
@@ -395,10 +394,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       // Avoid validating an untouched / already valid field
       if (validity.type !== "unknown" && !isTalkative(name)) {
         setTalkative(name, ["onFirstBlur", "onFirstSuccessOrFirstBlur"]);
-
-        if (isMounted(name)) {
-          internalValidateField(name);
-        }
+        internalValidateField(name);
       }
     };
 
@@ -450,7 +446,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       const wasEditing = formStatus.current === "editing";
       formStatus.current = "submitting";
 
-      const names: Name[] = Object.keys(mounteds.current);
+      const names: Name[] = Object.keys(mounteds.current).filter((name) => mounteds.current[name]);
       const values: Partial<Values> = {};
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidateResult<ErrorMessage>[] = [];

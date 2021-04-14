@@ -356,10 +356,6 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     };
 
     const getOnChange = <N extends Name>(name: N) => (value: Values[N]): void => {
-      if (!isMounted(name)) {
-        return;
-      }
-
       const debounceInterval = getDebounceInterval(name);
 
       states.current[name] = {
@@ -398,10 +394,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       // Avoid validating an untouched / already valid field
       if (validity.type !== "unknown" && !isTalkative(name)) {
         setTalkative(name, ["onFirstBlur", "onFirstSuccessOrFirstBlur"]);
-
-        if (isMounted(name)) {
-          internalValidateField(name);
-        }
+        internalValidateField(name);
       }
     };
 

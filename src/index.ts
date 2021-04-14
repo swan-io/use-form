@@ -347,11 +347,19 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     };
 
     const validateField: Contract["validateField"] = (name) => {
+      if (!isMounted(name)) {
+        return Promise.resolve(undefined);
+      }
+
       setTalkative(name);
-      return Promise.resolve(isMounted(name) ? internalValidateField(name) : undefined);
+      return Promise.resolve(internalValidateField(name));
     };
 
     const getOnChange = <N extends Name>(name: N) => (value: Values[N]): void => {
+      if (!isMounted(name)) {
+        return;
+      }
+
       const debounceInterval = getDebounceInterval(name);
 
       states.current[name] = {
@@ -360,11 +368,6 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       };
 
       setTalkative(name, ["onFirstChange"]);
-
-      if (!isMounted(name)) {
-        return; // Skip validation
-      }
-
       clearDebounceTimeout(name);
 
       if (formStatus.current === "untouched") {
@@ -450,7 +453,10 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       const wasEditing = formStatus.current === "editing";
       formStatus.current = "submitting";
 
-      const names: Name[] = Object.keys(mounteds.current);
+      const names = Object.keys(mounteds.current).reduce<Name[]>((acc, name) => {
+        return mounteds.current[name] ? [...acc, name] : acc;
+      }, []);
+
       const values: Partial<Values> = {};
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidateResult<ErrorMessage>[] = [];

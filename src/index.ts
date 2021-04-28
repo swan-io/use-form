@@ -602,21 +602,10 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     field.current = Field;
 
     const FieldsListener: FieldsListenerComponent<Values, ErrorMessage> = ({ names, children }) => {
-      const subscribeKey = JSON.stringify(names);
-
-      type FieldStates = {
-        [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
-      };
-
-      const subscription = useSubscription(
+      useSubscription(
         useMemo(
           () => ({
-            getCurrentValue: () =>
-              names.reduce<Partial<FieldStates>>((acc, name) => {
-                acc[name] = api.transformState(name, states.current[name], { sanitize: false });
-                return acc;
-              }, {}),
-
+            getCurrentValue: () => JSON.stringify(names.map((name) => states.current[name])),
             subscribe: (callback) => {
               names.forEach((name) => callbacks.current[name].add(callback));
 
@@ -625,11 +614,21 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
               };
             },
           }),
-          [subscribeKey],
+          [JSON.stringify(names)],
         ),
       );
 
-      return children(subscription as FieldStates);
+      return children(
+        names.reduce(
+          (acc, name) => {
+            acc[name] = api.transformState(name, states.current[name], { sanitize: false });
+            return acc;
+          },
+          {} as {
+            [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
+          },
+        ),
+      );
     };
 
     FieldsListener.displayName = "FieldsListener";

@@ -180,7 +180,7 @@ A component that listen for fields states changes. Useful when a part of your co
 ```tsx
 <FieldsListener names={["firstName", "lastName"]}>
   {
-    (states: Record< "firstName" | "lastName", {
+    (states: Record<"firstName" | "lastName", {
       // The field value
       value: Value;
       // Is the field validating? (only happen on async operations)

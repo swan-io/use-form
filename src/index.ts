@@ -553,12 +553,10 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     }
 
     const Field: FieldComponent<Values, ErrorMessage> = ({ name, children }) => {
-      const subscription = useSubscription(
+      const state = useSubscription(
         useMemo(
           () => ({
-            getCurrentValue: () =>
-              api.transformState(name, states.current[name], { sanitize: false }),
-
+            getCurrentValue: () => states.current[name],
             subscribe: (callback) => {
               callbacks.current[name].add(callback);
 
@@ -592,8 +590,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       }, [name]);
 
       return children({
-        ...subscription,
-
+        ...api.transformState(name, state, { sanitize: false }),
         ref: refs.current[name],
         focusNextField: useMemo(() => api.getFocusNextField(name), [name]),
         onBlur: useMemo(() => api.getOnBlur(name), [name]),

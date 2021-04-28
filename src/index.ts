@@ -50,6 +50,19 @@ type FieldComponent<Values extends Record<string, any>, ErrorMessage = string> =
   displayName?: string;
 };
 
+type SpyComponent<Values extends Record<string, any>, ErrorMessage = string> = (<
+  N extends keyof Values
+>(props: {
+  fieldNames: N[];
+  children: (
+    states: {
+      [N1 in N]: FieldState<Values[N1], ErrorMessage>;
+    },
+  ) => ReactElement | null;
+}) => ReactElement | null) & {
+  displayName?: string;
+};
+
 export type FormConfig<Values extends Record<string, any>, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N];
@@ -66,7 +79,9 @@ export type FormConfig<Values extends Record<string, any>, ErrorMessage = string
 
 export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
   formStatus: FormStatus;
+
   Field: FieldComponent<Values, ErrorMessage>;
+  Spy: SpyComponent<Values, ErrorMessage>;
 
   getFieldState: <N extends keyof Values>(
     name: N,
@@ -174,6 +189,7 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
   const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
   const field = useRef() as MutableRefObject<FieldComponent<Values, ErrorMessage>>;
+  const spy = useRef() as MutableRefObject<SpyComponent<Values, ErrorMessage>>;
 
   const api = useMemo(() => {
     const getConfig = (name: Name) => config.current[name];
@@ -535,10 +551,12 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     }
 
     const Field: FieldComponent<Values, ErrorMessage> = ({ name, children }) => {
-      const state = useSubscription(
+      const subscription = useSubscription(
         useMemo(
           () => ({
-            getCurrentValue: () => states.current[name],
+            getCurrentValue: () =>
+              api.transformState(name, states.current[name], { sanitize: false }),
+
             subscribe: (callback) => {
               callbacks.current[name].add(callback);
 
@@ -572,7 +590,8 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       }, [name]);
 
       return children({
-        ...api.transformState(name, state, { sanitize: false }),
+        ...subscription,
+
         ref: refs.current[name],
         focusNextField: useMemo(() => api.getFocusNextField(name), [name]),
         onBlur: useMemo(() => api.getOnBlur(name), [name]),
@@ -582,11 +601,47 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
 
     Field.displayName = "Field";
     field.current = Field;
+
+    const Spy: SpyComponent<Values, ErrorMessage> = ({ fieldNames, children }) => {
+      const subscribeKey = JSON.stringify(fieldNames);
+
+      type FieldStates = {
+        [N1 in typeof fieldNames[number]]: FieldState<Values[N1], ErrorMessage>;
+      };
+
+      const subscription = useSubscription(
+        useMemo(
+          () => ({
+            getCurrentValue: () =>
+              fieldNames.reduce<Partial<FieldStates>>((acc, name) => {
+                acc[name] = api.transformState(name, states.current[name], { sanitize: false });
+                return acc;
+              }, {}),
+
+            subscribe: (callback) => {
+              fieldNames.forEach((name) => callbacks.current[name].add(callback));
+
+              return () => {
+                fieldNames.forEach((name) => callbacks.current[name].delete(callback));
+              };
+            },
+          }),
+          [subscribeKey],
+        ),
+      );
+
+      return children(subscription as FieldStates);
+    };
+
+    Spy.displayName = "Spy";
+    spy.current = Spy;
   }
 
   return {
     formStatus: formStatus.current,
+
     Field: field.current,
+    Spy: spy.current,
 
     getFieldState: api.getFieldState,
     setFieldValue: api.setFieldValue,

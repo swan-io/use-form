@@ -50,10 +50,10 @@ type FieldComponent<Values extends Record<string, any>, ErrorMessage = string> =
   displayName?: string;
 };
 
-type SpyComponent<Values extends Record<string, any>, ErrorMessage = string> = (<
+type FieldsListenerComponent<Values extends Record<string, any>, ErrorMessage = string> = (<
   N extends keyof Values
 >(props: {
-  fieldNames: N[];
+  names: N[];
   children: (
     states: {
       [N1 in N]: FieldState<Values[N1], ErrorMessage>;
@@ -81,7 +81,7 @@ export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
   formStatus: FormStatus;
 
   Field: FieldComponent<Values, ErrorMessage>;
-  Spy: SpyComponent<Values, ErrorMessage>;
+  FieldsListener: FieldsListenerComponent<Values, ErrorMessage>;
 
   getFieldState: <N extends keyof Values>(
     name: N,
@@ -189,7 +189,9 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
   const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
   const field = useRef() as MutableRefObject<FieldComponent<Values, ErrorMessage>>;
-  const spy = useRef() as MutableRefObject<SpyComponent<Values, ErrorMessage>>;
+  const fieldsListener = useRef() as MutableRefObject<
+    FieldsListenerComponent<Values, ErrorMessage>
+  >;
 
   const api = useMemo(() => {
     const getConfig = (name: Name) => config.current[name];
@@ -602,27 +604,27 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
     Field.displayName = "Field";
     field.current = Field;
 
-    const Spy: SpyComponent<Values, ErrorMessage> = ({ fieldNames, children }) => {
-      const subscribeKey = JSON.stringify(fieldNames);
+    const FieldsListener: FieldsListenerComponent<Values, ErrorMessage> = ({ names, children }) => {
+      const subscribeKey = JSON.stringify(names);
 
       type FieldStates = {
-        [N1 in typeof fieldNames[number]]: FieldState<Values[N1], ErrorMessage>;
+        [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
       };
 
       const subscription = useSubscription(
         useMemo(
           () => ({
             getCurrentValue: () =>
-              fieldNames.reduce<Partial<FieldStates>>((acc, name) => {
+              names.reduce<Partial<FieldStates>>((acc, name) => {
                 acc[name] = api.transformState(name, states.current[name], { sanitize: false });
                 return acc;
               }, {}),
 
             subscribe: (callback) => {
-              fieldNames.forEach((name) => callbacks.current[name].add(callback));
+              names.forEach((name) => callbacks.current[name].add(callback));
 
               return () => {
-                fieldNames.forEach((name) => callbacks.current[name].delete(callback));
+                names.forEach((name) => callbacks.current[name].delete(callback));
               };
             },
           }),
@@ -633,15 +635,15 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
       return children(subscription as FieldStates);
     };
 
-    Spy.displayName = "Spy";
-    spy.current = Spy;
+    FieldsListener.displayName = "FieldsListener";
+    fieldsListener.current = FieldsListener;
   }
 
   return {
     formStatus: formStatus.current,
 
     Field: field.current,
-    Spy: spy.current,
+    FieldsListener: fieldsListener.current,
 
     getFieldState: api.getFieldState,
     setFieldValue: api.setFieldValue,

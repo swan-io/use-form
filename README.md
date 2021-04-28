@@ -175,7 +175,7 @@ A component that exposes everything you need locally as a children render prop.
 
 #### `<FieldsListener />`
 
-A component that listen for fields states changes.
+A component that listen for fields states changes. Useful when a part of your component needs to react to fields updates without triggering a full re-render.
 
 ```tsx
 <FieldsListener names={["firstName", "lastName"]}>

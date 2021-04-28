@@ -179,16 +179,18 @@ A component that listen for fields states changes.
 
 ```tsx
 <FieldsListener names={["firstName", "lastName"]}>
-  {(states: Record< "firstName" | "lastName", {
-    // The field value
-    value: Value;
-    // Is the field validating? (only happen on async operations)
-    validating: boolean;
-    // Is the field valid?
-    valid: boolean;
-    // The field is invalid: here its error message.
-    error?: ErrorMessage;
-  }>) => /* … */}
+  {
+    (states: Record< "firstName" | "lastName", {
+      // The field value
+      value: Value;
+      // Is the field validating? (only happen on async operations)
+      validating: boolean;
+      // Is the field valid?
+      valid: boolean;
+      // The field is invalid: here its error message.
+      error?: ErrorMessage;
+    }>) => /* … */
+  }
 </FieldsListener>
 ```
 

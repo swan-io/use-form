@@ -8,7 +8,7 @@ const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayout
 export type ValidateResult<ErrorMessage> = ErrorMessage | void | Promise<ErrorMessage | void>;
 export type ValidateFn<T, ErrorMessage = string> = (value: T) => ValidateResult<ErrorMessage>;
 
-type Helpers<Values extends Record<string, any>, ErrorMessage> = {
+type Helpers<Values extends Record<string, unknown>, ErrorMessage> = {
   getFieldState: <N extends keyof Values>(
     name: N,
     options?: { sanitize?: boolean },
@@ -34,7 +34,7 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
-type FieldComponent<Values extends Record<string, any>, ErrorMessage = string> = (<
+type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
   N extends keyof Values
 >(props: {
   name: N;
@@ -50,7 +50,7 @@ type FieldComponent<Values extends Record<string, any>, ErrorMessage = string> =
   displayName?: string;
 };
 
-type FieldsListenerComponent<Values extends Record<string, any>, ErrorMessage = string> = (<
+type FieldsListenerComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
   N extends keyof Values
 >(props: {
   names: N[];
@@ -63,7 +63,7 @@ type FieldsListenerComponent<Values extends Record<string, any>, ErrorMessage = 
   displayName?: string;
 };
 
-export type FormConfig<Values extends Record<string, any>, ErrorMessage = string> = {
+export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N];
     strategy?: Strategy;
@@ -77,7 +77,7 @@ export type FormConfig<Values extends Record<string, any>, ErrorMessage = string
   };
 };
 
-export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
+export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
   formStatus: FormStatus;
 
   Field: FieldComponent<Values, ErrorMessage>;
@@ -142,7 +142,7 @@ export const combineValidators = <T, ErrorMessage = string>(
   }
 };
 
-export const hasDefinedKeys = <T extends Record<string, any>, K extends keyof T = keyof T>(
+export const hasDefinedKeys = <T extends Record<string, unknown>, K extends keyof T = keyof T>(
   object: T,
   keys: K[],
 ): object is T &
@@ -150,7 +150,7 @@ export const hasDefinedKeys = <T extends Record<string, any>, K extends keyof T 
     [K1 in K]-?: Exclude<T[K1], undefined>;
   } => keys.every((key) => object[key] !== undefined);
 
-export const useForm = <Values extends Record<string, any>, ErrorMessage = string>(
+export const useForm = <Values extends Record<string, unknown>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
 ): Form<Values, ErrorMessage> => {
   type Contract = Form<Values, ErrorMessage>;

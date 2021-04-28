@@ -73,7 +73,19 @@ export const FieldsListenerForm = () => {
   return (
     <Page title="Fields listener">
       <FieldsListener names={["firstName", "lastName", "emailAddress"]}>
-        {(states) => <pre>{JSON.stringify(states, null, 2)}</pre>}
+        {(states) => (
+          <pre
+            style={{
+              backgroundColor: "#fafafa",
+              borderRadius: 6,
+              borderWidth: 1,
+              fontSize: 14,
+              padding: 12,
+            }}
+          >
+            {JSON.stringify(states, null, 2)}
+          </pre>
+        )}
       </FieldsListener>
 
       <Box height={4} />

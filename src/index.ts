@@ -8,7 +8,7 @@ const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayout
 export type ValidateResult<ErrorMessage> = ErrorMessage | void | Promise<ErrorMessage | void>;
 export type ValidateFn<T, ErrorMessage = string> = (value: T) => ValidateResult<ErrorMessage>;
 
-type Helpers<Values extends Record<string, any>, ErrorMessage> = {
+type Helpers<Values extends Record<string, unknown>, ErrorMessage> = {
   getFieldState: <N extends keyof Values>(
     name: N,
     options?: { sanitize?: boolean },
@@ -34,7 +34,7 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
-type FieldComponent<Values extends Record<string, any>, ErrorMessage = string> = (<
+type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
   N extends keyof Values
 >(props: {
   name: N;
@@ -50,7 +50,20 @@ type FieldComponent<Values extends Record<string, any>, ErrorMessage = string> =
   displayName?: string;
 };
 
-export type FormConfig<Values extends Record<string, any>, ErrorMessage = string> = {
+type FieldsListenerComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
+  N extends keyof Values
+>(props: {
+  names: N[];
+  children: (
+    states: {
+      [N1 in N]: FieldState<Values[N1], ErrorMessage>;
+    },
+  ) => ReactElement | null;
+}) => ReactElement | null) & {
+  displayName?: string;
+};
+
+export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N];
     strategy?: Strategy;
@@ -64,9 +77,11 @@ export type FormConfig<Values extends Record<string, any>, ErrorMessage = string
   };
 };
 
-export type Form<Values extends Record<string, any>, ErrorMessage = string> = {
+export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
   formStatus: FormStatus;
+
   Field: FieldComponent<Values, ErrorMessage>;
+  FieldsListener: FieldsListenerComponent<Values, ErrorMessage>;
 
   getFieldState: <N extends keyof Values>(
     name: N,
@@ -127,7 +142,7 @@ export const combineValidators = <T, ErrorMessage = string>(
   }
 };
 
-export const hasDefinedKeys = <T extends Record<string, any>, K extends keyof T = keyof T>(
+export const hasDefinedKeys = <T extends Record<string, unknown>, K extends keyof T = keyof T>(
   object: T,
   keys: K[],
 ): object is T &
@@ -135,7 +150,7 @@ export const hasDefinedKeys = <T extends Record<string, any>, K extends keyof T 
     [K1 in K]-?: Exclude<T[K1], undefined>;
   } => keys.every((key) => object[key] !== undefined);
 
-export const useForm = <Values extends Record<string, any>, ErrorMessage = string>(
+export const useForm = <Values extends Record<string, unknown>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
 ): Form<Values, ErrorMessage> => {
   type Contract = Form<Values, ErrorMessage>;
@@ -174,6 +189,9 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
   const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
   const field = useRef() as MutableRefObject<FieldComponent<Values, ErrorMessage>>;
+  const fieldsListener = useRef() as MutableRefObject<
+    FieldsListenerComponent<Values, ErrorMessage>
+  >;
 
   const api = useMemo(() => {
     const getConfig = (name: Name) => config.current[name];
@@ -582,11 +600,46 @@ export const useForm = <Values extends Record<string, any>, ErrorMessage = strin
 
     Field.displayName = "Field";
     field.current = Field;
+
+    const FieldsListener: FieldsListenerComponent<Values, ErrorMessage> = ({ names, children }) => {
+      useSubscription(
+        useMemo(
+          () => ({
+            getCurrentValue: () => JSON.stringify(names.map((name) => states.current[name])),
+            subscribe: (callback) => {
+              names.forEach((name) => callbacks.current[name].add(callback));
+
+              return () => {
+                names.forEach((name) => callbacks.current[name].delete(callback));
+              };
+            },
+          }),
+          [JSON.stringify(names)],
+        ),
+      );
+
+      return children(
+        names.reduce(
+          (acc, name) => {
+            acc[name] = api.transformState(name, states.current[name], { sanitize: false });
+            return acc;
+          },
+          {} as {
+            [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
+          },
+        ),
+      );
+    };
+
+    FieldsListener.displayName = "FieldsListener";
+    fieldsListener.current = FieldsListener;
   }
 
   return {
     formStatus: formStatus.current,
+
     Field: field.current,
+    FieldsListener: fieldsListener.current,
 
     getFieldState: api.getFieldState,
     setFieldValue: api.setFieldValue,

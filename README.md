@@ -87,6 +87,7 @@ import { useForm } from "react-ux-form";
 const {
   formStatus,
   Field,
+  FieldsListener,
   getFieldState,
   setFieldValue,
   focusField,
@@ -148,7 +149,7 @@ type formStatus =
 A component that exposes everything you need locally as a children render prop.
 
 ```tsx
-<Field name="emailAddress">
+<Field name="fieldName">
   {
     (props: {
       // A ref to pass to your element (only required for focus handling)
@@ -170,6 +171,27 @@ A component that exposes everything you need locally as a children render prop.
     }) => /* … */
   }
 </Field>
+```
+
+#### `<FieldsListener />`
+
+A component that listen for fields states changes. Useful when a part of your component needs to react to fields updates without triggering a full re-render.
+
+```tsx
+<FieldsListener names={["firstName", "lastName"]}>
+  {
+    (states: Record< "firstName" | "lastName", {
+      // The field value
+      value: Value;
+      // Is the field validating? (only happen on async operations)
+      validating: boolean;
+      // Is the field valid?
+      valid: boolean;
+      // The field is invalid: here its error message.
+      error?: ErrorMessage;
+    }>) => /* … */
+  }
+</FieldsListener>
 ```
 
 #### getFieldState

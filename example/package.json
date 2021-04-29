@@ -1,6 +1,6 @@
 {
   "name": "react-ux-form-example",
-  "version": "0.0.0",
+  "private": true,
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",

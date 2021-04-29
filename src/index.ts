@@ -384,7 +384,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       setTalkative(name, ["onFirstChange"]);
       clearDebounceTimeout(name);
 
-      if (formStatus.current === "untouched") {
+      if (formStatus.current === "untouched" || formStatus.current === "submitted") {
         formStatus.current = "editing";
         forceUpdate();
       }

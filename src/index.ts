@@ -34,6 +34,13 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
+type ListenFieldFunction<Values extends Record<string, unknown>, ErrorMessage = string> = <
+  N extends keyof Values
+>(
+  name: N,
+  onUpdate: (state: FieldState<Values[N], ErrorMessage>) => void,
+) => () => void;
+
 type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
   N extends keyof Values
 >(props: {
@@ -79,6 +86,8 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
 
 export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
   formStatus: FormStatus;
+
+  listenField: ListenFieldFunction<Values, ErrorMessage>;
 
   Field: FieldComponent<Values, ErrorMessage>;
   FieldsListener: FieldsListenerComponent<Values, ErrorMessage>;
@@ -637,6 +646,8 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
   return {
     formStatus: formStatus.current,
+
+    listenField: () => () => {},
 
     Field: field.current,
     FieldsListener: fieldsListener.current,

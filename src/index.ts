@@ -197,6 +197,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   const refs = useRef() as MutableRefObject<RefMap>;
   const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
+  const listenField = useRef() as MutableRefObject<ListenFieldFunction<Values, ErrorMessage>>;
   const field = useRef() as MutableRefObject<FieldComponent<Values, ErrorMessage>>;
   const fieldsListener = useRef() as MutableRefObject<
     FieldsListenerComponent<Values, ErrorMessage>
@@ -561,6 +562,21 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
     }
 
+    const listenFieldFunction: ListenFieldFunction<Values, ErrorMessage> = (name, onUpdate) => {
+      const callback = () => {
+        const state = api.transformState(name, states.current[name], { sanitize: false });
+        onUpdate(state);
+      };
+
+      callbacks.current[name].add(callback);
+
+      return () => {
+        callbacks.current[name].delete(callback);
+      };
+    };
+
+    listenField.current = listenFieldFunction;
+
     const Field: FieldComponent<Values, ErrorMessage> = ({ name, children }) => {
       const state = useSubscription(
         useMemo(
@@ -647,7 +663,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   return {
     formStatus: formStatus.current,
 
-    listenField: () => () => {},
+    listenField: listenField.current,
 
     Field: field.current,
     FieldsListener: fieldsListener.current,

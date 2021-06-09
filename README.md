@@ -194,6 +194,28 @@ A component that listen for fields states changes. Useful when a part of your co
 </FieldsListener>
 ```
 
+#### listenField
+
+A function that listen a field states changes. Useful when you want to apply side effects on value changed.
+
+```tsx
+listenField(
+  'name',
+  (state: {
+// The field value
+      value: Value;
+      // Is the field validating? (only happen on async operations)
+      validating: boolean;
+      // Is the field valid?
+      valid: boolean;
+      // The field is invalid: here its error message.
+      error?: ErrorMessage;
+  }) => {
+    /* … */
+  }
+)
+```
+
 #### getFieldState
 
 By setting `sanitize: true`, you will enforce sanitization.

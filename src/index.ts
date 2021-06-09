@@ -37,8 +37,8 @@ export type FieldState<Value, ErrorMessage = string> = {
 type ListenFieldFunction<Values extends Record<string, unknown>, ErrorMessage = string> = <
   N extends keyof Values
 >(
-  name: N,
-  onUpdate: (state: FieldState<Values[N], ErrorMessage>) => void,
+  names: N[],
+  onUpdate: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
 ) => () => void;
 
 type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
@@ -382,16 +382,24 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return Promise.resolve(internalValidateField(name));
     };
 
-    const listenField: ListenFieldFunction<Values, ErrorMessage> = (name, onUpdate) => {
+    const listenField: ListenFieldFunction<Values, ErrorMessage> = (names, onUpdate) => {
       const callback = () => {
-        const state = transformState(name, states.current[name], { sanitize: false });
-        onUpdate(state);
+        const fieldStates = names.reduce(
+          (acc, name) => {
+            acc[name] = api.transformState(name, states.current[name], { sanitize: false });
+            return acc;
+          },
+          {} as {
+            [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
+          },
+        );
+        onUpdate(fieldStates);
       };
 
-      callbacks.current[name].add(callback);
+      names.forEach((name) => callbacks.current[name].add(callback));
 
       return () => {
-        callbacks.current[name].delete(callback);
+        names.forEach((name) => callbacks.current[name].delete(callback));
       };
     };
 

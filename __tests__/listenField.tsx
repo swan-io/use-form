@@ -10,20 +10,19 @@ test("Count the number of updates", async () => {
       firstName: {
         strategy: "onFirstChange",
         initialValue: "",
-        validate: (value) => {
-          if (value.length < 3) {
-            return "Must be at least 3 characters";
-          }
-        },
+      },
+      lastName: {
+        strategy: "onFirstChange",
+        initialValue: "",
       },
     });
 
-    const [nameCopy, setNameCopy] = React.useState("");
+    const [fullName, setFullName] = React.useState("");
 
     React.useEffect(() => {
-      const removeListener = listenField("firstName", ({ value }) => {
+      const removeListener = listenField(["firstName", "lastName"], ({ firstName, lastName }) => {
         nameUpdateCount++;
-        setNameCopy(value);
+        setFullName([firstName.value, lastName.value].filter(Boolean).join(" "));
       });
 
       return () => {
@@ -52,7 +51,26 @@ test("Count the number of updates", async () => {
           )}
         </Field>
 
-        <div>value: {nameCopy}</div>
+        <Field name="lastName">
+          {({ value, onBlur, onChange }) => (
+            <>
+              <label htmlFor="lastName">Last name</label>
+
+              <input
+                type="text"
+                id="lastName"
+                value={value}
+                onBlur={onBlur}
+                onChange={(e) => {
+                  e.preventDefault();
+                  onChange(e.target.value);
+                }}
+              />
+            </>
+          )}
+        </Field>
+
+        <div>value: {fullName}</div>
       </form>
     );
   };
@@ -62,6 +80,7 @@ test("Count the number of updates", async () => {
   expect(nameUpdateCount).toEqual(0);
 
   const firstNameInput = await screen.findByLabelText("First name");
+  const lastNameInput = await screen.findByLabelText("Last name");
 
   // fireEvent doesn't simulate typing, so viewerRenderCount will only be increased by 1
   fireEvent.input(firstNameInput, { target: { value: "Ni" } });
@@ -75,4 +94,10 @@ test("Count the number of updates", async () => {
   expect(nameUpdateCount).toEqual(2);
 
   await screen.findByText("value: Nicolas");
+
+  fireEvent.input(lastNameInput, { target: { value: "Saison" } });
+
+  expect(nameUpdateCount).toEqual(3);
+
+  await screen.findByText("value: Nicolas Saison");
 });

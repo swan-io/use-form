@@ -197,7 +197,6 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   const refs = useRef() as MutableRefObject<RefMap>;
   const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
-  const listenField = useRef() as MutableRefObject<ListenFieldFunction<Values, ErrorMessage>>;
   const field = useRef() as MutableRefObject<FieldComponent<Values, ErrorMessage>>;
   const fieldsListener = useRef() as MutableRefObject<
     FieldsListenerComponent<Values, ErrorMessage>
@@ -383,6 +382,19 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return Promise.resolve(internalValidateField(name));
     };
 
+    const listenField: ListenFieldFunction<Values, ErrorMessage> = (name, onUpdate) => {
+      const callback = () => {
+        const state = transformState(name, states.current[name], { sanitize: false });
+        onUpdate(state);
+      };
+
+      callbacks.current[name].add(callback);
+
+      return () => {
+        callbacks.current[name].delete(callback);
+      };
+    };
+
     const getOnChange = <N extends Name>(name: N) => (value: Values[N]): void => {
       const debounceInterval = getDebounceInterval(name);
 
@@ -528,6 +540,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       focusField,
       resetField,
       validateField,
+      listenField,
       resetForm,
       submitForm,
 
@@ -561,21 +574,6 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         timeouts.current[name] = undefined;
       }
     }
-
-    const listenFieldFunction: ListenFieldFunction<Values, ErrorMessage> = (name, onUpdate) => {
-      const callback = () => {
-        const state = api.transformState(name, states.current[name], { sanitize: false });
-        onUpdate(state);
-      };
-
-      callbacks.current[name].add(callback);
-
-      return () => {
-        callbacks.current[name].delete(callback);
-      };
-    };
-
-    listenField.current = listenFieldFunction;
 
     const Field: FieldComponent<Values, ErrorMessage> = ({ name, children }) => {
       const state = useSubscription(
@@ -663,8 +661,6 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   return {
     formStatus: formStatus.current,
 
-    listenField: listenField.current,
-
     Field: field.current,
     FieldsListener: fieldsListener.current,
 
@@ -673,6 +669,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     focusField: api.focusField,
     resetField: api.resetField,
     validateField: api.validateField,
+    listenField: api.listenField,
 
     resetForm: api.resetForm,
     submitForm: api.submitForm,

@@ -6,7 +6,7 @@ test("Count the number of updates", async () => {
   let nameUpdateCount = 0;
 
   const Test = () => {
-    const { Field, listenField } = useForm({
+    const { Field, listenFields } = useForm({
       firstName: {
         strategy: "onFirstChange",
         initialValue: "",
@@ -20,7 +20,7 @@ test("Count the number of updates", async () => {
     const [fullName, setFullName] = React.useState("");
 
     React.useEffect(() => {
-      const removeListener = listenField(["firstName", "lastName"], ({ firstName, lastName }) => {
+      const removeListener = listenFields(["firstName", "lastName"], ({ firstName, lastName }) => {
         nameUpdateCount++;
         setFullName([firstName.value, lastName.value].filter(Boolean).join(" "));
       });

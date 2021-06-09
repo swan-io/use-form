@@ -34,7 +34,7 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
-type ListenFieldFunction<Values extends Record<string, unknown>, ErrorMessage = string> = <
+type ListenFieldsFunction<Values extends Record<string, unknown>, ErrorMessage = string> = <
   N extends keyof Values
 >(
   names: N[],
@@ -87,7 +87,7 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
 export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
   formStatus: FormStatus;
 
-  listenField: ListenFieldFunction<Values, ErrorMessage>;
+  listenFields: ListenFieldsFunction<Values, ErrorMessage>;
 
   Field: FieldComponent<Values, ErrorMessage>;
   FieldsListener: FieldsListenerComponent<Values, ErrorMessage>;
@@ -382,7 +382,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return Promise.resolve(internalValidateField(name));
     };
 
-    const listenField: ListenFieldFunction<Values, ErrorMessage> = (names, onUpdate) => {
+    const listenFields: ListenFieldsFunction<Values, ErrorMessage> = (names, onUpdate) => {
       const callback = () => {
         const fieldStates = names.reduce(
           (acc, name) => {
@@ -548,7 +548,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       focusField,
       resetField,
       validateField,
-      listenField,
+      listenFields,
       resetForm,
       submitForm,
 
@@ -677,7 +677,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     focusField: api.focusField,
     resetField: api.resetField,
     validateField: api.validateField,
-    listenField: api.listenField,
+    listenFields: api.listenFields,
 
     resetForm: api.resetForm,
     submitForm: api.submitForm,

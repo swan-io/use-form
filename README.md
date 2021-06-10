@@ -194,7 +194,7 @@ A component that listen for fields states changes. Useful when a part of your co
 </FieldsListener>
 ```
 
-#### listenField
+#### listenFields
 
 A function that listen a field states changes. Useful when you want to apply side effects on value changed.
 

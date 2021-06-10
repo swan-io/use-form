@@ -34,13 +34,6 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
-type ListenFieldsFunction<Values extends Record<string, unknown>, ErrorMessage = string> = <
-  N extends keyof Values
->(
-  names: N[],
-  onUpdate: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
-) => () => void;
-
 type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
   N extends keyof Values
 >(props: {
@@ -87,7 +80,10 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
 export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
   formStatus: FormStatus;
 
-  listenFields: ListenFieldsFunction<Values, ErrorMessage>;
+  listenFields: <N extends keyof Values>(
+    names: N[],
+    listener: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
+  ) => () => void;
 
   Field: FieldComponent<Values, ErrorMessage>;
   FieldsListener: FieldsListenerComponent<Values, ErrorMessage>;
@@ -382,18 +378,19 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return Promise.resolve(internalValidateField(name));
     };
 
-    const listenFields: ListenFieldsFunction<Values, ErrorMessage> = (names, onUpdate) => {
+    const listenFields: Contract["listenFields"] = (names, listener) => {
       const callback = () => {
-        const fieldStates = names.reduce(
-          (acc, name) => {
-            acc[name] = api.transformState(name, states.current[name], { sanitize: false });
-            return acc;
-          },
-          {} as {
-            [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
-          },
+        listener(
+          names.reduce(
+            (acc, name) => {
+              acc[name] = transformState(name, states.current[name], { sanitize: false });
+              return acc;
+            },
+            {} as {
+              [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
+            },
+          ),
         );
-        onUpdate(fieldStates);
       };
 
       names.forEach((name) => callbacks.current[name].add(callback));

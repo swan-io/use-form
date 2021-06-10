@@ -196,7 +196,7 @@ A component that listen for fields states changes. Useful when a part of your co
 
 #### listenFields
 
-A function that listen fields states changes. Useful when you want to apply side effects on value changed.
+A function that listen for fields states changes. Useful when you want to apply side effects on values change.
 
 ```tsx
 React.useEffect(() => {

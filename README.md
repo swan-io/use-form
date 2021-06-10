@@ -4,7 +4,8 @@
 [![npm version](https://img.shields.io/npm/v/react-ux-form?style=for-the-badge)](https://www.npmjs.org/package/react-ux-form)
 [![bundlephobia](https://img.shields.io/bundlephobia/minzip/react-ux-form?label=size&style=for-the-badge)](https://bundlephobia.com/result?p=react-ux-form)
 
-A simple, fast and opinionated form library for React & React Native focusing on UX.
+A simple, fast and opinionated form library for React & React Native focusing on UX.<br>
+👉 Take a look at the demo on [CodeSandbox](https://0jszi.csb.app/).
 
 ## Setup
 
@@ -424,5 +425,4 @@ A full set of examples is available on [CodeSandbox](https://0jszi.csb.app/) or 
 ## Acknowledgements
 
 - [re-formality](https://github.com/MinimaHQ/re-formality) for the [validation strategies](https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md) idea.
-- [react-jeff](https://github.com/jamiebuilds/react-jeff) for its simple and testable validation API.
 - [react-hook-form](https://react-hook-form.com/) and [react-final-form](https://github.com/final-form/react-final-form) for their subscription pattern implementations.

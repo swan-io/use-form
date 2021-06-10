@@ -80,11 +80,6 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
 export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
   formStatus: FormStatus;
 
-  listenFields: <N extends keyof Values>(
-    names: N[],
-    listener: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
-  ) => () => void;
-
   Field: FieldComponent<Values, ErrorMessage>;
   FieldsListener: FieldsListenerComponent<Values, ErrorMessage>;
 
@@ -101,6 +96,11 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
   focusField: (name: keyof Values) => void;
   resetField: (name: keyof Values) => void;
   validateField: (name: keyof Values) => Promise<ErrorMessage | void>;
+
+  listenFields: <N extends keyof Values>(
+    names: N[],
+    listener: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
+  ) => () => void;
 
   resetForm: () => void;
   submitForm: (

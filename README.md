@@ -96,7 +96,8 @@ const {
   resetForm,
   submitForm,
 } = useForm({
-  fieldName: { // Keys are used as fields names
+  // Keys are used as fields names
+  fieldName: {
     initialValue: "",
     // Properties below are optional (those are the default values)
     strategy: "onFirstSuccessOrFirstBlur",

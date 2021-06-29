@@ -94,6 +94,7 @@ const {
   focusField,
   resetField,
   validateField,
+  listenFields,
   resetForm,
   submitForm,
 } = useForm({
@@ -196,32 +197,6 @@ A component that listen for fields states changes. Useful when a part of your co
 </FieldsListener>
 ```
 
-#### listenFields
-
-A function that listen for fields states changes. Useful when you want to apply side effects on values change.
-
-```tsx
-React.useEffect(() => {
-  const removeListener = listenFields(
-    ["firstName", "lastName"],
-    (states: Record<"firstName" | "lastName", {
-      // The field value
-      value: Value;
-      // Is the field validating? (only happen on async operations)
-      validating: boolean;
-      // Is the field valid?
-      valid: boolean;
-      // The field is invalid: here its error message.
-      error?: ErrorMessage;
-    }>) => /* … */
-  );
-
-  return () => {
-    removeListener();
-  }
-}, []);
-```
-
 #### getFieldState
 
 By setting `sanitize: true`, you will enforce sanitization.
@@ -276,6 +251,32 @@ Once you manually call validation, the switch automatically switch to _talkative
 
 ```tsx
 type validateField = (name: FieldName) => Promise<ErrorMessage | void>;
+```
+
+#### listenFields
+
+A function that listen for fields states changes. Useful when you want to apply side effects on values change.
+
+```tsx
+React.useEffect(() => {
+  const removeListener = listenFields(
+    ["firstName", "lastName"],
+    (states: Record<"firstName" | "lastName", {
+      // The field value
+      value: Value;
+      // Is the field validating? (only happen on async operations)
+      validating: boolean;
+      // Is the field valid?
+      valid: boolean;
+      // The field is invalid: here its error message.
+      error?: ErrorMessage;
+    }>) => /* … */
+  );
+
+  return () => {
+    removeListener();
+  }
+}, []);
 ```
 
 #### resetForm

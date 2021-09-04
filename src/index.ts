@@ -5,18 +5,12 @@ import { useSubscription } from "use-subscription";
 // For server-side rendering / react-native
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-export type ValidateResult<ErrorMessage> = ErrorMessage | void | Promise<ErrorMessage | void>;
-export type ValidateFn<T, ErrorMessage = string> = (value: T) => ValidateResult<ErrorMessage>;
+export type ValidateFnResult<ErrorMessage = string> =
+  | ErrorMessage
+  | void
+  | Promise<ErrorMessage | void>;
 
-type Helpers<Values extends Record<string, unknown>, ErrorMessage> = {
-  getFieldState: <N extends keyof Values>(
-    name: N,
-    options?: { sanitize?: boolean },
-  ) => FieldState<Values[N], ErrorMessage>;
-
-  focusField: (name: keyof Values) => void;
-};
-
+export type ValidateFn<T, ErrorMessage = string> = (value: T) => ValidateFnResult<ErrorMessage>;
 export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
 
 // Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md
@@ -29,35 +23,6 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
-type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
-  N extends keyof Values,
->(props: {
-  name: N;
-  children: (
-    props: FieldState<Values[N], ErrorMessage> & {
-      ref: MutableRefObject<any>;
-      onChange: (value: Values[N]) => void;
-      onBlur: () => void;
-      focusNextField: () => void;
-    },
-  ) => ReactElement | null;
-}) => ReactElement | null) & {
-  displayName?: string;
-};
-
-type FieldsListenerComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
-  N extends keyof Values,
->(props: {
-  names: N[];
-  children: (
-    states: {
-      [N1 in N]: FieldState<Values[N1], ErrorMessage>;
-    },
-  ) => ReactElement | null;
-}) => ReactElement | null) & {
-  displayName?: string;
-};
-
 export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N];
@@ -67,16 +32,44 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],
-      helpers: Helpers<Values, ErrorMessage>,
-    ) => ValidateResult<ErrorMessage>;
+      helpers: {
+        focusField: (name: keyof Values) => void;
+        getFieldState: <N extends keyof Values>(
+          name: N,
+          options?: { sanitize?: boolean },
+        ) => FieldState<Values[N], ErrorMessage>;
+      },
+    ) => ValidateFnResult<ErrorMessage>;
   };
 };
 
 export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
   formStatus: FormStatus;
 
-  Field: FieldComponent<Values, ErrorMessage>;
-  FieldsListener: FieldsListenerComponent<Values, ErrorMessage>;
+  Field: (<N extends keyof Values>(props: {
+    name: N;
+    children: (
+      props: FieldState<Values[N], ErrorMessage> & {
+        ref: MutableRefObject<any>;
+        onChange: (value: Values[N]) => void;
+        onBlur: () => void;
+        focusNextField: () => void;
+      },
+    ) => ReactElement | null;
+  }) => ReactElement | null) & {
+    displayName?: string;
+  };
+
+  FieldsListener: (<N extends keyof Values>(props: {
+    names: N[];
+    children: (
+      states: {
+        [N1 in N]: FieldState<Values[N1], ErrorMessage>;
+      },
+    ) => ReactElement | null;
+  }) => ReactElement | null) & {
+    displayName?: string;
+  };
 
   getFieldState: <N extends keyof Values>(
     name: N,
@@ -190,10 +183,8 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   const refs = useRef() as MutableRefObject<RefMap>;
   const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
-  const field = useRef() as MutableRefObject<FieldComponent<Values, ErrorMessage>>;
-  const fieldsListener = useRef() as MutableRefObject<
-    FieldsListenerComponent<Values, ErrorMessage>
-  >;
+  const field = useRef() as MutableRefObject<Contract["Field"]>;
+  const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
     const getConfig = (name: Name) => config.current[name];
@@ -276,7 +267,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const getFieldState: Contract["getFieldState"] = (name, options = {}) =>
       transformState(name, states.current[name], options);
 
-    const internalValidateField = <N extends Name>(name: N): ValidateResult<ErrorMessage> => {
+    const internalValidateField = <N extends Name>(name: N): ValidateFnResult<ErrorMessage> => {
       const debounced = clearDebounceTimeout(name);
 
       const sanitizeAtStart = getSanitize(name);
@@ -459,7 +450,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
 
     const isSyncSubmission = (
-      results: ValidateResult<ErrorMessage>[],
+      results: ValidateFnResult<ErrorMessage>[],
     ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
 
     const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
@@ -493,7 +484,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const names: Name[] = Object.keys(mounteds.current).filter((name) => mounteds.current[name]);
       const values: Partial<Values> = {};
       const errors: Partial<Record<Name, ErrorMessage>> = {};
-      const results: ValidateResult<ErrorMessage>[] = [];
+      const results: ValidateFnResult<ErrorMessage>[] = [];
 
       // autofocusing first error is the default behaviour
       const shouldFocusOnError = !options.avoidFocusOnError;
@@ -579,7 +570,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
     }
 
-    const Field: FieldComponent<Values, ErrorMessage> = ({ name, children }) => {
+    const Field: Contract["Field"] = ({ name, children }) => {
       const state = useSubscription(
         useMemo(
           () => ({
@@ -628,7 +619,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     Field.displayName = "Field";
     field.current = Field;
 
-    const FieldsListener: FieldsListenerComponent<Values, ErrorMessage> = ({ names, children }) => {
+    const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
       useSubscription(
         useMemo(
           () => ({

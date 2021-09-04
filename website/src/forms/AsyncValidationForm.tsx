@@ -65,7 +65,7 @@ export const AsyncValidationForm = () => {
             <Input
               label="Email address"
               validation="Must be valid"
-              strategy="onFirstChange"
+              strategy="onChange"
               placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}

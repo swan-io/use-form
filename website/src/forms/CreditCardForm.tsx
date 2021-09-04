@@ -106,7 +106,7 @@ export const CreditCardForm = () => {
               label="Card number"
               validation="Must be valid"
               placeholder="4242424242424242"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -124,7 +124,7 @@ export const CreditCardForm = () => {
               label="Expiration date"
               validation="Must be valid"
               placeholder="01/28"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -142,7 +142,7 @@ export const CreditCardForm = () => {
               label="CVC"
               validation="Must be valid"
               placeholder="123"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}

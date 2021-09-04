@@ -63,7 +63,7 @@ export const AsyncSubmissionForm = () => {
             <Input
               label="Email address"
               validation="Must be valid"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}

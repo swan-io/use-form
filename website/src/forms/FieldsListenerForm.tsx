@@ -105,7 +105,7 @@ export const FieldsListenerForm = () => {
             <Input
               label="First name"
               validation="Required"
-              strategy="onFirstBlur"
+              strategy="onBlur"
               placeholder="John"
               error={error}
               onBlur={onBlur}
@@ -123,7 +123,7 @@ export const FieldsListenerForm = () => {
             <Input
               label="Last name"
               validation="Required"
-              strategy="onFirstBlur"
+              strategy="onBlur"
               placeholder="Doe"
               error={error}
               onBlur={onBlur}
@@ -141,7 +141,7 @@ export const FieldsListenerForm = () => {
             <Input
               label="Email address"
               validation="Must be valid"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}

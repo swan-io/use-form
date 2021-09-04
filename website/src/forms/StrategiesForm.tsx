@@ -85,9 +85,9 @@ export const StrategiesForm = () => {
         <Field name="onChange">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
-              label="onFirstChange"
+              label="onChange"
               validation="Must be at least 3 characters long"
-              strategy="onFirstChange"
+              strategy="onChange"
               placeholder="…"
               error={error}
               onBlur={onBlur}
@@ -103,9 +103,9 @@ export const StrategiesForm = () => {
         <Field name="onSuccess">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
-              label="onFirstSuccess"
+              label="onSuccess"
               validation="Must be at least 3 characters long"
-              strategy="onFirstSuccess"
+              strategy="onSuccess"
               placeholder="…"
               error={error}
               onBlur={onBlur}
@@ -121,9 +121,9 @@ export const StrategiesForm = () => {
         <Field name="onBlur">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
-              label="onFirstBlur"
+              label="onBlur"
               validation="Must be at least 3 characters long"
-              strategy="onFirstBlur"
+              strategy="onBlur"
               placeholder="…"
               error={error}
               onBlur={onBlur}
@@ -139,9 +139,9 @@ export const StrategiesForm = () => {
         <Field name="onSuccessOrBlur">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
-              label="onFirstSuccessOrFirstBlur (default)"
+              label="onSuccessOrBlur (default)"
               validation="Must be at least 3 characters long"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               placeholder="…"
               error={error}
               onBlur={onBlur}

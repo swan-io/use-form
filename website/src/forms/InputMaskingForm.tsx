@@ -112,7 +112,7 @@ export const InputMaskingForm = () => {
                   label="Card number"
                   validation="Must be valid"
                   placeholder="4242 4242 4242 4242"
-                  strategy="onFirstSuccessOrFirstBlur"
+                  strategy="onSuccessOrBlur"
                   error={error}
                   onBlur={onBlur}
                   onChange={onChange}

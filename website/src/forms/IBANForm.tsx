@@ -81,7 +81,7 @@ export const IBANForm = () => {
               label="IBAN"
               validation="Must be valid"
               placeholder="FR2230003000403598356122X09"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}

@@ -5,29 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>react-ux-form website</title>
 
-    <script type="text/javascript">
+    <script>
       // https://github.com/rafgraph/spa-github-pages
-      const pathSegmentsToKeep = 1;
-      const location = window.location;
+      var pathSegmentsToKeep = 1;
 
-      location.replace(
-        location.protocol +
+      var l = window.location;
+      l.replace(
+        l.protocol +
           "//" +
-          location.hostname +
-          (location.port ? ":" + location.port : "") +
-          location.pathname
+          l.hostname +
+          (l.port ? ":" + l.port : "") +
+          l.pathname
             .split("/")
             .slice(0, 1 + pathSegmentsToKeep)
             .join("/") +
           "/?/" +
-          location.pathname
+          l.pathname
             .slice(1)
             .split("/")
             .slice(pathSegmentsToKeep)
             .join("/")
             .replace(/&/g, "~and~") +
-          (location.search ? "&" + location.search.slice(1).replace(/&/g, "~and~") : "") +
-          location.hash,
+          (l.search ? "&" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+          l.hash,
       );
     </script>
   </head>

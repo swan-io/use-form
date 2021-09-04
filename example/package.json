@@ -1,5 +1,5 @@
 {
-  "name": "react-ux-form-example",
+  "name": "react-ux-form-website",
   "private": true,
   "scripts": {
     "build": "tsc && vite build",

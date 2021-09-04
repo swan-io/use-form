@@ -421,7 +421,7 @@ const MyAwesomeForm = () => {
 
 ## More examples
 
-A full set of examples is available on [CodeSandbox](https://0jszi.csb.app/) or in the [`/example` directory](https://github.com/swan-io/react-ux-form/tree/main/example) project. Just clone the repository, install its dependencies and start it!
+A full set of examples is available on [CodeSandbox](https://0jszi.csb.app/) or in the [`/website` directory](https://github.com/swan-io/react-ux-form/tree/main/website) project. Just clone the repository, install its dependencies and start it!
 
 ## Acknowledgements
 

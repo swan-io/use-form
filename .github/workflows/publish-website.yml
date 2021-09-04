@@ -1,0 +1,31 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+          cache: "yarn"
+          cache-dependency-path: website/yarn.lock
+
+      - name: yarn install and build
+        run: |
+          cd website
+          yarn install
+          yarn build
+
+      - name: Deploy
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: gh-pages
+          FOLDER: website
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

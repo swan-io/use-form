@@ -5,12 +5,12 @@ import { useSubscription } from "use-subscription";
 // For server-side rendering / react-native
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-export type ValidateFnResult<ErrorMessage = string> =
+export type ValidatorResult<ErrorMessage = string> =
   | ErrorMessage
   | void
   | Promise<ErrorMessage | void>;
 
-export type ValidateFn<T, ErrorMessage = string> = (value: T) => ValidateFnResult<ErrorMessage>;
+export type Validator<T, ErrorMessage = string> = (value: T) => ValidatorResult<ErrorMessage>;
 export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
 
 // Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md
@@ -39,7 +39,7 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
           options?: { sanitize?: boolean },
         ) => FieldState<Values[N], ErrorMessage>;
       },
-    ) => ValidateFnResult<ErrorMessage>;
+    ) => ValidatorResult<ErrorMessage>;
   };
 };
 
@@ -108,8 +108,8 @@ const isPromise = <T>(value: any): value is Promise<T> =>
 
 export const combineValidators =
   <T, ErrorMessage = string>(
-    ...fns: (ValidateFn<T, ErrorMessage> | false)[]
-  ): ValidateFn<T, ErrorMessage> =>
+    ...fns: (Validator<T, ErrorMessage> | false)[]
+  ): Validator<T, ErrorMessage> =>
   (value) => {
     const [fn, ...nextFns] = fns;
 
@@ -267,7 +267,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const getFieldState: Contract["getFieldState"] = (name, options = {}) =>
       transformState(name, states.current[name], options);
 
-    const internalValidateField = <N extends Name>(name: N): ValidateFnResult<ErrorMessage> => {
+    const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
       const debounced = clearDebounceTimeout(name);
 
       const sanitizeAtStart = getSanitize(name);
@@ -450,7 +450,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
 
     const isSyncSubmission = (
-      results: ValidateFnResult<ErrorMessage>[],
+      results: ValidatorResult<ErrorMessage>[],
     ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
 
     const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
@@ -484,7 +484,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const names: Name[] = Object.keys(mounteds.current).filter((name) => mounteds.current[name]);
       const values: Partial<Values> = {};
       const errors: Partial<Record<Name, ErrorMessage>> = {};
-      const results: ValidateFnResult<ErrorMessage>[] = [];
+      const results: ValidatorResult<ErrorMessage>[] = [];
 
       // autofocusing first error is the default behaviour
       const shouldFocusOnError = !options.avoidFocusOnError;

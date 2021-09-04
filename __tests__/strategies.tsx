@@ -12,26 +12,26 @@ const validate = (value: string) => {
 test("validation strategies give feedback at the right time", async () => {
   const Test = () => {
     const { Field, resetForm, submitForm } = useForm({
-      onFirstChange: {
-        strategy: "onFirstChange",
+      onChange: {
+        strategy: "onChange",
         initialValue: "",
         sanitize,
         validate,
       },
-      onFirstSuccess: {
-        strategy: "onFirstSuccess",
+      onSuccess: {
+        strategy: "onSuccess",
         initialValue: "",
         sanitize,
         validate,
       },
-      onFirstBlur: {
-        strategy: "onFirstBlur",
+      onBlur: {
+        strategy: "onBlur",
         initialValue: "",
         sanitize,
         validate,
       },
-      onFirstSuccessOrFirstBlur: {
-        strategy: "onFirstSuccessOrFirstBlur",
+      onSuccessOrBlur: {
+        strategy: "onSuccessOrBlur",
         initialValue: "",
         sanitize,
         validate,
@@ -46,14 +46,14 @@ test("validation strategies give feedback at the right time", async () => {
 
     return (
       <form onSubmit={(e) => e.preventDefault()}>
-        <Field name="onFirstChange">
+        <Field name="onChange">
           {({ error, onBlur, onChange, valid, validating, value }) => (
             <>
-              <label htmlFor="onFirstChange">onFirstChange</label>
+              <label htmlFor="onChange">onChange</label>
 
               <input
                 type="text"
-                id="onFirstChange"
+                id="onChange"
                 value={value}
                 onBlur={onBlur}
                 onChange={(e) => {
@@ -62,22 +62,22 @@ test("validation strategies give feedback at the right time", async () => {
                 }}
               />
 
-              {!(valid || error) && <div>onFirstChange idle</div>}
-              {valid && <div>onFirstChange valid</div>}
-              {validating && <div>onFirstChange validating</div>}
-              {error && <div>onFirstChange error</div>}
+              {!(valid || error) && <div>onChange idle</div>}
+              {valid && <div>onChange valid</div>}
+              {validating && <div>onChange validating</div>}
+              {error && <div>onChange error</div>}
             </>
           )}
         </Field>
 
-        <Field name="onFirstSuccess">
+        <Field name="onSuccess">
           {({ error, onBlur, onChange, valid, validating, value }) => (
             <>
-              <label htmlFor="onFirstSuccess">onFirstSuccess</label>
+              <label htmlFor="onSuccess">onSuccess</label>
 
               <input
                 type="text"
-                id="onFirstSuccess"
+                id="onSuccess"
                 value={value}
                 onBlur={onBlur}
                 onChange={(e) => {
@@ -86,22 +86,22 @@ test("validation strategies give feedback at the right time", async () => {
                 }}
               />
 
-              {!(valid || error) && <div>onFirstSuccess idle</div>}
-              {valid && <div>onFirstSuccess valid</div>}
-              {validating && <div>onFirstSuccess validating</div>}
-              {error && <div>onFirstSuccess error</div>}
+              {!(valid || error) && <div>onSuccess idle</div>}
+              {valid && <div>onSuccess valid</div>}
+              {validating && <div>onSuccess validating</div>}
+              {error && <div>onSuccess error</div>}
             </>
           )}
         </Field>
 
-        <Field name="onFirstBlur">
+        <Field name="onBlur">
           {({ error, onBlur, onChange, valid, validating, value }) => (
             <>
-              <label htmlFor="onFirstBlur">onFirstBlur</label>
+              <label htmlFor="onBlur">onBlur</label>
 
               <input
                 type="text"
-                id="onFirstBlur"
+                id="onBlur"
                 value={value}
                 onBlur={onBlur}
                 onChange={(e) => {
@@ -110,22 +110,22 @@ test("validation strategies give feedback at the right time", async () => {
                 }}
               />
 
-              {!(valid || error) && <div>onFirstBlur idle</div>}
-              {valid && <div>onFirstBlur valid</div>}
-              {validating && <div>onFirstBlur validating</div>}
-              {error && <div>onFirstBlur error</div>}
+              {!(valid || error) && <div>onBlur idle</div>}
+              {valid && <div>onBlur valid</div>}
+              {validating && <div>onBlur validating</div>}
+              {error && <div>onBlur error</div>}
             </>
           )}
         </Field>
 
-        <Field name="onFirstSuccessOrFirstBlur">
+        <Field name="onSuccessOrBlur">
           {({ error, onBlur, onChange, valid, validating, value }) => (
             <>
-              <label htmlFor="onFirstSuccessOrFirstBlur">onFirstSuccessOrFirstBlur</label>
+              <label htmlFor="onSuccessOrBlur">onSuccessOrBlur</label>
 
               <input
                 type="text"
-                id="onFirstSuccessOrFirstBlur"
+                id="onSuccessOrBlur"
                 value={value}
                 onBlur={onBlur}
                 onChange={(e) => {
@@ -134,10 +134,10 @@ test("validation strategies give feedback at the right time", async () => {
                 }}
               />
 
-              {!(valid || error) && <div>onFirstSuccessOrFirstBlur idle</div>}
-              {valid && <div>onFirstSuccessOrFirstBlur valid</div>}
-              {validating && <div>onFirstSuccessOrFirstBlur validating</div>}
-              {error && <div>onFirstSuccessOrFirstBlur error</div>}
+              {!(valid || error) && <div>onSuccessOrBlur idle</div>}
+              {valid && <div>onSuccessOrBlur valid</div>}
+              {validating && <div>onSuccessOrBlur validating</div>}
+              {error && <div>onSuccessOrBlur error</div>}
             </>
           )}
         </Field>
@@ -174,60 +174,60 @@ test("validation strategies give feedback at the right time", async () => {
 
   render(<Test />);
 
-  let input = await screen.findByLabelText("onFirstChange");
+  let input = await screen.findByLabelText("onChange");
   const resetButton = await screen.findByText("Reset");
   const submitButton = await screen.findByText("Submit");
 
-  await screen.findByText("onFirstChange idle");
+  await screen.findByText("onChange idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstChange error");
+  await screen.findByText("onChange error");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await screen.findByText("onFirstChange valid");
+  await screen.findByText("onChange valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstChange error");
+  await screen.findByText("onChange error");
 
   fireEvent.click(resetButton);
-  input = await screen.findByLabelText("onFirstSuccess");
+  input = await screen.findByLabelText("onSuccess");
 
-  await screen.findByText("onFirstSuccess idle");
+  await screen.findByText("onSuccess idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstSuccess idle");
+  await screen.findByText("onSuccess idle");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await screen.findByText("onFirstSuccess valid");
+  await screen.findByText("onSuccess valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstSuccess error");
+  await screen.findByText("onSuccess error");
 
   fireEvent.click(resetButton);
-  input = await screen.findByLabelText("onFirstBlur");
+  input = await screen.findByLabelText("onBlur");
 
-  await screen.findByText("onFirstBlur idle");
+  await screen.findByText("onBlur idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstBlur idle");
+  await screen.findByText("onBlur idle");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await screen.findByText("onFirstBlur idle");
+  await screen.findByText("onBlur idle");
   fireEvent.blur(input);
-  await screen.findByText("onFirstBlur valid");
+  await screen.findByText("onBlur valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstBlur error");
+  await screen.findByText("onBlur error");
 
   fireEvent.click(resetButton);
-  input = await screen.findByLabelText("onFirstSuccessOrFirstBlur");
+  input = await screen.findByLabelText("onSuccessOrBlur");
 
-  await screen.findByText("onFirstSuccessOrFirstBlur idle");
+  await screen.findByText("onSuccessOrBlur idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstSuccessOrFirstBlur idle");
+  await screen.findByText("onSuccessOrBlur idle");
   fireEvent.input(input, { target: { value: "Nicolas" } });
-  await screen.findByText("onFirstSuccessOrFirstBlur valid");
+  await screen.findByText("onSuccessOrBlur valid");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstSuccessOrFirstBlur error");
+  await screen.findByText("onSuccessOrBlur error");
 
   fireEvent.click(resetButton);
 
-  await screen.findByText("onFirstSuccessOrFirstBlur idle");
+  await screen.findByText("onSuccessOrBlur idle");
   fireEvent.input(input, { target: { value: "Ni" } });
-  await screen.findByText("onFirstSuccessOrFirstBlur idle");
+  await screen.findByText("onSuccessOrBlur idle");
   fireEvent.blur(input);
-  await screen.findByText("onFirstSuccessOrFirstBlur error");
+  await screen.findByText("onSuccessOrBlur error");
 
   fireEvent.click(resetButton);
   input = await screen.findByLabelText("onSubmit");

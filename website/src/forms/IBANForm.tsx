@@ -12,7 +12,7 @@ import { Page } from "../components/Page";
 export const IBANForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     iban: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {

@@ -12,7 +12,7 @@ import { Page } from "../components/Page";
 export const CreditCardForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     cardNumber: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -22,7 +22,7 @@ export const CreditCardForm = () => {
       },
     },
     expirationDate: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -32,7 +32,7 @@ export const CreditCardForm = () => {
       },
     },
     cvc: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {

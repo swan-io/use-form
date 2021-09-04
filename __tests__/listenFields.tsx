@@ -8,11 +8,11 @@ test("Count the number of updates", async () => {
   const Test = () => {
     const { Field, listenFields } = useForm({
       firstName: {
-        strategy: "onFirstChange",
+        strategy: "onChange",
         initialValue: "",
       },
       lastName: {
-        strategy: "onFirstChange",
+        strategy: "onChange",
         initialValue: "",
       },
     });

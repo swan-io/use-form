@@ -11,7 +11,7 @@ import { resolveAfter } from "../utils/promises";
 export const AsyncValidationForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     emailAddress: {
-      strategy: "onFirstChange",
+      strategy: "onChange",
       initialValue: "",
       debounceInterval: 250,
       sanitize: (value) => value.trim(),

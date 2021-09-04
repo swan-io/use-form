@@ -15,26 +15,26 @@ const validate = (value: string) => {
 
 export const StrategiesForm = () => {
   const { Field, resetForm, submitForm } = useForm({
-    onFirstChange: {
-      strategy: "onFirstChange",
+    onChange: {
+      strategy: "onChange",
       initialValue: "",
       sanitize,
       validate,
     },
-    onFirstSuccess: {
-      strategy: "onFirstSuccess",
+    onSuccess: {
+      strategy: "onSuccess",
       initialValue: "",
       sanitize,
       validate,
     },
-    onFirstBlur: {
-      strategy: "onFirstBlur",
+    onBlur: {
+      strategy: "onBlur",
       initialValue: "",
       sanitize,
       validate,
     },
-    onFirstSuccessOrFirstBlur: {
-      strategy: "onFirstSuccessOrFirstBlur",
+    onSuccessOrBlur: {
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize,
       validate,
@@ -82,7 +82,7 @@ export const StrategiesForm = () => {
       description="All these fields use the same sanitization rules (the value is trimmed), the same validation rule (the value must be at least 3 characters long) but different validation strategies, so you can easily play with each."
     >
       <form onSubmit={onSubmit}>
-        <Field name="onFirstChange">
+        <Field name="onChange">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstChange"
@@ -100,7 +100,7 @@ export const StrategiesForm = () => {
           )}
         </Field>
 
-        <Field name="onFirstSuccess">
+        <Field name="onSuccess">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstSuccess"
@@ -118,7 +118,7 @@ export const StrategiesForm = () => {
           )}
         </Field>
 
-        <Field name="onFirstBlur">
+        <Field name="onBlur">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstBlur"
@@ -136,7 +136,7 @@ export const StrategiesForm = () => {
           )}
         </Field>
 
-        <Field name="onFirstSuccessOrFirstBlur">
+        <Field name="onSuccessOrBlur">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstSuccessOrFirstBlur (default)"

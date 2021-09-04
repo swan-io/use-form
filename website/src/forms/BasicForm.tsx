@@ -10,7 +10,7 @@ import { Page } from "../components/Page";
 export const BasicForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     firstName: {
-      strategy: "onFirstBlur",
+      strategy: "onBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -20,7 +20,7 @@ export const BasicForm = () => {
       },
     },
     lastName: {
-      strategy: "onFirstBlur",
+      strategy: "onBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -30,7 +30,7 @@ export const BasicForm = () => {
       },
     },
     emailAddress: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {

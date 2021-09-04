@@ -29,7 +29,7 @@ const appendSpace = (res: string) => ([4, 9, 14].includes(res.length) ? `${res} 
 export const InputMaskingForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     cardNumber: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {

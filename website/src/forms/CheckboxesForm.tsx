@@ -9,7 +9,7 @@ import { Page } from "../components/Page";
 export const CheckboxesForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     termsAndConditions: {
-      strategy: "onFirstChange",
+      strategy: "onChange",
       initialValue: false,
       validate: (value) => {
         if (!value) {
@@ -18,7 +18,7 @@ export const CheckboxesForm = () => {
       },
     },
     emailsFromPartners: {
-      strategy: "onFirstChange",
+      strategy: "onChange",
       initialValue: false,
       validate: (value) => {
         if (!value) {

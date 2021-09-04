@@ -11,7 +11,7 @@ import { resolveAfter } from "../utils/promises";
 export const AsyncSubmissionForm = () => {
   const { Field, resetForm, submitForm, formStatus } = useForm({
     emailAddress: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {

@@ -20,12 +20,7 @@ type Helpers<Values extends Record<string, unknown>, ErrorMessage> = {
 export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
 
 // Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md
-export type Strategy =
-  | "onFirstChange"
-  | "onFirstSuccess"
-  | "onFirstBlur"
-  | "onFirstSuccessOrFirstBlur"
-  | "onSubmit";
+export type Strategy = "onChange" | "onSuccess" | "onBlur" | "onSuccessOrBlur" | "onSubmit";
 
 export type FieldState<Value, ErrorMessage = string> = {
   value: Value;
@@ -207,7 +202,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const getEqualityFn = (name: Name) => getConfig(name).equalityFn ?? Object.is;
     const getInitialValue = (name: Name) => getConfig(name).initialValue;
     const getSanitize = (name: Name) => getConfig(name).sanitize ?? identity;
-    const getStrategy = (name: Name) => getConfig(name).strategy ?? "onFirstSuccessOrFirstBlur";
+    const getStrategy = (name: Name) => getConfig(name).strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => getConfig(name).validate ?? noop;
 
     const isMounted = (name: Name) => mounteds.current[name];
@@ -297,7 +292,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         const error = promiseOrError;
 
         if (error == null) {
-          setTalkative(name, ["onFirstSuccess", "onFirstSuccessOrFirstBlur"]);
+          setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
         }
 
         setValidateResult(name, error);
@@ -320,7 +315,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             return;
           }
           if (error == null) {
-            setTalkative(name, ["onFirstSuccess", "onFirstSuccessOrFirstBlur"]);
+            setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
           }
 
           setValidateResult(name, error);
@@ -412,7 +407,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           value,
         };
 
-        setTalkative(name, ["onFirstChange"]);
+        setTalkative(name, ["onChange"]);
         clearDebounceTimeout(name);
 
         if (formStatus.current === "untouched" || formStatus.current === "submitted") {
@@ -442,7 +437,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       // Avoid validating an untouched / already valid field
       if (validity.type !== "unknown" && !isTalkative(name)) {
-        setTalkative(name, ["onFirstBlur", "onFirstSuccessOrFirstBlur"]);
+        setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
         internalValidateField(name);
       }
     };

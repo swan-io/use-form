@@ -2,7 +2,7 @@
   "name": "react-ux-form-website",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && cp 404.html dist",
     "dev": "vite",
     "serve": "vite preview"
   },

@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>react-ux-form website</title>
+
     <style>
       html,
       body {
@@ -17,6 +18,25 @@
         height: 100%;
       }
     </style>
+
+    <script type="text/javascript">
+      // https://github.com/rafgraph/spa-github-pages
+      ((location) => {
+        if (location.search[1] === "/") {
+          const decoded = location.search
+            .slice(1)
+            .split("&")
+            .map((s) => s.replace(/~and~/g, "&"))
+            .join("?");
+
+          window.history.replaceState(
+            null,
+            null,
+            location.pathname.slice(0, -1) + decoded + location.hash,
+          );
+        }
+      })(window.location);
+    </script>
   </head>
   <body>
     <div id="root"></div>

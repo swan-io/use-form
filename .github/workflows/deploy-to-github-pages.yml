@@ -10,9 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
+
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
+          cache: "yarn"
+          cache-dependency-path: |
+            yarn.lock
+            website/yarn.lock
 
       - name: yarn install and build
         run: |
@@ -25,5 +30,5 @@ jobs:
         env:
           REPO: self
           BRANCH: gh-pages
-          FOLDER: website
+          FOLDER: website/dist
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

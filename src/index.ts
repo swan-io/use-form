@@ -35,7 +35,7 @@ export type FieldState<Value, ErrorMessage = string> = {
 };
 
 type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
-  N extends keyof Values
+  N extends keyof Values,
 >(props: {
   name: N;
   children: (
@@ -51,7 +51,7 @@ type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = strin
 };
 
 type FieldsListenerComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
-  N extends keyof Values
+  N extends keyof Values,
 >(props: {
   names: N[];
   children: (
@@ -118,34 +118,36 @@ const isPromise = <T>(value: any): value is Promise<T> =>
   (typeof value === "object" || typeof value === "function") &&
   typeof value.then === "function";
 
-export const combineValidators = <T, ErrorMessage = string>(
-  ...fns: (ValidateFn<T, ErrorMessage> | false)[]
-): ValidateFn<T, ErrorMessage> => (value) => {
-  const [fn, ...nextFns] = fns;
+export const combineValidators =
+  <T, ErrorMessage = string>(
+    ...fns: (ValidateFn<T, ErrorMessage> | false)[]
+  ): ValidateFn<T, ErrorMessage> =>
+  (value) => {
+    const [fn, ...nextFns] = fns;
 
-  if (fn) {
-    const result = fn(value);
+    if (fn) {
+      const result = fn(value);
 
-    if (isPromise(result)) {
-      return result.then((error) => {
-        if (error != null) {
-          return error;
-        }
-        if (nextFns.length > 0) {
-          return combineValidators(...nextFns)(value);
-        }
-      });
+      if (isPromise(result)) {
+        return result.then((error) => {
+          if (error != null) {
+            return error;
+          }
+          if (nextFns.length > 0) {
+            return combineValidators(...nextFns)(value);
+          }
+        });
+      }
+
+      if (result != null) {
+        return result;
+      }
     }
 
-    if (result != null) {
-      return result;
+    if (nextFns.length > 0) {
+      return combineValidators(...nextFns)(value);
     }
-  }
-
-  if (nextFns.length > 0) {
-    return combineValidators(...nextFns)(value);
-  }
-};
+  };
 
 export const hasDefinedKeys = <T extends Record<string, unknown>, K extends keyof T = keyof T>(
   object: T,
@@ -400,38 +402,40 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       };
     };
 
-    const getOnChange = <N extends Name>(name: N) => (value: Values[N]): void => {
-      const debounceInterval = getDebounceInterval(name);
+    const getOnChange =
+      <N extends Name>(name: N) =>
+      (value: Values[N]): void => {
+        const debounceInterval = getDebounceInterval(name);
 
-      states.current[name] = {
-        ...states.current[name],
-        value,
-      };
+        states.current[name] = {
+          ...states.current[name],
+          value,
+        };
 
-      setTalkative(name, ["onFirstChange"]);
-      clearDebounceTimeout(name);
+        setTalkative(name, ["onFirstChange"]);
+        clearDebounceTimeout(name);
 
-      if (formStatus.current === "untouched" || formStatus.current === "submitted") {
-        formStatus.current = "editing";
-        forceUpdate();
-      }
-
-      if (debounceInterval === 0) {
-        internalValidateField(name);
-        return;
-      }
-
-      setValidating(name);
-      runCallbacks(name);
-
-      timeouts.current[name] = (setTimeout(() => {
-        if (isMounted(name)) {
-          internalValidateField(name);
-        } else {
-          clearDebounceTimeout(name);
+        if (formStatus.current === "untouched" || formStatus.current === "submitted") {
+          formStatus.current = "editing";
+          forceUpdate();
         }
-      }, debounceInterval) as unknown) as number;
-    };
+
+        if (debounceInterval === 0) {
+          internalValidateField(name);
+          return;
+        }
+
+        setValidating(name);
+        runCallbacks(name);
+
+        timeouts.current[name] = setTimeout(() => {
+          if (isMounted(name)) {
+            internalValidateField(name);
+          } else {
+            clearDebounceTimeout(name);
+          }
+        }, debounceInterval) as unknown as number;
+      };
 
     const getOnBlur = (name: Name) => (): void => {
       const { validity } = states.current[name];

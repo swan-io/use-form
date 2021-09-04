@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Box, HStack } from "@chakra-ui/layout";
+import { HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
 import { useForm } from "react-ux-form";
@@ -77,12 +77,18 @@ export const StrategiesForm = () => {
   };
 
   return (
-    <Page title="Validation strategies">
+    <Page
+      title="Validation strategies"
+      description="All these fields use the same sanitization rules (the value is trimmed), the same validation rule (the value must be at least 3 characters long) but different validation strategies, so you can easily play with each."
+    >
       <form onSubmit={onSubmit}>
         <Field name="onFirstChange">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstChange"
+              validation="Must be at least 3 characters long"
+              strategy="onFirstChange"
+              placeholder="…"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -98,6 +104,9 @@ export const StrategiesForm = () => {
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstSuccess"
+              validation="Must be at least 3 characters long"
+              strategy="onFirstSuccess"
+              placeholder="…"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -113,6 +122,9 @@ export const StrategiesForm = () => {
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstBlur"
+              validation="Must be at least 3 characters long"
+              strategy="onFirstBlur"
+              placeholder="…"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -128,6 +140,9 @@ export const StrategiesForm = () => {
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onFirstSuccessOrFirstBlur (default)"
+              validation="Must be at least 3 characters long"
+              strategy="onFirstSuccessOrFirstBlur"
+              placeholder="…"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -143,6 +158,9 @@ export const StrategiesForm = () => {
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="onSubmit"
+              validation="Must be at least 3 characters long"
+              strategy="onSubmit"
+              placeholder="…"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -154,7 +172,7 @@ export const StrategiesForm = () => {
           )}
         </Field>
 
-        <Box height={4} />
+        <Spacer height={4} />
 
         <HStack spacing={3}>
           <Button onClick={resetForm}>Reset</Button>

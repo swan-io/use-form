@@ -1,5 +1,7 @@
 import { Button } from "@chakra-ui/button";
-import { Box, HStack } from "@chakra-ui/layout";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { HStack, Spacer } from "@chakra-ui/layout";
+import { Link } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
 import cardValidator from "card-validator";
 import * as React from "react";
@@ -68,7 +70,32 @@ export const InputMaskingForm = () => {
   };
 
   return (
-    <Page title="Input masking">
+    <Page
+      title="Input masking"
+      description={
+        <>
+          You can try it by yourself using random credit card numbers from{" "}
+          <Link
+            href="https://www.creditcardvalidator.org/generator"
+            isExternal={true}
+            color="gray.600"
+            fontWeight="medium"
+          >
+            creditcardvalidator.org <ExternalLinkIcon marginTop={-1} />
+          </Link>
+          <br />
+          Validation is performed using{" "}
+          <Link
+            href="https://www.npmjs.com/package/card-validator"
+            isExternal={true}
+            color="gray.600"
+            fontWeight="medium"
+          >
+            card-validator <ExternalLinkIcon marginTop={-1} />
+          </Link>
+        </>
+      }
+    >
       <form onSubmit={onSubmit}>
         <Field name="cardNumber">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
@@ -83,6 +110,9 @@ export const InputMaskingForm = () => {
               {({ value, onChange }) => (
                 <Input
                   label="Card number"
+                  validation="Must be valid"
+                  placeholder="4242424242424242"
+                  strategy="onFirstSuccessOrFirstBlur"
                   error={error}
                   onBlur={onBlur}
                   onChange={onChange}
@@ -96,7 +126,7 @@ export const InputMaskingForm = () => {
           )}
         </Field>
 
-        <Box height={4} />
+        <Spacer height={4} />
 
         <HStack spacing={3}>
           <Button onClick={resetForm}>Reset</Button>

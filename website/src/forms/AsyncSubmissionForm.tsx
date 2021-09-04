@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Box, HStack } from "@chakra-ui/layout";
+import { HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
 import { useForm } from "react-ux-form";
@@ -53,12 +53,18 @@ export const AsyncSubmissionForm = () => {
   };
 
   return (
-    <Page title="Async submission">
+    <Page
+      title="Async submission"
+      description="Even if we do not recommend preventing the submission of the form until all the values in it are valid (which is a bad UX practice), the library still handle async submission just fine 🔥."
+    >
       <form onSubmit={onSubmit}>
         <Field name="emailAddress">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="Email address"
+              validation="Must be valid"
+              strategy="onFirstSuccessOrFirstBlur"
+              placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -70,7 +76,7 @@ export const AsyncSubmissionForm = () => {
           )}
         </Field>
 
-        <Box height={4} />
+        <Spacer height={4} />
 
         <HStack spacing={3}>
           <Button onClick={resetForm}>Reset</Button>

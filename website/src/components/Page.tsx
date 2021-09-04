@@ -1,7 +1,15 @@
-import { Box, Flex, Heading } from "@chakra-ui/layout";
+import { Flex, Heading, Spacer, Text } from "@chakra-ui/layout";
 import * as React from "react";
 
-export const Page = ({ children, title }: { children: React.ReactNode; title: string }) => (
+export const Page = ({
+  children,
+  title,
+  description,
+}: {
+  children: React.ReactNode;
+  title: string;
+  description?: React.ReactNode;
+}) => (
   <Flex
     flexDirection="column"
     flexGrow={1}
@@ -12,9 +20,19 @@ export const Page = ({ children, title }: { children: React.ReactNode; title: st
     paddingLeft={{ base: 5, md: 10 }}
     paddingRight={{ base: 5, md: 10 }}
   >
-    <main style={{ maxWidth: 500 }}>
+    <main style={{ maxWidth: 768 }}>
       <Heading>{title}</Heading>
-      <Box height={8} />
+
+      {description ? (
+        <>
+          <Spacer height={4} />
+          <Text color="gray.500">{description}</Text>
+          <Spacer height={12} />
+        </>
+      ) : (
+        <Spacer height={8} />
+      )}
+
       {children}
     </main>
   </Flex>

@@ -1,5 +1,7 @@
 import { Button } from "@chakra-ui/button";
-import { Box, HStack } from "@chakra-ui/layout";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { HStack, Spacer } from "@chakra-ui/layout";
+import { Link } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
 import { useForm } from "react-ux-form";
@@ -51,12 +53,35 @@ export const IBANForm = () => {
   };
 
   return (
-    <Page title="IBAN">
+    <Page
+      title="IBAN"
+      description={
+        <>
+          You can try it by yourself using random IBAN from{" "}
+          <Link href="http://randomiban.com" isExternal={true} color="gray.600" fontWeight="medium">
+            randomiban.com <ExternalLinkIcon marginTop={-1} />
+          </Link>
+          <br />
+          Validation is performed using{" "}
+          <Link
+            href="https://www.npmjs.com/package/validator"
+            isExternal={true}
+            color="gray.600"
+            fontWeight="medium"
+          >
+            validator <ExternalLinkIcon marginTop={-1} />
+          </Link>
+        </>
+      }
+    >
       <form onSubmit={onSubmit}>
         <Field name="iban">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="IBAN"
+              validation="Must be valid"
+              placeholder="FR2230003000403598356122X09"
+              strategy="onFirstSuccessOrFirstBlur"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -68,7 +93,7 @@ export const IBANForm = () => {
           )}
         </Field>
 
-        <Box height={4} />
+        <Spacer height={4} />
 
         <HStack spacing={3}>
           <Button onClick={resetForm}>Reset</Button>

@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Box, HStack } from "@chakra-ui/layout";
+import { Code, HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
 import { useForm } from "react-ux-form";
@@ -50,12 +50,23 @@ export const AsyncValidationForm = () => {
   };
 
   return (
-    <Page title="Async validation">
+    <Page
+      title="Async validation"
+      description={
+        <>
+          Validation will be triggered on each keystroke, <Code>debounceInterval</Code> is set to{" "}
+          <Code>250</Code> (ms).
+        </>
+      }
+    >
       <form onSubmit={onSubmit}>
         <Field name="emailAddress">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="Email address"
+              validation="Must be valid"
+              strategy="onFirstChange"
+              placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -67,7 +78,7 @@ export const AsyncValidationForm = () => {
           )}
         </Field>
 
-        <Box height={4} />
+        <Spacer height={4} />
 
         <HStack spacing={3}>
           <Button onClick={resetForm}>Reset</Button>

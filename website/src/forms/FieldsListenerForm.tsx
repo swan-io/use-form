@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Box, HStack } from "@chakra-ui/layout";
+import { Code, HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
 import { useForm } from "react-ux-form";
@@ -71,7 +71,16 @@ export const FieldsListenerForm = () => {
   };
 
   return (
-    <Page title="Fields listener">
+    <Page
+      title="Fields listener"
+      description={
+        <>
+          Using <Code>listenFields</Code> and the <Code>{"<FieldsListener />"}</Code> component,
+          it's really easy to synchronise components states and perform side-effects several fields
+          values changes.
+        </>
+      }
+    >
       <FieldsListener names={["firstName", "lastName", "emailAddress"]}>
         {(states) => (
           <pre
@@ -88,13 +97,16 @@ export const FieldsListenerForm = () => {
         )}
       </FieldsListener>
 
-      <Box height={4} />
+      <Spacer height={8} />
 
       <form onSubmit={onSubmit}>
         <Field name="firstName">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="First name"
+              validation="Required"
+              strategy="onFirstBlur"
+              placeholder="John"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -110,6 +122,9 @@ export const FieldsListenerForm = () => {
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="Last name"
+              validation="Required"
+              strategy="onFirstBlur"
+              placeholder="Doe"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -125,6 +140,9 @@ export const FieldsListenerForm = () => {
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="Email address"
+              validation="Must be valid"
+              strategy="onFirstSuccessOrFirstBlur"
+              placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -136,7 +154,7 @@ export const FieldsListenerForm = () => {
           )}
         </Field>
 
-        <Box height={4} />
+        <Spacer height={4} />
 
         <HStack spacing={3}>
           <Button onClick={resetForm}>Reset</Button>

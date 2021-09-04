@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Box, HStack } from "@chakra-ui/layout";
+import { HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
 import { useForm } from "react-ux-form";
@@ -71,12 +71,24 @@ export const BasicForm = () => {
   };
 
   return (
-    <Page title="Basic">
+    <Page
+      title="Basic"
+      description={
+        <>
+          A common form example which play with at least two different strategies.
+          <br />
+          Note that all values are sanitized using trimming.
+        </>
+      }
+    >
       <form onSubmit={onSubmit}>
         <Field name="firstName">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="First name"
+              validation="Required"
+              strategy="onFirstBlur"
+              placeholder="John"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -92,6 +104,9 @@ export const BasicForm = () => {
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="Last name"
+              validation="Required"
+              strategy="onFirstBlur"
+              placeholder="Doe"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -107,6 +122,9 @@ export const BasicForm = () => {
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
               label="Email address"
+              validation="Must be valid"
+              strategy="onFirstSuccessOrFirstBlur"
+              placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -118,7 +136,7 @@ export const BasicForm = () => {
           )}
         </Field>
 
-        <Box height={4} />
+        <Spacer height={4} />
 
         <HStack spacing={3}>
           <Button onClick={resetForm}>Reset</Button>

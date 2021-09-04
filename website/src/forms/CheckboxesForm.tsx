@@ -1,6 +1,6 @@
 import { Button } from "@chakra-ui/button";
 import { Checkbox } from "@chakra-ui/checkbox";
-import { Box, HStack } from "@chakra-ui/layout";
+import { Code, HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
 import { useForm } from "react-ux-form";
@@ -58,7 +58,15 @@ export const CheckboxesForm = () => {
   };
 
   return (
-    <Page title="Checkboxes">
+    <Page
+      title="Checkboxes"
+      description={
+        <>
+          Checkboxes that must be ticked are a great use-case for <Code>onFirstChange</Code>{" "}
+          validation strategy.
+        </>
+      }
+    >
       <form onSubmit={onSubmit}>
         <Field name="termsAndConditions">
           {({ error, onChange, value }) => (
@@ -67,13 +75,14 @@ export const CheckboxesForm = () => {
               isInvalid={error != null}
               isChecked={value}
               onChange={(e) => onChange(e.target.checked)}
+              color="gray.600"
             >
               Accept terms and conditions
             </Checkbox>
           )}
         </Field>
 
-        <Box height={1} />
+        <Spacer height={1} />
 
         <Field name="emailsFromPartners">
           {({ error, onChange, value }) => (
@@ -82,13 +91,14 @@ export const CheckboxesForm = () => {
               isInvalid={error != null}
               isChecked={value}
               onChange={(e) => onChange(e.target.checked)}
+              color="gray.600"
             >
               Receive emails from partners
             </Checkbox>
           )}
         </Field>
 
-        <Box height={4} />
+        <Spacer height={12} />
 
         <HStack spacing={3}>
           <Button onClick={resetForm}>Reset</Button>

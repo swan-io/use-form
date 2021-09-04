@@ -4,8 +4,8 @@
 [![npm version](https://img.shields.io/npm/v/react-ux-form?style=for-the-badge)](https://www.npmjs.org/package/react-ux-form)
 [![bundlephobia](https://img.shields.io/bundlephobia/minzip/react-ux-form?label=size&style=for-the-badge)](https://bundlephobia.com/result?p=react-ux-form)
 
-A simple, fast and opinionated form library for React & React Native focusing on UX.<br>
-👉 Take a look at the demo on [CodeSandbox](https://0jszi.csb.app/).
+A simple, fast, and opinionated form library for React & React Native focusing on UX.<br>
+👉 Take a look at [the demo website](https://swan-io.github.io/react-ux-form).
 
 ## Setup
 
@@ -17,7 +17,7 @@ $ yarn add react-ux-form
 
 ## Features
 
-- Subscription based field updates (avoid rerendering the whole form on each keystroke 🔥)
+- Subscription-based field updates (avoid re-render the whole form on each keystroke 🔥)
 - Validation strategies ✨
 - Field sanitization
 - Mounted-only fields validation
@@ -31,11 +31,11 @@ $ yarn add react-ux-form
 Why another React form library 🤔?<br>
 Because, as silly as it seems, we couldn't find any existing library which fits our existing needs:
 
-- We want validation strategies per field, because we fell in love with them when we read the [re-formality](https://github.com/MinimaHQ/re-formality) documentation (which is unfortunately only available for [ReScript](https://rescript-lang.org/)).
+- We want validation strategies per field because we fell in love with them when we read the [re-formality](https://github.com/MinimaHQ/re-formality) documentation (which is unfortunately only available for [ReScript](https://rescript-lang.org/)).
 - It should be able to handle huge forms without a single performance hiccup.
-- Validation should be simple, reusable and testable (aka just functions).
+- Validation should be simple, reusable, and testable (aka just functions).
 - It shouldn't even try to validate unmounted fields.
-- It should have some sort of built-in focus management (to improve the keyboard flow of our React Native forms).
+- It should have built-in focus management (to improve the keyboard flow of our React Native forms).
 
 ## Validation strategies ✨
 
@@ -43,7 +43,7 @@ The key of **good UX** is simple: validation should be executed **in continue**,
 
 ### Quick example: A credit card field 💳
 
-Let's say we want to display some sort of valid state icon (✔) when the input value is a valid credit card number but don't want to display an error until the user blur the field (and let the value in an invalid state).
+Let's say we want to display a valid state icon (✔) when the input value is a valid credit card number but don't want to display an error until the user blurs the field (and lets the value in an invalid state).
 
 #### Something like this:
 
@@ -80,7 +80,7 @@ That's precisely why every field config could declare its own `strategy`:
 
 ### useForm
 
-`useForm` takes one argument (a map of your fields configs) and returns a set of helpers (functions, components and values) to manage your form state.
+`useForm` takes one argument (a map of your fields configs) and returns a set of helpers (functions, components, and values) to manage your form state.
 
 ```tsx
 import { useForm } from "react-ux-form";
@@ -149,7 +149,7 @@ type formStatus =
 
 #### `<Field />`
 
-A component that exposes everything you need locally as a children render prop.
+A component that exposes everything you need locally as a `children` render prop.
 
 ```tsx
 <Field name="fieldName">
@@ -178,7 +178,7 @@ A component that exposes everything you need locally as a children render prop.
 
 #### `<FieldsListener />`
 
-A component that listen for fields states changes. Useful when a part of your component needs to react to fields updates without triggering a full re-render.
+A component that listens for fields states changes. It's useful when a part of your component needs to react to fields updates without triggering a full re-render.
 
 ```tsx
 <FieldsListener names={["firstName", "lastName"]}>
@@ -231,7 +231,7 @@ type setFieldValue = (
 
 #### focusField
 
-Will only works if you forward the `Field` provided `ref` to your input.
+Will only work if you forward the `Field` provided `ref` to your input.
 
 ```tsx
 type focusField = (name: FieldName) => void;
@@ -239,7 +239,7 @@ type focusField = (name: FieldName) => void;
 
 #### resetField
 
-Value will be set to `initialValue` and user feedback will be hidden (the field is not _talkative_ anymore).
+Value will be set to `initialValue`, and user feedback will be hidden (the field is not _talkative_ anymore).
 
 ```tsx
 type resetField = (name: FieldName) => void;
@@ -247,7 +247,7 @@ type resetField = (name: FieldName) => void;
 
 #### validateField
 
-Once you manually call validation, the switch automatically switch to _talkative_ state.
+Once you manually call validation, the field automatically switches to _talkative_ state.
 
 ```tsx
 type validateField = (name: FieldName) => Promise<ErrorMessage | void>;
@@ -304,7 +304,7 @@ type submitForm = (
 
 ### combineValidators
 
-As it's a very common case to use several validation functions per field, we export a `combineValidators` helper function that allow you to chain sync and async validation functions: it will run them sequentially until an error is returned.
+As it's a very common case to use several validation functions per field, we export a `combineValidators` helper function that allows you to chain sync and async validation functions: it will run them sequentially until an error is returned.
 
 ```tsx
 import { combineValidators, useForm } from "react-ux-form";
@@ -339,7 +339,7 @@ const MyAwesomeForm = () => {
 
 ### hasDefinedKeys
 
-As some of your fields might be unmounted on submit, the `submitForm` method could not guarantee that every field value is defined and valid, we export `hasDefinedKeys` helper function that allow you to test if some object keys are defined.
+As some of your fields might be unmounted on submit, the `submitForm` method could not guarantee that every field value is defined and valid. We export `hasDefinedKeys` helper function that allows you to test if some object keys are defined.
 
 ```tsx
 import { hasDefinedKeys, useForm } from "react-ux-form";
@@ -421,7 +421,7 @@ const MyAwesomeForm = () => {
 
 ## More examples
 
-A full set of examples is available on [CodeSandbox](https://0jszi.csb.app/) or in the [`/website` directory](https://github.com/swan-io/react-ux-form/tree/main/website) project. Just clone the repository, install its dependencies and start it!
+A full set of examples is available on [the demo website](https://swan-io.github.io/react-ux-form) or in the [`/website` directory](https://github.com/swan-io/react-ux-form/tree/main/website) project. Just clone the repository, install its dependencies and start it!
 
 ## Acknowledgements
 

@@ -16,6 +16,7 @@ jobs:
 
       - name: yarn install and build
         run: |
+          yarn install
           yarn --cwd website install
           yarn --cwd website build
 

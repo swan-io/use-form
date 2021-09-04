@@ -3,7 +3,7 @@ import { Checkbox } from "@chakra-ui/checkbox";
 import { Box, HStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
-import { useForm } from "../../../src";
+import { useForm } from "react-ux-form";
 import { Page } from "../components/Page";
 
 export const CheckboxesForm = () => {

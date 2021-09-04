@@ -2,7 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { Box, HStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import * as React from "react";
-import { useForm } from "../../../src";
+import { useForm } from "react-ux-form";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
 

@@ -18,9 +18,8 @@ jobs:
 
       - name: yarn install and build
         run: |
-          cd website
-          yarn install
-          yarn build
+          yarn --cwd website install
+          yarn --cwd website build
 
       - name: Deploy
         uses: s0/git-publish-subdir-action@develop

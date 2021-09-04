@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  dedupe: ["react", "react-dom"],
+  base: "/react-ux-form/",
   plugins: [reactRefresh()],
+  resolve: { dedupe: ["react", "react-dom"] },
 });

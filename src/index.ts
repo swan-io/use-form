@@ -25,7 +25,7 @@ export type FieldState<Value, ErrorMessage = string> = {
 
 export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
   [N in keyof Values]: {
-    initialValue: Values[N];
+    initialValue: Values[N] | (() => Values[N]);
     strategy?: Strategy;
     debounceInterval?: number;
     equalityFn?: (value1: Values[N], value2: Values[N]) => boolean;
@@ -100,6 +100,9 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
 
 const identity = <T>(value: T) => value;
 const noop = () => {};
+
+const extractInitialValue = <T>(value: T | (() => T)): T =>
+  typeof value === "function" ? (value as () => T)() : value;
 
 const isPromise = <T>(value: any): value is Promise<T> =>
   !!value &&
@@ -191,7 +194,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     const getDebounceInterval = (name: Name) => getConfig(name).debounceInterval ?? 0;
     const getEqualityFn = (name: Name) => getConfig(name).equalityFn ?? Object.is;
-    const getInitialValue = (name: Name) => getConfig(name).initialValue;
+    const getInitialValue = (name: Name) => extractInitialValue(getConfig(name).initialValue);
     const getSanitize = (name: Name) => getConfig(name).sanitize ?? identity;
     const getStrategy = (name: Name) => getConfig(name).strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => getConfig(name).validate ?? noop;
@@ -558,7 +561,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
         states.current[name] = {
-          value: config.current[name].initialValue,
+          value: extractInitialValue(config.current[name].initialValue),
           talkative: false,
           validity: { type: "unknown" },
         };

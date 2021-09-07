@@ -95,10 +95,12 @@ export const IBANForm = () => {
 
         <Spacer height={4} />
 
-        <HStack spacing={3}>
-          <Button onClick={resetForm}>Reset</Button>
+        <HStack justifyContent="flex-end" spacing={3}>
+          <Button onClick={resetForm} width={100}>
+            Reset
+          </Button>
 
-          <Button colorScheme="green" onClick={onSubmit} type="submit">
+          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
             Submit
           </Button>
         </HStack>

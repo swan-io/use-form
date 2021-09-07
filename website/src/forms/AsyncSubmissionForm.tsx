@@ -78,15 +78,18 @@ export const AsyncSubmissionForm = () => {
 
         <Spacer height={4} />
 
-        <HStack spacing={3}>
-          <Button onClick={resetForm}>Reset</Button>
+        <HStack justifyContent="flex-end" spacing={3}>
+          <Button onClick={resetForm} width={100}>
+            Reset
+          </Button>
 
           <Button
             colorScheme="green"
-            disabled={formStatus === "submitting"}
-            isLoading={formStatus === "submitting"}
             type="submit"
             onClick={onSubmit}
+            width={100}
+            disabled={formStatus === "submitting"}
+            isLoading={formStatus === "submitting"}
           >
             Submit
           </Button>

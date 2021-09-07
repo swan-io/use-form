@@ -54,7 +54,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>(
           <Spacer width={2} />
 
           <Text color="gray.500" fontSize={12} fontWeight="medium">
-            {strategy} ✨
+            {strategy} ✨
           </Text>
         </Flex>
 

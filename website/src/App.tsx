@@ -4,7 +4,7 @@ import { HamburgerIcon } from "@chakra-ui/icons";
 import { Flex, Text, VStack } from "@chakra-ui/layout";
 import { useBreakpointValue } from "@chakra-ui/media-query";
 import * as React from "react";
-import { Route, Router } from "wouter";
+import { Route, Router, useLocation } from "wouter";
 import { Link } from "./components/Link";
 import { AsyncSubmissionForm } from "./forms/AsyncSubmissionForm";
 import { AsyncValidationForm } from "./forms/AsyncValidationForm";
@@ -17,8 +17,11 @@ import { InputMaskingForm } from "./forms/InputMaskingForm";
 import { StrategiesForm } from "./forms/StrategiesForm";
 
 export const App = () => {
+  const [path] = useLocation();
   const isDesktop = !useBreakpointValue({ base: true, md: false });
-  const menu = useDisclosure();
+  const { isOpen, onToggle, onClose } = useDisclosure();
+
+  React.useEffect(onClose, [path]);
 
   return (
     <Router base="/react-ux-form">
@@ -29,13 +32,13 @@ export const App = () => {
           flexShrink={0}
           fontSize={14}
           height="48px"
-          onClick={menu.onToggle}
+          onClick={onToggle}
         >
           <HamburgerIcon height={5} width={5} marginRight={2} />
           MENU
         </Button>
 
-        {(isDesktop || menu.isOpen) && (
+        {(isDesktop || isOpen) && (
           <Flex
             backgroundColor="gray.50"
             flexDirection="column"

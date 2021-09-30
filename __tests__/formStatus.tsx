@@ -7,7 +7,7 @@ test("formStatus evolve though time", async () => {
   const Test = () => {
     const { Field, formStatus, resetForm, submitForm } = useForm({
       firstName: {
-        strategy: "onFirstSuccess",
+        strategy: "onSuccess",
         initialValue: "",
         validate: (value) => {
           if (value.length < 3) {
@@ -74,7 +74,7 @@ test("formStatus evolve though time with async validation", async () => {
   const Test = () => {
     const { Field, formStatus, resetForm, submitForm } = useForm({
       firstName: {
-        strategy: "onFirstSuccess",
+        strategy: "onSuccess",
         initialValue: "",
         validate: (value) =>
           resolveAfter(100, value.length < 3 ? "Must be at least 3 characters" : undefined),
@@ -139,7 +139,7 @@ test("formStatus evolve though time with async submission", async () => {
   const Test = () => {
     const { Field, formStatus, resetForm, submitForm } = useForm({
       firstName: {
-        strategy: "onFirstSuccess",
+        strategy: "onSuccess",
         initialValue: "",
         validate: (value) => {
           if (value.length < 3) {

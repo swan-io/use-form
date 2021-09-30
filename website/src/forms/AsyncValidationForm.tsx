@@ -11,7 +11,7 @@ import { resolveAfter } from "../utils/promises";
 export const AsyncValidationForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     emailAddress: {
-      strategy: "onFirstChange",
+      strategy: "onChange",
       initialValue: "",
       debounceInterval: 250,
       sanitize: (value) => value.trim(),
@@ -65,7 +65,7 @@ export const AsyncValidationForm = () => {
             <Input
               label="Email address"
               validation="Must be valid"
-              strategy="onFirstChange"
+              strategy="onChange"
               placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}
@@ -80,10 +80,12 @@ export const AsyncValidationForm = () => {
 
         <Spacer height={4} />
 
-        <HStack spacing={3}>
-          <Button onClick={resetForm}>Reset</Button>
+        <HStack justifyContent="flex-end" spacing={3}>
+          <Button onClick={resetForm} width={100}>
+            Reset
+          </Button>
 
-          <Button colorScheme="green" onClick={onSubmit} type="submit">
+          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
             Submit
           </Button>
         </HStack>

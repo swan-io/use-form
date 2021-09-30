@@ -7,7 +7,7 @@ test("input validation evolve though time", async () => {
   const Test = () => {
     const { Field, resetForm, submitForm } = useForm({
       firstName: {
-        strategy: "onFirstBlur",
+        strategy: "onBlur",
         initialValue: "",
         validate: (value) => {
           if (value.length < 3) {
@@ -69,7 +69,7 @@ test("input validation evolve though time with async validation", async () => {
   const Test = () => {
     const { Field, resetForm, submitForm } = useForm({
       firstName: {
-        strategy: "onFirstBlur",
+        strategy: "onBlur",
         initialValue: "",
         validate: (value) =>
           resolveAfter(100, value.length < 3 ? "Must be at least 3 characters" : undefined),

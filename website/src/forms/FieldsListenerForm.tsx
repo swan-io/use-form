@@ -10,7 +10,7 @@ import { Page } from "../components/Page";
 export const FieldsListenerForm = () => {
   const { Field, FieldsListener, resetForm, submitForm } = useForm({
     firstName: {
-      strategy: "onFirstBlur",
+      strategy: "onBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -20,7 +20,7 @@ export const FieldsListenerForm = () => {
       },
     },
     lastName: {
-      strategy: "onFirstBlur",
+      strategy: "onBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -30,7 +30,7 @@ export const FieldsListenerForm = () => {
       },
     },
     emailAddress: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -105,7 +105,7 @@ export const FieldsListenerForm = () => {
             <Input
               label="First name"
               validation="Required"
-              strategy="onFirstBlur"
+              strategy="onBlur"
               placeholder="John"
               error={error}
               onBlur={onBlur}
@@ -123,7 +123,7 @@ export const FieldsListenerForm = () => {
             <Input
               label="Last name"
               validation="Required"
-              strategy="onFirstBlur"
+              strategy="onBlur"
               placeholder="Doe"
               error={error}
               onBlur={onBlur}
@@ -141,7 +141,7 @@ export const FieldsListenerForm = () => {
             <Input
               label="Email address"
               validation="Must be valid"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               placeholder="john.doe@example.org"
               error={error}
               onBlur={onBlur}
@@ -156,10 +156,12 @@ export const FieldsListenerForm = () => {
 
         <Spacer height={4} />
 
-        <HStack spacing={3}>
-          <Button onClick={resetForm}>Reset</Button>
+        <HStack justifyContent="flex-end" spacing={3}>
+          <Button onClick={resetForm} width={100}>
+            Reset
+          </Button>
 
-          <Button colorScheme="green" onClick={onSubmit} type="submit">
+          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
             Submit
           </Button>
         </HStack>

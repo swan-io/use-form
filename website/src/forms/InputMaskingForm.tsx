@@ -29,7 +29,7 @@ const appendSpace = (res: string) => ([4, 9, 14].includes(res.length) ? `${res} 
 export const InputMaskingForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     cardNumber: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -112,7 +112,7 @@ export const InputMaskingForm = () => {
                   label="Card number"
                   validation="Must be valid"
                   placeholder="4242 4242 4242 4242"
-                  strategy="onFirstSuccessOrFirstBlur"
+                  strategy="onSuccessOrBlur"
                   error={error}
                   onBlur={onBlur}
                   onChange={onChange}
@@ -128,10 +128,12 @@ export const InputMaskingForm = () => {
 
         <Spacer height={4} />
 
-        <HStack spacing={3}>
-          <Button onClick={resetForm}>Reset</Button>
+        <HStack justifyContent="flex-end" spacing={3}>
+          <Button onClick={resetForm} width={100}>
+            Reset
+          </Button>
 
-          <Button colorScheme="green" onClick={onSubmit} type="submit">
+          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
             Submit
           </Button>
         </HStack>

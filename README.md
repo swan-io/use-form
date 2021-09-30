@@ -50,24 +50,24 @@ Let's say we want to display a valid state icon (✔) when the input value is a 
 ![Valid credit card](docs/credit-card-valid.gif)
 ![Invalid credit card](docs/credit-card-error.gif)
 
-How do we easily achieve such magic? With the `onFirstSuccessOrFirstBlur` strategy 🧙‍♂️<br>
+How do we easily achieve such magic? With the `onSuccessOrBlur` strategy 🧙‍♂️<br>
 
 ```tsx
 const {} = useForm({
-  cardNumber: { initialValue: "", strategy: "onFirstSuccessOrFirstBlur" },
+  cardNumber: { initialValue: "", strategy: "onSuccessOrBlur" },
 });
 ```
 
-Of course, `onFirstSuccessOrFirstBlur` will not fit perfectly every use-case!<br>
+Of course, `onSuccessOrBlur` will not fit perfectly every use-case!<br>
 That's precisely why every field config could declare its own `strategy`:
 
-| Strategy                    | When feedback will be available?                              |
-| --------------------------- | ------------------------------------------------------------- |
-| `onFirstChange`             | On first change (as the user types or update the value)       |
-| `onFirstSuccess`            | On first validation success                                   |
-| `onFirstBlur`               | On first field blur                                           |
-| `onFirstSuccessOrFirstBlur` | On first validation success or first field blur **(default)** |
-| `onSubmit`                  | On form submit                                                |
+| Strategy          | When feedback will be available?                              |
+| ----------------- | ------------------------------------------------------------- |
+| `onChange`        | On first change (as the user types or update the value)       |
+| `onSuccess`       | On first validation success                                   |
+| `onBlur`          | On first field blur                                           |
+| `onSuccessOrBlur` | On first validation success or first field blur **(default)** |
+| `onSubmit`        | On form submit                                                |
 
 #### Note that:
 
@@ -102,7 +102,7 @@ const {
   fieldName: {
     initialValue: "",
     // Properties below are optional (those are the default values)
-    strategy: "onFirstSuccessOrFirstBlur",
+    strategy: "onSuccessOrBlur",
     debounceInterval: 0,
     equalityFn: (value1, value2) => Object.is(value1, value2),
     sanitize: (value) => value,
@@ -165,7 +165,7 @@ A component that exposes everything you need locally as a `children` render prop
       valid: boolean;
       // The field is invalid: here its error message.
       error?: ErrorMessage;
-      // The onBlur handler (required for onBlur and onFirstSuccessOrFirstBlur strategies)
+      // The onBlur handler (required for onBlur and onSuccessOrBlur strategies)
       onBlur: () => void;
       // The onChange handler (required)
       onChange: (value: Value) => void;
@@ -372,7 +372,7 @@ const MyAwesomeForm = () => {
   const { Field, submitForm } = useForm({
     firstName: {
       initialValue: "",
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       sanitize: (value) => value.trim(), // we trim value before validation and submission
       validate: (value) => {
         if (value === "") {

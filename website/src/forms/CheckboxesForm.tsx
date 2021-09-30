@@ -9,7 +9,7 @@ import { Page } from "../components/Page";
 export const CheckboxesForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     termsAndConditions: {
-      strategy: "onFirstChange",
+      strategy: "onChange",
       initialValue: false,
       validate: (value) => {
         if (!value) {
@@ -18,7 +18,7 @@ export const CheckboxesForm = () => {
       },
     },
     emailsFromPartners: {
-      strategy: "onFirstChange",
+      strategy: "onChange",
       initialValue: false,
       validate: (value) => {
         if (!value) {
@@ -62,8 +62,8 @@ export const CheckboxesForm = () => {
       title="Checkboxes"
       description={
         <>
-          Checkboxes that must be ticked are a great use-case for <Code>onFirstChange</Code>{" "}
-          validation strategy.
+          Checkboxes that must be ticked are a great use-case for <Code>onChange</Code> validation
+          strategy.
         </>
       }
     >
@@ -100,10 +100,12 @@ export const CheckboxesForm = () => {
 
         <Spacer height={12} />
 
-        <HStack spacing={3}>
-          <Button onClick={resetForm}>Reset</Button>
+        <HStack justifyContent="flex-end" spacing={3}>
+          <Button onClick={resetForm} width={100}>
+            Reset
+          </Button>
 
-          <Button colorScheme="green" onClick={onSubmit} type="submit">
+          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
             Submit
           </Button>
         </HStack>

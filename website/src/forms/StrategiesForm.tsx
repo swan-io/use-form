@@ -15,26 +15,26 @@ const validate = (value: string) => {
 
 export const StrategiesForm = () => {
   const { Field, resetForm, submitForm } = useForm({
-    onFirstChange: {
-      strategy: "onFirstChange",
+    onChange: {
+      strategy: "onChange",
       initialValue: "",
       sanitize,
       validate,
     },
-    onFirstSuccess: {
-      strategy: "onFirstSuccess",
+    onSuccess: {
+      strategy: "onSuccess",
       initialValue: "",
       sanitize,
       validate,
     },
-    onFirstBlur: {
-      strategy: "onFirstBlur",
+    onBlur: {
+      strategy: "onBlur",
       initialValue: "",
       sanitize,
       validate,
     },
-    onFirstSuccessOrFirstBlur: {
-      strategy: "onFirstSuccessOrFirstBlur",
+    onSuccessOrBlur: {
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize,
       validate,
@@ -82,12 +82,12 @@ export const StrategiesForm = () => {
       description="All these fields use the same sanitization rules (the value is trimmed), the same validation rule (the value must be at least 3 characters long) but different validation strategies, so you can easily play with each."
     >
       <form onSubmit={onSubmit}>
-        <Field name="onFirstChange">
+        <Field name="onChange">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
-              label="onFirstChange"
+              label="onChange"
               validation="Must be at least 3 characters long"
-              strategy="onFirstChange"
+              strategy="onChange"
               placeholder="…"
               error={error}
               onBlur={onBlur}
@@ -100,12 +100,12 @@ export const StrategiesForm = () => {
           )}
         </Field>
 
-        <Field name="onFirstSuccess">
+        <Field name="onSuccess">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
-              label="onFirstSuccess"
+              label="onSuccess"
               validation="Must be at least 3 characters long"
-              strategy="onFirstSuccess"
+              strategy="onSuccess"
               placeholder="…"
               error={error}
               onBlur={onBlur}
@@ -118,12 +118,12 @@ export const StrategiesForm = () => {
           )}
         </Field>
 
-        <Field name="onFirstBlur">
+        <Field name="onBlur">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
-              label="onFirstBlur"
+              label="onBlur"
               validation="Must be at least 3 characters long"
-              strategy="onFirstBlur"
+              strategy="onBlur"
               placeholder="…"
               error={error}
               onBlur={onBlur}
@@ -136,12 +136,12 @@ export const StrategiesForm = () => {
           )}
         </Field>
 
-        <Field name="onFirstSuccessOrFirstBlur">
+        <Field name="onSuccessOrBlur">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
-              label="onFirstSuccessOrFirstBlur (default)"
+              label="onSuccessOrBlur (default)"
               validation="Must be at least 3 characters long"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               placeholder="…"
               error={error}
               onBlur={onBlur}
@@ -174,10 +174,12 @@ export const StrategiesForm = () => {
 
         <Spacer height={4} />
 
-        <HStack spacing={3}>
-          <Button onClick={resetForm}>Reset</Button>
+        <HStack justifyContent="flex-end" spacing={3}>
+          <Button onClick={resetForm} width={100}>
+            Reset
+          </Button>
 
-          <Button colorScheme="green" onClick={onSubmit} type="submit">
+          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
             Submit
           </Button>
         </HStack>

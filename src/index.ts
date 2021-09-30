@@ -5,27 +5,16 @@ import { useSubscription } from "use-subscription";
 // For server-side rendering / react-native
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-export type ValidateResult<ErrorMessage> = ErrorMessage | void | Promise<ErrorMessage | void>;
-export type ValidateFn<T, ErrorMessage = string> = (value: T) => ValidateResult<ErrorMessage>;
+export type ValidatorResult<ErrorMessage = string> =
+  | ErrorMessage
+  | void
+  | Promise<ErrorMessage | void>;
 
-type Helpers<Values extends Record<string, unknown>, ErrorMessage> = {
-  getFieldState: <N extends keyof Values>(
-    name: N,
-    options?: { sanitize?: boolean },
-  ) => FieldState<Values[N], ErrorMessage>;
-
-  focusField: (name: keyof Values) => void;
-};
-
+export type Validator<T, ErrorMessage = string> = (value: T) => ValidatorResult<ErrorMessage>;
 export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
 
 // Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md
-export type Strategy =
-  | "onFirstChange"
-  | "onFirstSuccess"
-  | "onFirstBlur"
-  | "onFirstSuccessOrFirstBlur"
-  | "onSubmit";
+export type Strategy = "onChange" | "onSuccess" | "onBlur" | "onSuccessOrBlur" | "onSubmit";
 
 export type FieldState<Value, ErrorMessage = string> = {
   value: Value;
@@ -34,54 +23,53 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
-type FieldComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
-  N extends keyof Values,
->(props: {
-  name: N;
-  children: (
-    props: FieldState<Values[N], ErrorMessage> & {
-      ref: MutableRefObject<any>;
-      onChange: (value: Values[N]) => void;
-      onBlur: () => void;
-      focusNextField: () => void;
-    },
-  ) => ReactElement | null;
-}) => ReactElement | null) & {
-  displayName?: string;
-};
-
-type FieldsListenerComponent<Values extends Record<string, unknown>, ErrorMessage = string> = (<
-  N extends keyof Values,
->(props: {
-  names: N[];
-  children: (
-    states: {
-      [N1 in N]: FieldState<Values[N1], ErrorMessage>;
-    },
-  ) => ReactElement | null;
-}) => ReactElement | null) & {
-  displayName?: string;
-};
-
 export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
   [N in keyof Values]: {
-    initialValue: Values[N];
+    initialValue: Values[N] | (() => Values[N]);
     strategy?: Strategy;
     debounceInterval?: number;
     equalityFn?: (value1: Values[N], value2: Values[N]) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],
-      helpers: Helpers<Values, ErrorMessage>,
-    ) => ValidateResult<ErrorMessage>;
+      helpers: {
+        focusField: (name: keyof Values) => void;
+        getFieldState: <N extends keyof Values>(
+          name: N,
+          options?: { sanitize?: boolean },
+        ) => FieldState<Values[N], ErrorMessage>;
+      },
+    ) => ValidatorResult<ErrorMessage>;
   };
 };
 
 export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
   formStatus: FormStatus;
 
-  Field: FieldComponent<Values, ErrorMessage>;
-  FieldsListener: FieldsListenerComponent<Values, ErrorMessage>;
+  Field: (<N extends keyof Values>(props: {
+    name: N;
+    children: (
+      props: FieldState<Values[N], ErrorMessage> & {
+        ref: MutableRefObject<any>;
+        onChange: (value: Values[N]) => void;
+        onBlur: () => void;
+        focusNextField: () => void;
+      },
+    ) => ReactElement | null;
+  }) => ReactElement | null) & {
+    displayName?: string;
+  };
+
+  FieldsListener: (<N extends keyof Values>(props: {
+    names: N[];
+    children: (
+      states: {
+        [N1 in N]: FieldState<Values[N1], ErrorMessage>;
+      },
+    ) => ReactElement | null;
+  }) => ReactElement | null) & {
+    displayName?: string;
+  };
 
   getFieldState: <N extends keyof Values>(
     name: N,
@@ -113,6 +101,9 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
 const identity = <T>(value: T) => value;
 const noop = () => {};
 
+const extractInitialValue = <T>(value: T | (() => T)): T =>
+  typeof value === "function" ? (value as () => T)() : value;
+
 const isPromise = <T>(value: any): value is Promise<T> =>
   !!value &&
   (typeof value === "object" || typeof value === "function") &&
@@ -120,8 +111,8 @@ const isPromise = <T>(value: any): value is Promise<T> =>
 
 export const combineValidators =
   <T, ErrorMessage = string>(
-    ...fns: (ValidateFn<T, ErrorMessage> | false)[]
-  ): ValidateFn<T, ErrorMessage> =>
+    ...fns: (Validator<T, ErrorMessage> | false)[]
+  ): Validator<T, ErrorMessage> =>
   (value) => {
     const [fn, ...nextFns] = fns;
 
@@ -195,19 +186,17 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   const refs = useRef() as MutableRefObject<RefMap>;
   const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
-  const field = useRef() as MutableRefObject<FieldComponent<Values, ErrorMessage>>;
-  const fieldsListener = useRef() as MutableRefObject<
-    FieldsListenerComponent<Values, ErrorMessage>
-  >;
+  const field = useRef() as MutableRefObject<Contract["Field"]>;
+  const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
     const getConfig = (name: Name) => config.current[name];
 
     const getDebounceInterval = (name: Name) => getConfig(name).debounceInterval ?? 0;
     const getEqualityFn = (name: Name) => getConfig(name).equalityFn ?? Object.is;
-    const getInitialValue = (name: Name) => getConfig(name).initialValue;
+    const getInitialValue = (name: Name) => extractInitialValue(getConfig(name).initialValue);
     const getSanitize = (name: Name) => getConfig(name).sanitize ?? identity;
-    const getStrategy = (name: Name) => getConfig(name).strategy ?? "onFirstSuccessOrFirstBlur";
+    const getStrategy = (name: Name) => getConfig(name).strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => getConfig(name).validate ?? noop;
 
     const isMounted = (name: Name) => mounteds.current[name];
@@ -281,7 +270,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const getFieldState: Contract["getFieldState"] = (name, options = {}) =>
       transformState(name, states.current[name], options);
 
-    const internalValidateField = <N extends Name>(name: N): ValidateResult<ErrorMessage> => {
+    const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
       const debounced = clearDebounceTimeout(name);
 
       const sanitizeAtStart = getSanitize(name);
@@ -297,7 +286,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         const error = promiseOrError;
 
         if (error == null) {
-          setTalkative(name, ["onFirstSuccess", "onFirstSuccessOrFirstBlur"]);
+          setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
         }
 
         setValidateResult(name, error);
@@ -320,7 +309,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             return;
           }
           if (error == null) {
-            setTalkative(name, ["onFirstSuccess", "onFirstSuccessOrFirstBlur"]);
+            setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
           }
 
           setValidateResult(name, error);
@@ -412,7 +401,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           value,
         };
 
-        setTalkative(name, ["onFirstChange"]);
+        setTalkative(name, ["onChange"]);
         clearDebounceTimeout(name);
 
         if (formStatus.current === "untouched" || formStatus.current === "submitted") {
@@ -442,7 +431,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       // Avoid validating an untouched / already valid field
       if (validity.type !== "unknown" && !isTalkative(name)) {
-        setTalkative(name, ["onFirstBlur", "onFirstSuccessOrFirstBlur"]);
+        setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
         internalValidateField(name);
       }
     };
@@ -464,7 +453,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
 
     const isSyncSubmission = (
-      results: ValidateResult<ErrorMessage>[],
+      results: ValidatorResult<ErrorMessage>[],
     ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
 
     const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
@@ -498,7 +487,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const names: Name[] = Object.keys(mounteds.current).filter((name) => mounteds.current[name]);
       const values: Partial<Values> = {};
       const errors: Partial<Record<Name, ErrorMessage>> = {};
-      const results: ValidateResult<ErrorMessage>[] = [];
+      const results: ValidatorResult<ErrorMessage>[] = [];
 
       // autofocusing first error is the default behaviour
       const shouldFocusOnError = !options.avoidFocusOnError;
@@ -572,7 +561,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
         states.current[name] = {
-          value: config.current[name].initialValue,
+          value: extractInitialValue(config.current[name].initialValue),
           talkative: false,
           validity: { type: "unknown" },
         };
@@ -584,7 +573,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
     }
 
-    const Field: FieldComponent<Values, ErrorMessage> = ({ name, children }) => {
+    const Field: Contract["Field"] = ({ name, children }) => {
       const state = useSubscription(
         useMemo(
           () => ({
@@ -633,7 +622,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     Field.displayName = "Field";
     field.current = Field;
 
-    const FieldsListener: FieldsListenerComponent<Values, ErrorMessage> = ({ names, children }) => {
+    const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
       useSubscription(
         useMemo(
           () => ({

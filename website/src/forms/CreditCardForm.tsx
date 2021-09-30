@@ -12,7 +12,7 @@ import { Page } from "../components/Page";
 export const CreditCardForm = () => {
   const { Field, resetForm, submitForm } = useForm({
     cardNumber: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -22,7 +22,7 @@ export const CreditCardForm = () => {
       },
     },
     expirationDate: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -32,7 +32,7 @@ export const CreditCardForm = () => {
       },
     },
     cvc: {
-      strategy: "onFirstSuccessOrFirstBlur",
+      strategy: "onSuccessOrBlur",
       initialValue: "",
       sanitize: (value) => value.trim(),
       validate: (value) => {
@@ -106,7 +106,7 @@ export const CreditCardForm = () => {
               label="Card number"
               validation="Must be valid"
               placeholder="4242424242424242"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -124,7 +124,7 @@ export const CreditCardForm = () => {
               label="Expiration date"
               validation="Must be valid"
               placeholder="01/28"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -142,7 +142,7 @@ export const CreditCardForm = () => {
               label="CVC"
               validation="Must be valid"
               placeholder="123"
-              strategy="onFirstSuccessOrFirstBlur"
+              strategy="onSuccessOrBlur"
               error={error}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -156,10 +156,12 @@ export const CreditCardForm = () => {
 
         <Spacer height={4} />
 
-        <HStack spacing={3}>
-          <Button onClick={resetForm}>Reset</Button>
+        <HStack justifyContent="flex-end" spacing={3}>
+          <Button onClick={resetForm} width={100}>
+            Reset
+          </Button>
 
-          <Button colorScheme="green" onClick={onSubmit} type="submit">
+          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
             Submit
           </Button>
         </HStack>

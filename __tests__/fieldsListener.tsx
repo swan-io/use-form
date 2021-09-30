@@ -35,7 +35,7 @@ test("FieldsListener is synchronized with fields states", async () => {
 
     const { Field, FieldsListener, resetForm } = useForm({
       firstName: {
-        strategy: "onFirstChange",
+        strategy: "onChange",
         initialValue: "",
         validate: (value) => {
           if (value.length < 3) {
@@ -44,7 +44,7 @@ test("FieldsListener is synchronized with fields states", async () => {
         },
       },
       lastName: {
-        strategy: "onFirstChange",
+        strategy: "onChange",
         initialValue: "",
         validate: (value) => {
           if (value.length < 3) {

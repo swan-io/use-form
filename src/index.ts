@@ -62,11 +62,9 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
 
   FieldsListener: (<N extends keyof Values>(props: {
     names: N[];
-    children: (
-      states: {
-        [N1 in N]: FieldState<Values[N1], ErrorMessage>;
-      },
-    ) => ReactElement | null;
+    children: (states: {
+      [N1 in N]: FieldState<Values[N1], ErrorMessage>;
+    }) => ReactElement | null;
   }) => ReactElement | null) & {
     displayName?: string;
   };
@@ -143,10 +141,9 @@ export const combineValidators =
 export const hasDefinedKeys = <T extends Record<string, unknown>, K extends keyof T = keyof T>(
   object: T,
   keys: K[],
-): object is T &
-  {
-    [K1 in K]-?: Exclude<T[K1], undefined>;
-  } => keys.every((key) => object[key] !== undefined);
+): object is T & {
+  [K1 in K]-?: Exclude<T[K1], undefined>;
+} => keys.every((key) => object[key] !== undefined);
 
 export const useForm = <Values extends Record<string, unknown>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,

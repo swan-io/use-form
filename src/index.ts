@@ -10,7 +10,10 @@ export type ValidatorResult<ErrorMessage = string> =
   | void
   | Promise<ErrorMessage | void>;
 
-export type Validator<T, ErrorMessage = string> = (value: T) => ValidatorResult<ErrorMessage>;
+export type Validator<Value, ErrorMessage = string> = (
+  value: Value,
+) => ValidatorResult<ErrorMessage>;
+
 export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
 
 // Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md
@@ -99,8 +102,8 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
 const identity = <T>(value: T) => value;
 const noop = () => {};
 
-const extractInitialValue = <T>(value: T | (() => T)): T =>
-  typeof value === "function" ? (value as () => T)() : value;
+const extractInitialValue = <Value>(value: Value | (() => Value)): Value =>
+  typeof value === "function" ? (value as () => Value)() : value;
 
 const isPromise = <T>(value: any): value is Promise<T> =>
   !!value &&
@@ -108,33 +111,33 @@ const isPromise = <T>(value: any): value is Promise<T> =>
   typeof value.then === "function";
 
 export const combineValidators =
-  <T, ErrorMessage = string>(
-    ...fns: (Validator<T, ErrorMessage> | false)[]
-  ): Validator<T, ErrorMessage> =>
+  <Value, ErrorMessage = string>(
+    ...validators: (Validator<Value, ErrorMessage> | false)[]
+  ): Validator<Value, ErrorMessage> =>
   (value) => {
-    const [fn, ...nextFns] = fns;
+    const [validator, ...nextValidators] = validators;
 
-    if (fn) {
-      const result = fn(value);
+    if (validator) {
+      const result = validator(value);
 
       if (isPromise(result)) {
         return result.then((error) => {
-          if (error != null) {
+          if (typeof error !== "undefined") {
             return error;
           }
-          if (nextFns.length > 0) {
-            return combineValidators(...nextFns)(value);
+          if (nextValidators.length > 0) {
+            return combineValidators(...nextValidators)(value);
           }
         });
       }
 
-      if (result != null) {
+      if (typeof result !== "undefined") {
         return result;
       }
     }
 
-    if (nextFns.length > 0) {
-      return combineValidators(...nextFns)(value);
+    if (nextValidators.length > 0) {
+      return combineValidators(...nextValidators)(value);
     }
   };
 
@@ -143,7 +146,7 @@ export const hasDefinedKeys = <T extends Record<string, unknown>, K extends keyo
   keys: K[],
 ): object is T & {
   [K1 in K]-?: Exclude<T[K1], undefined>;
-} => keys.every((key) => object[key] !== undefined);
+} => keys.every((key) => typeof object[key] !== "undefined");
 
 export const useForm = <Values extends Record<string, unknown>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,

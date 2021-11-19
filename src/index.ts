@@ -1,9 +1,8 @@
-import type { MutableRefObject, ReactElement } from "react";
-import { useEffect, useLayoutEffect, useMemo, useReducer, useRef } from "react";
+import * as React from "react";
 import { useSubscription } from "use-subscription";
 
 // For server-side rendering / react-native
-const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+const useIsoLayoutEffect = typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
 
 export type ValidatorResult<ErrorMessage = string> =
   | ErrorMessage
@@ -53,13 +52,13 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
     name: N;
     children: (
       props: FieldState<Values[N], ErrorMessage> & {
-        ref: MutableRefObject<any>;
+        ref: React.MutableRefObject<any>;
         onChange: (value: Values[N]) => void;
         onBlur: () => void;
         focusNextField: () => void;
       },
-    ) => ReactElement | null;
-  }) => ReactElement | null) & {
+    ) => React.ReactElement | null;
+  }) => React.ReactElement | null) & {
     displayName?: string;
   };
 
@@ -67,8 +66,8 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
     names: N[];
     children: (states: {
       [N1 in N]: FieldState<Values[N1], ErrorMessage>;
-    }) => ReactElement | null;
-  }) => ReactElement | null) & {
+    }) => React.ReactElement | null;
+  }) => React.ReactElement | null) & {
     displayName?: string;
   };
 
@@ -154,9 +153,9 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   type Contract = Form<Values, ErrorMessage>;
   type Name = keyof Values;
 
-  const [, forceUpdate] = useReducer(() => [], []);
-  const config = useRef(fields);
-  const formStatus = useRef<FormStatus>("untouched");
+  const [, forceUpdate] = React.useReducer(() => [], []);
+  const config = React.useRef(fields);
+  const formStatus = React.useRef<FormStatus>("untouched");
 
   useIsoLayoutEffect(() => {
     config.current = fields;
@@ -174,22 +173,22 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
   };
 
-  const states = useRef() as MutableRefObject<StateMap>;
+  const states = React.useRef() as React.MutableRefObject<StateMap>;
 
   type CallbackMap = Record<Name, Set<() => void>>;
   type MountedMap = Record<Name, boolean>;
-  type RefMap = Record<Name, MutableRefObject<any>>;
+  type RefMap = Record<Name, React.MutableRefObject<any>>;
   type TimeoutMap = Record<Name, number | undefined>;
 
-  const callbacks = useRef() as MutableRefObject<CallbackMap>;
-  const mounteds = useRef() as MutableRefObject<MountedMap>;
-  const refs = useRef() as MutableRefObject<RefMap>;
-  const timeouts = useRef() as MutableRefObject<TimeoutMap>;
+  const callbacks = React.useRef() as React.MutableRefObject<CallbackMap>;
+  const mounteds = React.useRef() as React.MutableRefObject<MountedMap>;
+  const refs = React.useRef() as React.MutableRefObject<RefMap>;
+  const timeouts = React.useRef() as React.MutableRefObject<TimeoutMap>;
 
-  const field = useRef() as MutableRefObject<Contract["Field"]>;
-  const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
+  const field = React.useRef() as React.MutableRefObject<Contract["Field"]>;
+  const fieldsListener = React.useRef() as React.MutableRefObject<Contract["FieldsListener"]>;
 
-  const api = useMemo(() => {
+  const api = React.useMemo(() => {
     const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
     const getEqualityFn = (name: Name) => config.current[name].equalityFn ?? Object.is;
     const getInitialValue = (name: Name) => extractInitialValue(config.current[name].initialValue);
@@ -210,12 +209,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       return !talkative || validity.type === "unknown"
         ? // Avoid giving feedback too soon
-          {
-            value,
-            validating: false,
-            valid: !getValidate(name),
-            error: undefined,
-          }
+          { value, validating: false, valid: !getValidate(name), error: undefined }
         : {
             value,
             validating: validity.type === "validating",
@@ -579,7 +573,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     const Field: Contract["Field"] = ({ name, children }) => {
       const state = useSubscription(
-        useMemo(
+        React.useMemo(
           () => ({
             getCurrentValue: () => states.current[name],
             subscribe: (callback) => {
@@ -594,7 +588,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         ),
       );
 
-      useEffect(() => {
+      React.useEffect(() => {
         const isFirstMounting = !mounteds.current[name];
 
         if (isFirstMounting) {
@@ -617,9 +611,9 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return children({
         ...api.transformState(name, state, { sanitize: false }),
         ref: refs.current[name],
-        focusNextField: useMemo(() => api.getFocusNextField(name), [name]),
-        onBlur: useMemo(() => api.getOnBlur(name), [name]),
-        onChange: useMemo(() => api.getOnChange(name), [name]),
+        focusNextField: React.useMemo(() => api.getFocusNextField(name), [name]),
+        onBlur: React.useMemo(() => api.getOnBlur(name), [name]),
+        onChange: React.useMemo(() => api.getOnChange(name), [name]),
       });
     };
 
@@ -628,7 +622,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
       useSubscription(
-        useMemo(
+        React.useMemo(
           () => ({
             getCurrentValue: () => JSON.stringify(names.map((name) => states.current[name])),
             subscribe: (callback) => {

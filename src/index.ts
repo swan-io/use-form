@@ -154,12 +154,21 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   type Name = keyof Values;
 
   const [, forceUpdate] = React.useReducer(() => [], []);
+  const mounted = React.useRef(false);
   const config = React.useRef(fields);
   const formStatus = React.useRef<FormStatus>("untouched");
 
   useIsoLayoutEffect(() => {
     config.current = fields;
   });
+
+  React.useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   type StateMap = {
     [N in Name]: {
@@ -463,14 +472,11 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
         effect.finally(() => {
           formStatus.current = "submitted";
-          forceUpdate();
+          mounted.current && forceUpdate();
         });
       } else {
         formStatus.current = "submitted";
-
-        if (wasEditing) {
-          forceUpdate(); // Only needed to rerender and switch from editing to submitted
-        }
+        wasEditing && forceUpdate(); // Only needed to rerender and switch from editing to submitted
       }
     };
 
@@ -504,7 +510,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           focusFirstError(names, results);
         }
 
-        names.forEach((name, index) => (errors[name] = results[index]));
+        names.forEach((name, index) => {
+          errors[name] = results[index];
+        });
+
         return handleSyncEffect(onFailure(errors), wasEditing);
       }
 
@@ -521,12 +530,15 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             focusFirstError(names, results);
           }
 
-          names.forEach((name, index) => (errors[name] = results[index]));
+          names.forEach((name, index) => {
+            errors[name] = results[index];
+          });
+
           return onFailure(errors);
         })
         .finally(() => {
           formStatus.current = "submitted";
-          forceUpdate();
+          mounted.current && forceUpdate();
         });
     };
 

@@ -122,7 +122,7 @@ export const combineValidators =
 
       if (isPromise(result)) {
         return result.then((error) => {
-          if (typeof error !== "undefined") {
+          if (error !== undefined) {
             return error;
           }
           if (nextValidators.length > 0) {
@@ -131,7 +131,7 @@ export const combineValidators =
         });
       }
 
-      if (typeof result !== "undefined") {
+      if (result !== undefined) {
         return result;
       }
     }
@@ -146,7 +146,7 @@ export const hasDefinedKeys = <T extends Record<string, unknown>, K extends keyo
   keys: K[],
 ): object is T & {
   [K1 in K]-?: Exclude<T[K1], undefined>;
-} => keys.every((key) => typeof object[key] !== "undefined");
+} => keys.every((key) => object[key] !== undefined);
 
 export const useForm = <Values extends Record<string, unknown>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
@@ -190,14 +190,12 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
-    const getConfig = (name: Name) => config.current[name];
-
-    const getDebounceInterval = (name: Name) => getConfig(name).debounceInterval ?? 0;
-    const getEqualityFn = (name: Name) => getConfig(name).equalityFn ?? Object.is;
-    const getInitialValue = (name: Name) => extractInitialValue(getConfig(name).initialValue);
-    const getSanitize = (name: Name) => getConfig(name).sanitize ?? identity;
-    const getStrategy = (name: Name) => getConfig(name).strategy ?? "onSuccessOrBlur";
-    const getValidate = (name: Name) => getConfig(name).validate ?? noop;
+    const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
+    const getEqualityFn = (name: Name) => config.current[name].equalityFn ?? Object.is;
+    const getInitialValue = (name: Name) => extractInitialValue(config.current[name].initialValue);
+    const getSanitize = (name: Name) => config.current[name].sanitize ?? identity;
+    const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
+    const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
     const isMounted = (name: Name) => mounteds.current[name];
     const isTalkative = (name: Name) => states.current[name].talkative;
@@ -228,7 +226,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     const clearDebounceTimeout = (name: Name): boolean => {
       const timeout = timeouts.current[name];
-      const debounced = timeout != null;
+      const debounced = timeout !== undefined;
 
       if (debounced) {
         clearTimeout(timeout);
@@ -263,7 +261,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const setValidateResult = (name: Name, error: ErrorMessage | void): void => {
       states.current[name] = {
         ...states.current[name],
-        validity: error != null ? { type: "invalid", error } : { type: "valid" },
+        validity: error !== undefined ? { type: "invalid", error } : { type: "valid" },
       };
     };
 
@@ -285,7 +283,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       if (!isPromise(promiseOrError)) {
         const error = promiseOrError;
 
-        if (error == null) {
+        if (error === undefined) {
           setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
         }
 
@@ -308,7 +306,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           if (!equalityFn(valueAtStart, valueAtEnd)) {
             return;
           }
-          if (error == null) {
+          if (error === undefined) {
             setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
           }
 
@@ -440,9 +438,12 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const keys: Name[] = Object.keys(config.current);
       const index = keys.findIndex((key) => key === name);
 
-      if (index != null) {
+      if (index !== undefined) {
         const nextField = keys[index + 1];
-        nextField != null && focusField(nextField);
+
+        if (nextField !== undefined) {
+          focusField(nextField);
+        }
       }
     };
 
@@ -457,7 +458,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
 
     const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
-      const index = results.findIndex((result) => result != null);
+      const index = results.findIndex((result) => result !== undefined);
       const name = names[index];
       name && focusField(name);
     };
@@ -472,7 +473,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         });
       } else {
         formStatus.current = "submitted";
-        wasEditing && forceUpdate(); // Only needed to rerender and switch from editing to submitted
+
+        if (wasEditing) {
+          forceUpdate(); // Only needed to rerender and switch from editing to submitted
+        }
       }
     };
 
@@ -499,7 +503,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       });
 
       if (isSyncSubmission(results)) {
-        if (results.every((result) => result == null)) {
+        if (results.every((result) => result === undefined)) {
           return handleSyncEffect(onSuccess(values), wasEditing);
         }
         if (shouldFocusOnError) {
@@ -516,7 +520,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
 
-          if (results.every((result) => result == null)) {
+          if (results.every((result) => result === undefined)) {
             return onSuccess(values);
           }
           if (shouldFocusOnError) {

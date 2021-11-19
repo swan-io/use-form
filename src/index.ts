@@ -104,10 +104,10 @@ const noop = () => {};
 const extractInitialValue = <Value>(value: Value | (() => Value)): Value =>
   typeof value === "function" ? (value as () => Value)() : value;
 
-const isPromise = <T>(value: any): value is Promise<T> =>
+const isPromise = <T>(value: unknown): value is Promise<T> =>
   !!value &&
   (typeof value === "object" || typeof value === "function") &&
-  typeof value.then === "function";
+  typeof (value as { then?: Function }).then === "function";
 
 export const combineValidators =
   <Value, ErrorMessage = string>(
@@ -338,7 +338,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         setTalkative(name);
       }
 
-      internalValidateField(name);
+      void internalValidateField(name);
     };
 
     const focusField: Contract["focusField"] = (name) => {
@@ -411,7 +411,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         }
 
         if (debounceInterval === 0) {
-          internalValidateField(name);
+          void internalValidateField(name);
           return;
         }
 
@@ -420,7 +420,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
         timeouts.current[name] = setTimeout(() => {
           if (isMounted(name)) {
-            internalValidateField(name);
+            void internalValidateField(name);
           } else {
             clearDebounceTimeout(name);
           }
@@ -433,7 +433,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       // Avoid validating an untouched / already valid field
       if (validity.type !== "unknown" && !isTalkative(name)) {
         setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
-        internalValidateField(name);
+        void internalValidateField(name);
       }
     };
 
@@ -645,6 +645,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
               };
             },
           }),
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           [JSON.stringify(names)],
         ),
       );

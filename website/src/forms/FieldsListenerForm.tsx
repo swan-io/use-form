@@ -86,6 +86,7 @@ export const FieldsListenerForm = () => {
           <pre
             style={{
               backgroundColor: "#fafafa",
+              color: "#1A202C",
               borderRadius: 6,
               borderWidth: 1,
               fontSize: 14,

@@ -28,6 +28,10 @@
     "ux",
     "validation"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "build": "yarn clean && microbundle -f cjs,es",
     "clean": "rm -rf dist",
@@ -56,29 +60,29 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "use-subscription": "^1.5.1"
+    "use-sync-external-store": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/plugin-transform-react-jsx": "^7.16.0",
-    "@babel/preset-env": "^7.16.4",
-    "@babel/preset-typescript": "^7.16.0",
-    "@testing-library/jest-dom": "^5.15.0",
-    "@testing-library/react": "^12.1.2",
-    "@types/jest": "^27.0.3",
-    "@types/react": "^17.0.35",
-    "@types/use-subscription": "^1.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
-    "babel-jest": "^27.3.1",
-    "eslint": "^8.2.0",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "jest": "^27.3.1",
+    "@babel/core": "^7.17.9",
+    "@babel/plugin-transform-react-jsx": "^7.17.3",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^12.1.5",
+    "@types/jest": "^27.4.1",
+    "@types/react": "^17.0.44",
+    "@types/use-sync-external-store": "^0.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "babel-jest": "^27.5.1",
+    "eslint": "^8.13.0",
+    "eslint-plugin-react-hooks": "^4.4.0",
+    "jest": "^27.5.1",
     "microbundle": "^0.14.2",
-    "prettier": "2.4.1",
+    "prettier": "2.6.2",
     "prettier-plugin-organize-imports": "^2.3.4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "typescript": "^4.5.2"
+    "typescript": "^4.6.3"
   }
 }

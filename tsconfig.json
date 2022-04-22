@@ -8,9 +8,19 @@
     "moduleResolution": "Node",
     "outDir": "dist/",
 
+    "allowJs": false,
     "strict": true,
     "declaration": true,
     "sourceMap": true,
-    "stripInternal": true
+    "stripInternal": true,
+
+    // https://www.typescriptlang.org/tsconfig#Type_Checking_6248
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   }
 }

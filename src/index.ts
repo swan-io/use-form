@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useSubscription } from "use-subscription";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 
 // For server-side rendering / react-native
 const useIsoLayoutEffect = typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
@@ -121,7 +121,7 @@ export const combineValidators =
 
       if (isPromise(result)) {
         return result.then((error) => {
-          if (error !== undefined) {
+          if (typeof error !== "undefined") {
             return error;
           }
           if (nextValidators.length > 0) {
@@ -130,7 +130,7 @@ export const combineValidators =
         });
       }
 
-      if (result !== undefined) {
+      if (typeof result !== "undefined") {
         return result;
       }
     }
@@ -145,7 +145,7 @@ export const hasDefinedKeys = <T extends Record<string, unknown>, K extends keyo
   keys: K[],
 ): object is T & {
   [K1 in K]-?: Exclude<T[K1], undefined>;
-} => keys.every((key) => object[key] !== undefined);
+} => keys.every((key) => typeof object[key] !== "undefined");
 
 export const useForm = <Values extends Record<string, unknown>, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
@@ -229,7 +229,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     const clearDebounceTimeout = (name: Name): boolean => {
       const timeout = timeouts.current[name];
-      const debounced = timeout !== undefined;
+      const debounced = typeof timeout !== "undefined";
 
       if (debounced) {
         clearTimeout(timeout);
@@ -264,7 +264,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const setValidateResult = (name: Name, error: ErrorMessage | void): void => {
       states.current[name] = {
         ...states.current[name],
-        validity: error !== undefined ? { type: "invalid", error } : { type: "valid" },
+        validity: typeof error !== "undefined" ? { type: "invalid", error } : { type: "valid" },
       };
     };
 
@@ -441,10 +441,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const keys: Name[] = Object.keys(config.current);
       const index = keys.findIndex((key) => key === name);
 
-      if (index !== undefined) {
+      if (typeof index !== "undefined") {
         const nextField = keys[index + 1];
 
-        if (nextField !== undefined) {
+        if (typeof nextField !== "undefined") {
           focusField(nextField);
         }
       }
@@ -461,7 +461,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
 
     const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
-      const index = results.findIndex((result) => result !== undefined);
+      const index = results.findIndex((result) => typeof result !== "undefined");
       const name = names[index];
       name && focusField(name);
     };
@@ -584,21 +584,21 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     }
 
     const Field: Contract["Field"] = ({ name, children }) => {
-      const state = useSubscription(
-        React.useMemo(
-          () => ({
-            getCurrentValue: () => states.current[name],
-            subscribe: (callback) => {
-              callbacks.current[name].add(callback);
+      const { subscribe, getSnapshot } = React.useMemo(
+        () => ({
+          getSnapshot: () => states.current[name],
+          subscribe: (callback: () => void): (() => void) => {
+            callbacks.current[name].add(callback);
 
-              return () => {
-                callbacks.current[name].delete(callback);
-              };
-            },
-          }),
-          [name],
-        ),
+            return () => {
+              callbacks.current[name].delete(callback);
+            };
+          },
+        }),
+        [name],
       );
+
+      const state = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
       React.useEffect(() => {
         const isFirstMounting = !mounteds.current[name];
@@ -633,22 +633,22 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     field.current = Field;
 
     const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
-      useSubscription(
-        React.useMemo(
-          () => ({
-            getCurrentValue: () => JSON.stringify(names.map((name) => states.current[name])),
-            subscribe: (callback) => {
-              names.forEach((name) => callbacks.current[name].add(callback));
+      const { subscribe, getSnapshot } = React.useMemo(
+        () => ({
+          getSnapshot: () => JSON.stringify(names.map((name) => states.current[name])),
+          subscribe: (callback: () => void): (() => void) => {
+            names.forEach((name) => callbacks.current[name].add(callback));
 
-              return () => {
-                names.forEach((name) => callbacks.current[name].delete(callback));
-              };
-            },
-          }),
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          [JSON.stringify(names)],
-        ),
+            return () => {
+              names.forEach((name) => callbacks.current[name].delete(callback));
+            };
+          },
+        }),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [JSON.stringify(names)],
       );
+
+      useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
       return children(
         names.reduce(

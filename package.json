@@ -60,7 +60,7 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "use-subscription": "^1.5.1"
+    "use-sync-external-store": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
@@ -71,7 +71,7 @@
     "@testing-library/react": "^12.1.5",
     "@types/jest": "^27.4.1",
     "@types/react": "^17.0.44",
-    "@types/use-subscription": "^1.0.0",
+    "@types/use-sync-external-store": "^0.0.3",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "babel-jest": "^27.5.1",

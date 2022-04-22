@@ -62,7 +62,6 @@ export const Input = React.forwardRef<HTMLInputElement, Props>(
           <ChakraInput
             id={id}
             ref={forwardedRef}
-            error={error}
             onBlur={onBlur}
             placeholder={placeholder}
             value={value}

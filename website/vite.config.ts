@@ -1,10 +1,10 @@
-import reactRefresh from "@vitejs/plugin-react-refresh";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "/react-ux-form/",
   build: { sourcemap: true },
-  plugins: [reactRefresh()],
+  plugins: [react()],
   resolve: { dedupe: ["react", "react-dom"] },
 });

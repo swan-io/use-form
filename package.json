@@ -1,6 +1,6 @@
 {
   "name": "react-ux-form",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "description": "A simple, fast and opinionated form library for React & React Native focusing on UX.",
   "author": "Mathieu Acthernoene <mathieu.acthernoene@swan.io>",
@@ -60,7 +60,7 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "use-sync-external-store": "^1.0.0"
+    "use-sync-external-store": "^1.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
@@ -72,11 +72,11 @@
     "@types/jest": "^27.4.1",
     "@types/react": "^17.0.44",
     "@types/use-sync-external-store": "^0.0.3",
-    "@typescript-eslint/eslint-plugin": "^5.20.0",
-    "@typescript-eslint/parser": "^5.20.0",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
     "babel-jest": "^27.5.1",
-    "eslint": "^8.13.0",
-    "eslint-plugin-react-hooks": "^4.4.0",
+    "eslint": "^8.14.0",
+    "eslint-plugin-react-hooks": "^4.5.0",
     "jest": "^27.5.1",
     "microbundle": "^0.14.2",
     "prettier": "2.6.2",

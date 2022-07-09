@@ -31,7 +31,7 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
     strategy?: Strategy;
     debounceInterval?: number;
     equalityFn?: (value1: Values[N], value2: Values[N]) => boolean;
-    sanitize?: (value: Values[N]) => Values[N];
+    sanitize?: <Value extends Values[N]>(value: Value) => Value;
     validate?: (
       value: Values[N],
       helpers: {

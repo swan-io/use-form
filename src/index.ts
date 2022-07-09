@@ -170,7 +170,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
   }, []);
 
-  type StateMap = {
+  type InternalStateMap = {
     [N in Name]: {
       readonly value: Values[N];
       readonly talkative: boolean;
@@ -182,7 +182,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
   };
 
-  const states = React.useRef() as React.MutableRefObject<StateMap>;
+  const internalStates = React.useRef() as React.MutableRefObject<InternalStateMap>;
 
   type CallbackMap = Record<Name, Set<() => void>>;
   type MountedMap = Record<Name, boolean>;
@@ -206,11 +206,11 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
     const isMounted = (name: Name) => mounteds.current[name];
-    const isTalkative = (name: Name) => states.current[name].talkative;
+    const isTalkative = (name: Name) => internalStates.current[name].talkative;
 
     const transformState = <N extends Name>(
       name: N,
-      state: StateMap[N],
+      state: InternalStateMap[N],
       { sanitize = false }: { sanitize?: boolean },
     ): FieldState<Values[N], ErrorMessage> => {
       const value = (sanitize ? getSanitize(name)(state.value) : state.value) as Values[N];
@@ -247,36 +247,36 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const strategy = getStrategy(name);
 
       if (!strategies || strategies.some((value) => strategy === value)) {
-        states.current[name] = {
-          ...states.current[name],
+        internalStates.current[name] = {
+          ...internalStates.current[name],
           talkative: true,
         };
       }
     };
 
     const setValidating = (name: Name): void => {
-      states.current[name] = {
-        ...states.current[name],
+      internalStates.current[name] = {
+        ...internalStates.current[name],
         validity: { type: "validating" },
       };
     };
 
     const setValidateResult = (name: Name, error: ErrorMessage | void): void => {
-      states.current[name] = {
-        ...states.current[name],
+      internalStates.current[name] = {
+        ...internalStates.current[name],
         validity: typeof error !== "undefined" ? { type: "invalid", error } : { type: "valid" },
       };
     };
 
     const getFieldState: Contract["getFieldState"] = (name, options = {}) =>
-      transformState(name, states.current[name], options);
+      transformState(name, internalStates.current[name], options);
 
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
       const debounced = clearDebounceTimeout(name);
 
       const sanitizeAtStart = getSanitize(name);
       const validate = getValidate(name);
-      const valueAtStart = sanitizeAtStart(states.current[name].value);
+      const valueAtStart = sanitizeAtStart(internalStates.current[name].value);
 
       const promiseOrError = validate(valueAtStart, {
         getFieldState,
@@ -304,7 +304,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return promiseOrError
         .then((error) => {
           const equalityFn = getEqualityFn(name);
-          const valueAtEnd = sanitizeAtStart(states.current[name].value);
+          const valueAtEnd = sanitizeAtStart(internalStates.current[name].value);
 
           if (!equalityFn(valueAtStart, valueAtEnd)) {
             return;
@@ -331,8 +331,8 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
 
     const setFieldValue: Contract["setFieldValue"] = (name, value, options = {}) => {
-      states.current[name] = {
-        ...states.current[name],
+      internalStates.current[name] = {
+        ...internalStates.current[name],
         value,
       };
 
@@ -354,7 +354,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const resetField: Contract["resetField"] = (name) => {
       clearDebounceTimeout(name);
 
-      states.current[name] = {
+      internalStates.current[name] = {
         value: getInitialValue(name),
         talkative: false,
         validity: { type: "unknown" },
@@ -377,7 +377,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         listener(
           names.reduce(
             (acc, name) => {
-              acc[name] = transformState(name, states.current[name], { sanitize: false });
+              acc[name] = transformState(name, internalStates.current[name], { sanitize: false });
               return acc;
             },
             {} as {
@@ -399,8 +399,8 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       (value: Values[N]): void => {
         const debounceInterval = getDebounceInterval(name);
 
-        states.current[name] = {
-          ...states.current[name],
+        internalStates.current[name] = {
+          ...internalStates.current[name],
           value,
         };
 
@@ -430,7 +430,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       };
 
     const getOnBlur = (name: Name) => (): void => {
-      const { validity } = states.current[name];
+      const { validity } = internalStates.current[name];
 
       // Avoid validating an untouched / already valid field
       if (validity.type !== "unknown" && !isTalkative(name)) {
@@ -562,8 +562,8 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   }, []);
 
   // Lazy initialization
-  if (!states.current) {
-    states.current = {} as StateMap;
+  if (!internalStates.current) {
+    internalStates.current = {} as InternalStateMap;
 
     callbacks.current = {} as CallbackMap;
     mounteds.current = {} as MountedMap;
@@ -572,7 +572,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
-        states.current[name] = {
+        internalStates.current[name] = {
           value: extractInitialValue(config.current[name].initialValue),
           talkative: false,
           validity: { type: "unknown" },
@@ -588,7 +588,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const Field: Contract["Field"] = ({ name, children }) => {
       const { subscribe, getSnapshot } = React.useMemo(
         () => ({
-          getSnapshot: () => states.current[name],
+          getSnapshot: () => internalStates.current[name],
           subscribe: (callback: () => void): (() => void) => {
             callbacks.current[name].add(callback);
 
@@ -637,7 +637,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
       const { subscribe, getSnapshot } = React.useMemo(
         () => ({
-          getSnapshot: () => JSON.stringify(names.map((name) => states.current[name])),
+          getSnapshot: () => JSON.stringify(names.map((name) => internalStates.current[name])),
           subscribe: (callback: () => void): (() => void) => {
             names.forEach((name) => callbacks.current[name].add(callback));
 
@@ -655,7 +655,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return children(
         names.reduce(
           (acc, name) => {
-            acc[name] = api.transformState(name, states.current[name], { sanitize: false });
+            acc[name] = api.transformState(name, internalStates.current[name], { sanitize: false });
             return acc;
           },
           {} as {

@@ -225,7 +225,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             })
           : state;
 
-      const derived =
+      const exposed =
         !nextState.talkative || nextState.validity.tag === "unknown"
           ? // Avoid giving feedback too soon
             {
@@ -242,7 +242,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       states.current[name] = {
         talkative: nextState.talkative,
         validity: nextState.validity,
-        exposed: { ...derived, value: nextState.value },
+        exposed: { ...exposed, value: nextState.value },
       };
     };
 

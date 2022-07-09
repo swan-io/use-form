@@ -321,7 +321,9 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         .catch((error) => {
           if (process.env.NODE_ENV === "development") {
             console.error(
-              `Something went wrong during "${name}" validation. Don't forget to handle Promise rejection.\n`,
+              `Something went wrong during "${String(
+                name,
+              )}" validation. Don't forget to handle Promise rejection.\n`,
               error,
             );
           }

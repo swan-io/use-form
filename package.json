@@ -1,6 +1,6 @@
 {
   "name": "react-ux-form",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "license": "MIT",
   "description": "A simple, fast and opinionated form library for React & React Native focusing on UX.",
   "author": "Mathieu Acthernoene <mathieu.acthernoene@swan.io>",
@@ -15,7 +15,7 @@
   "sideEffects": false,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/index.module.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -36,13 +36,18 @@
     "build": "yarn clean && microbundle -f cjs,es",
     "clean": "rm -rf dist",
     "dev": "microbundle watch",
-    "format": "prettier '**/*.{js,md,ts,tsx}' --write",
+    "format": "prettier '**/*' -u -w",
     "lint": "eslint src --ext ts,tsx src",
     "test": "jest",
     "test:watch": "jest --watch",
     "tscheck": "tsc --noEmit",
-    "prepare": "yarn lint && yarn test && yarn build"
+    "prepack": "yarn lint && yarn test && yarn build"
   },
+  "browserslist": [
+    ">0.2%",
+    "not op_mini all",
+    "not dead"
+  ],
   "prettier": {
     "printWidth": 100,
     "trailingComma": "all"
@@ -69,20 +74,21 @@
     "@babel/preset-typescript": "^7.16.7",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.5",
-    "@types/jest": "^27.4.1",
-    "@types/react": "^17.0.44",
+    "@types/jest": "^28.1.4",
+    "@types/react": "^17.0.47",
     "@types/use-sync-external-store": "^0.0.3",
-    "@typescript-eslint/eslint-plugin": "^5.21.0",
-    "@typescript-eslint/parser": "^5.21.0",
-    "babel-jest": "^27.5.1",
-    "eslint": "^8.14.0",
-    "eslint-plugin-react-hooks": "^4.5.0",
-    "jest": "^27.5.1",
-    "microbundle": "^0.14.2",
-    "prettier": "2.6.2",
-    "prettier-plugin-organize-imports": "^2.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/parser": "^5.30.5",
+    "babel-jest": "^28.1.2",
+    "eslint": "^8.19.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "jest": "^28.1.2",
+    "jest-environment-jsdom": "^28.1.2",
+    "microbundle": "^0.15.0",
+    "prettier": "2.7.1",
+    "prettier-plugin-organize-imports": "^3.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "typescript": "^4.6.3"
+    "typescript": "^4.7.4"
   }
 }

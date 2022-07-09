@@ -30,16 +30,16 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
     initialValue: Values[N] | (() => Values[N]);
     strategy?: Strategy;
     debounceInterval?: number;
-    equalityFn?: (value1: Values[N], value2: Values[N]) => boolean;
+    equalityFn?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
     sanitize?: <Value extends Values[N]>(value: Value) => Value;
-    validate?: (
-      value: Values[N],
+    validate?: <Value extends Values[N]>(
+      value: Value,
       helpers: {
         focusField: (name: keyof Values) => void;
         getFieldState: <N extends keyof Values>(
           name: N,
           options?: { sanitize?: boolean },
-        ) => FieldState<Values[N], ErrorMessage>;
+        ) => FieldState<Value, ErrorMessage>;
       },
     ) => ValidatorResult<ErrorMessage>;
   };

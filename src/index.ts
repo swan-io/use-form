@@ -631,7 +631,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         [name],
       );
 
-      const state = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+      useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
       React.useEffect(() => {
         const isFirstMounting = !mounteds.current[name];

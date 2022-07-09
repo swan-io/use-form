@@ -175,10 +175,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       exposed: FieldState<Values[N], ErrorMessage>;
       talkative: boolean;
       validity:
-        | { readonly type: "unknown" }
-        | { readonly type: "validating" }
-        | { readonly type: "valid" }
-        | { readonly type: "invalid"; error: ErrorMessage };
+        | { readonly tag: "unknown" }
+        | { readonly tag: "validating" }
+        | { readonly tag: "valid" }
+        | { readonly tag: "invalid"; error: ErrorMessage };
     }>;
   };
 
@@ -226,7 +226,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           : state;
 
       const derived =
-        !nextState.talkative || nextState.validity.type === "unknown"
+        !nextState.talkative || nextState.validity.tag === "unknown"
           ? // Avoid giving feedback too soon
             {
               validating: false,
@@ -234,9 +234,9 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
               error: undefined,
             }
           : {
-              validating: nextState.validity.type === "validating",
-              valid: nextState.validity.type === "valid",
-              error: nextState.validity.type === "invalid" ? nextState.validity.error : undefined,
+              validating: nextState.validity.tag === "validating",
+              valid: nextState.validity.tag === "valid",
+              error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
             };
 
       states.current[name] = {
@@ -276,14 +276,14 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const setValidating = (name: Name): void => {
       setState(name, (prevState) => ({
         ...prevState,
-        validity: { type: "validating" },
+        validity: { tag: "validating" },
       }));
     };
 
     const setValidateResult = (name: Name, error: ErrorMessage | void): void => {
       setState(name, (prevState) => ({
         ...prevState,
-        validity: typeof error !== "undefined" ? { type: "invalid", error } : { type: "valid" },
+        validity: typeof error !== "undefined" ? { tag: "invalid", error } : { tag: "valid" },
       }));
     };
 
@@ -388,7 +388,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       setState(name, {
         value: getInitialValue(name),
         talkative: false,
-        validity: { type: "unknown" },
+        validity: { tag: "unknown" },
       });
 
       runCallbacks(name);
@@ -464,7 +464,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const { validity } = states.current[name];
 
       // Avoid validating an untouched / already valid field
-      if (validity.type !== "unknown" && !isTalkative(name)) {
+      if (validity.tag !== "unknown" && !isTalkative(name)) {
         setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
         void internalValidateField(name);
       }
@@ -606,7 +606,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         api.setState(name, {
           value: extractInitialValue(config.current[name].initialValue),
           talkative: false,
-          validity: { type: "unknown" },
+          validity: { tag: "unknown" },
         });
 
         callbacks.current[name] = new Set();

@@ -28,6 +28,7 @@ export type FieldState<Value, ErrorMessage = string> = {
 export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N] | (() => Values[N]);
+    ignoredValue?: Values[N];
     strategy?: Strategy;
     debounceInterval?: number;
     equalityFn?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
@@ -94,10 +95,7 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
-    options?: {
-      avoidFocusOnError?: boolean;
-      removeEmptyValues?: boolean;
-    },
+    options?: { avoidFocusOnError?: boolean },
   ) => void;
 };
 
@@ -106,9 +104,6 @@ const noop = () => {};
 
 const extractInitialValue = <Value>(value: Value | (() => Value)): Value =>
   typeof value === "function" ? (value as () => Value)() : value;
-
-const isEmptyValue = (value: unknown): value is "" | null | undefined =>
-  value === "" || value == null;
 
 const isPromise = <T>(value: unknown): value is Promise<T> =>
   !!value &&
@@ -213,6 +208,14 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     const isMounted = (name: Name) => mounteds.current[name];
     const isTalkative = (name: Name) => states.current[name].talkative;
+
+    const getIgnoredValue = (name: Name) => {
+      const isProvided = Object.prototype.hasOwnProperty.call(config.current[name], "ignoredValue");
+
+      return isProvided
+        ? { isProvided, ignoredValue: config.current[name].ignoredValue }
+        : { isProvided };
+    };
 
     const setState = <N extends Name>(
       name: N,
@@ -537,15 +540,15 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       // autofocusing first error is the default behaviour
       const shouldFocusOnError = !options.avoidFocusOnError;
-      const shouldKeepEmptyValue = !options.removeEmptyValues;
 
       names.forEach((name: Name, index) => {
         const { value } = getFieldState(name, { sanitize: true });
-        setTalkative(name);
-        results[index] = internalValidateField(name);
+        const { isProvided, ignoredValue } = getIgnoredValue(name);
 
-        if (shouldKeepEmptyValue || !isEmptyValue(value)) {
+        if (!isProvided || value !== ignoredValue) {
+          setTalkative(name);
           values[name] = value;
+          results[index] = internalValidateField(name);
         }
       });
 

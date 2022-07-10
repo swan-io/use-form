@@ -210,11 +210,14 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const isTalkative = (name: Name) => states.current[name].talkative;
 
     const getIgnoredValue = (name: Name) => {
-      const isProvided = Object.prototype.hasOwnProperty.call(config.current[name], "ignoredValue");
+      const isIgnoredValueSet = Object.prototype.hasOwnProperty.call(
+        config.current[name],
+        "ignoredValue",
+      );
 
-      return isProvided
-        ? { isProvided, ignoredValue: config.current[name].ignoredValue }
-        : { isProvided };
+      return isIgnoredValueSet
+        ? { isIgnoredValueSet, ignoredValue: config.current[name].ignoredValue }
+        : { isIgnoredValueSet };
     };
 
     const setState = <N extends Name>(
@@ -271,14 +274,23 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       callbacks.current[name].forEach((callback) => callback());
     };
 
-    const setTalkative = (name: Name, strategies?: Strategy[]): void => {
-      const strategy = getStrategy(name);
+    const setTalkativeStatus = (name: Name, strategies?: Strategy[]): void => {
+      const { isIgnoredValueSet, ignoredValue } = getIgnoredValue(name);
 
-      if (!strategies || strategies.some((value) => strategy === value)) {
+      if (isIgnoredValueSet && states.current[name].exposed.value === ignoredValue) {
         setState(name, (prevState) => ({
           ...prevState,
-          talkative: true,
+          talkative: false,
         }));
+      } else {
+        const strategy = getStrategy(name);
+
+        if (!strategies || strategies.some((item) => strategy === item)) {
+          setState(name, (prevState) => ({
+            ...prevState,
+            talkative: true,
+          }));
+        }
       }
     };
 
@@ -330,7 +342,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         const error = promiseOrError;
 
         if (error === undefined) {
-          setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
+          setTalkativeStatus(name, ["onSuccess", "onSuccessOrBlur"]);
         }
 
         setValidateResult(name, error);
@@ -353,7 +365,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             return;
           }
           if (error === undefined) {
-            setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
+            setTalkativeStatus(name, ["onSuccess", "onSuccessOrBlur"]);
           }
 
           setValidateResult(name, error);
@@ -380,7 +392,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }));
 
       if (Boolean(options.validate)) {
-        setTalkative(name);
+        setTalkativeStatus(name);
       }
 
       void internalValidateField(name);
@@ -411,7 +423,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         return Promise.resolve(undefined);
       }
 
-      setTalkative(name);
+      setTalkativeStatus(name);
       return Promise.resolve(internalValidateField(name));
     };
 
@@ -447,7 +459,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           value,
         }));
 
-        setTalkative(name, ["onChange"]);
+        setTalkativeStatus(name, ["onChange"]);
         clearDebounceTimeout(name);
 
         if (formStatus.current === "untouched" || formStatus.current === "submitted") {
@@ -477,7 +489,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       // Avoid validating an untouched / already valid field
       if (validity.tag !== "unknown" && !isTalkative(name)) {
-        setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
+        setTalkativeStatus(name, ["onBlur", "onSuccessOrBlur"]);
         void internalValidateField(name);
       }
     };
@@ -543,10 +555,11 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       names.forEach((name: Name, index) => {
         const { value } = getFieldState(name, { sanitize: true });
-        const { isProvided, ignoredValue } = getIgnoredValue(name);
+        const { isIgnoredValueSet, ignoredValue } = getIgnoredValue(name);
 
-        if (!isProvided || value !== ignoredValue) {
-          setTalkative(name);
+        setTalkativeStatus(name);
+
+        if (!isIgnoredValueSet || value !== ignoredValue) {
           values[name] = value;
           results[index] = internalValidateField(name);
         }

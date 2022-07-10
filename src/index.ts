@@ -274,10 +274,17 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       callbacks.current[name].forEach((callback) => callback());
     };
 
-    const setTalkativeStatus = (name: Name, strategies?: Strategy[]): void => {
+    const setTalkativeStatus = <N extends Name>(
+      name: N,
+      strategies?: Strategy[],
+    ): {
+      talkative: boolean;
+      sanitizedValue: Values[N];
+    } => {
       const { isIgnoredValueSet, ignoredValue } = getIgnoredValue(name);
+      const sanitizedValue = getFieldState(name, { sanitize: true }).value;
 
-      if (isIgnoredValueSet && states.current[name].exposed.value === ignoredValue) {
+      if (isIgnoredValueSet && sanitizedValue === ignoredValue) {
         setState(name, (prevState) => ({
           ...prevState,
           talkative: false,
@@ -290,8 +297,18 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             ...prevState,
             talkative: true,
           }));
+
+          return {
+            talkative: true,
+            sanitizedValue,
+          };
         }
       }
+
+      return {
+        talkative: false,
+        sanitizedValue,
+      };
     };
 
     const setValidating = (name: Name): void => {
@@ -554,14 +571,11 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const shouldFocusOnError = !options.avoidFocusOnError;
 
       names.forEach((name: Name, index) => {
-        const { value } = getFieldState(name, { sanitize: true });
-        const { isIgnoredValueSet, ignoredValue } = getIgnoredValue(name);
-
-        setTalkativeStatus(name);
+        const { talkative, sanitizedValue } = setTalkativeStatus(name);
         const result = internalValidateField(name);
 
-        if (!isIgnoredValueSet || value !== ignoredValue) {
-          values[name] = value;
+        if (talkative) {
+          values[name] = sanitizedValue;
           results[index] = result;
         }
       });

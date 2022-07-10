@@ -558,10 +558,11 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         const { isIgnoredValueSet, ignoredValue } = getIgnoredValue(name);
 
         setTalkativeStatus(name);
+        const result = internalValidateField(name);
 
         if (!isIgnoredValueSet || value !== ignoredValue) {
           values[name] = value;
-          results[index] = internalValidateField(name);
+          results[index] = result;
         }
       });
 

@@ -31,15 +31,15 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
     strategy?: Strategy;
     debounceInterval?: number;
     equalityFn?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
-    sanitize?: <Value extends Values[N]>(value: Value) => Value;
-    validate?: <Value extends Values[N]>(
-      value: Value,
+    sanitize?: (value: Values[N]) => Values[N];
+    validate?: (
+      value: Values[N],
       helpers: {
         focusField: (name: keyof Values) => void;
         getFieldState: <N extends keyof Values>(
           name: N,
           options?: { sanitize?: boolean },
-        ) => FieldState<Value, ErrorMessage>;
+        ) => FieldState<Values[N], ErrorMessage>;
       },
     ) => ValidatorResult<ErrorMessage>;
   };
@@ -287,7 +287,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }));
     };
 
-    const getFieldState: Contract["getFieldState"] = (name, options = {}) => {
+    const getFieldState = <N extends Name>(
+      name: N,
+      options: { sanitize?: boolean } = {},
+    ): FieldState<Values[N], ErrorMessage> => {
       const { exposed } = states.current[name];
 
       if (!options.sanitize) {
@@ -298,7 +301,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       return {
         ...exposed,
-        value: sanitize(exposed.value),
+        value: sanitize(exposed.value) as Values[N],
       };
     };
 

@@ -94,7 +94,10 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
-    options?: { avoidFocusOnError?: boolean },
+    options?: {
+      avoidFocusOnError?: boolean;
+      removeEmptyValues?: boolean;
+    },
   ) => void;
 };
 
@@ -103,6 +106,9 @@ const noop = () => {};
 
 const extractInitialValue = <Value>(value: Value | (() => Value)): Value =>
   typeof value === "function" ? (value as () => Value)() : value;
+
+const isEmptyValue = (value: unknown): value is "" | null | undefined =>
+  value === "" || value == null;
 
 const isPromise = <T>(value: unknown): value is Promise<T> =>
   !!value &&
@@ -531,11 +537,16 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       // autofocusing first error is the default behaviour
       const shouldFocusOnError = !options.avoidFocusOnError;
+      const shouldKeepEmptyValue = !options.removeEmptyValues;
 
       names.forEach((name: Name, index) => {
+        const { value } = getFieldState(name, { sanitize: true });
         setTalkative(name);
-        values[name] = getFieldState(name, { sanitize: true }).value;
         results[index] = internalValidateField(name);
+
+        if (shouldKeepEmptyValue || !isEmptyValue(value)) {
+          values[name] = value;
+        }
       });
 
       if (isSyncSubmission(results)) {

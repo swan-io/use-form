@@ -57,7 +57,7 @@ export const AsyncSubmissionForm = () => {
       title="Async submission"
       description="Even if we do not recommend preventing the submission of the form until all the values in it are valid (which is a bad UX practice), the library still handle async submission just fine 🔥."
     >
-      <form onSubmit={onSubmit}>
+      <form onReset={resetForm} onSubmit={onSubmit}>
         <Field name="emailAddress">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
@@ -79,14 +79,13 @@ export const AsyncSubmissionForm = () => {
         <Spacer height={4} />
 
         <HStack justifyContent="flex-end" spacing={3}>
-          <Button onClick={resetForm} width={100}>
+          <Button type="reset" width={100}>
             Reset
           </Button>
 
           <Button
             colorScheme="green"
             type="submit"
-            onClick={onSubmit}
             width={100}
             disabled={formStatus === "submitting"}
             isLoading={formStatus === "submitting"}

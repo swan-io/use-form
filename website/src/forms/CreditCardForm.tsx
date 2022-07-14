@@ -99,7 +99,7 @@ export const CreditCardForm = () => {
         </>
       }
     >
-      <form onSubmit={onSubmit}>
+      <form onReset={resetForm} onSubmit={onSubmit}>
         <Field name="cardNumber">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
@@ -157,11 +157,11 @@ export const CreditCardForm = () => {
         <Spacer height={4} />
 
         <HStack justifyContent="flex-end" spacing={3}>
-          <Button onClick={resetForm} width={100}>
+          <Button type="reset" width={100}>
             Reset
           </Button>
 
-          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
+          <Button colorScheme="green" type="submit" width={100}>
             Submit
           </Button>
         </HStack>

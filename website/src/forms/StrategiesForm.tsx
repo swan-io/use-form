@@ -81,7 +81,7 @@ export const StrategiesForm = () => {
       title="Validation strategies"
       description="All these fields use the same sanitization rules (the value is trimmed), the same validation rule (the value must be at least 3 characters long) but different validation strategies, so you can easily play with each."
     >
-      <form onSubmit={onSubmit}>
+      <form onReset={resetForm} onSubmit={onSubmit}>
         <Field name="onChange">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input
@@ -175,11 +175,11 @@ export const StrategiesForm = () => {
         <Spacer height={4} />
 
         <HStack justifyContent="flex-end" spacing={3}>
-          <Button onClick={resetForm} width={100}>
+          <Button type="reset" width={100}>
             Reset
           </Button>
 
-          <Button colorScheme="green" type="submit" onClick={onSubmit} width={100}>
+          <Button colorScheme="green" type="submit" width={100}>
             Submit
           </Button>
         </HStack>

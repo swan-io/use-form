@@ -30,7 +30,7 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
     initialValue: Values[N] | (() => Values[N]);
     strategy?: Strategy;
     debounceInterval?: number;
-    equalityFn?: (value1: Values[N], value2: Values[N]) => boolean;
+    equalityFn?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],
@@ -171,15 +171,15 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   }, []);
 
   type StateMap = {
-    [N in Name]: {
-      readonly value: Values[N];
-      readonly talkative: boolean;
-      readonly validity:
-        | { readonly type: "unknown" }
-        | { readonly type: "validating" }
-        | { readonly type: "valid" }
-        | { readonly type: "invalid"; error: ErrorMessage };
-    };
+    [N in Name]: Readonly<{
+      exposed: FieldState<Values[N], ErrorMessage>;
+      talkative: boolean;
+      validity:
+        | { readonly tag: "unknown" }
+        | { readonly tag: "validating" }
+        | { readonly tag: "valid" }
+        | { readonly tag: "invalid"; error: ErrorMessage };
+    }>;
   };
 
   const states = React.useRef() as React.MutableRefObject<StateMap>;
@@ -208,23 +208,42 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const isMounted = (name: Name) => mounteds.current[name];
     const isTalkative = (name: Name) => states.current[name].talkative;
 
-    const transformState = <N extends Name>(
+    const setState = <N extends Name>(
       name: N,
-      state: StateMap[N],
-      { sanitize = false }: { sanitize?: boolean },
-    ): FieldState<Values[N], ErrorMessage> => {
-      const value = (sanitize ? getSanitize(name)(state.value) : state.value) as Values[N];
-      const { talkative, validity } = state;
+      state: React.SetStateAction<
+        { value: Values[N] } & Pick<StateMap[N], "talkative" | "validity">
+      >,
+    ) => {
+      const currentState = states.current[name];
 
-      return !talkative || validity.type === "unknown"
-        ? // Avoid giving feedback too soon
-          { value, validating: false, valid: !getValidate(name), error: undefined }
-        : {
-            value,
-            validating: validity.type === "validating",
-            valid: validity.type === "valid",
-            error: validity.type === "invalid" ? validity.error : undefined,
-          };
+      const nextState =
+        typeof state === "function"
+          ? state({
+              value: currentState.exposed.value,
+              talkative: currentState.talkative,
+              validity: currentState.validity,
+            })
+          : state;
+
+      const exposed =
+        !nextState.talkative || nextState.validity.tag === "unknown"
+          ? // Avoid giving feedback too soon
+            {
+              validating: false,
+              valid: !getValidate(name),
+              error: undefined,
+            }
+          : {
+              validating: nextState.validity.tag === "validating",
+              valid: nextState.validity.tag === "valid",
+              error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
+            };
+
+      states.current[name] = {
+        talkative: nextState.talkative,
+        validity: nextState.validity,
+        exposed: { ...exposed, value: nextState.value },
+      };
     };
 
     const clearDebounceTimeout = (name: Name): boolean => {
@@ -247,36 +266,51 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const strategy = getStrategy(name);
 
       if (!strategies || strategies.some((value) => strategy === value)) {
-        states.current[name] = {
-          ...states.current[name],
+        setState(name, (prevState) => ({
+          ...prevState,
           talkative: true,
-        };
+        }));
       }
     };
 
     const setValidating = (name: Name): void => {
-      states.current[name] = {
-        ...states.current[name],
-        validity: { type: "validating" },
-      };
+      setState(name, (prevState) => ({
+        ...prevState,
+        validity: { tag: "validating" },
+      }));
     };
 
     const setValidateResult = (name: Name, error: ErrorMessage | void): void => {
-      states.current[name] = {
-        ...states.current[name],
-        validity: typeof error !== "undefined" ? { type: "invalid", error } : { type: "valid" },
-      };
+      setState(name, (prevState) => ({
+        ...prevState,
+        validity: typeof error !== "undefined" ? { tag: "invalid", error } : { tag: "valid" },
+      }));
     };
 
-    const getFieldState: Contract["getFieldState"] = (name, options = {}) =>
-      transformState(name, states.current[name], options);
+    const getFieldState = <N extends Name>(
+      name: N,
+      options: { sanitize?: boolean } = {},
+    ): FieldState<Values[N], ErrorMessage> => {
+      const { exposed } = states.current[name];
+
+      if (!options.sanitize) {
+        return exposed;
+      }
+
+      const sanitize = getSanitize(name);
+
+      return {
+        ...exposed,
+        value: sanitize(exposed.value) as Values[N],
+      };
+    };
 
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
       const debounced = clearDebounceTimeout(name);
 
       const sanitizeAtStart = getSanitize(name);
       const validate = getValidate(name);
-      const valueAtStart = sanitizeAtStart(states.current[name].value);
+      const valueAtStart = sanitizeAtStart(states.current[name].exposed.value);
 
       const promiseOrError = validate(valueAtStart, {
         getFieldState,
@@ -304,7 +338,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return promiseOrError
         .then((error) => {
           const equalityFn = getEqualityFn(name);
-          const valueAtEnd = sanitizeAtStart(states.current[name].value);
+          const valueAtEnd = sanitizeAtStart(states.current[name].exposed.value);
 
           if (!equalityFn(valueAtStart, valueAtEnd)) {
             return;
@@ -331,10 +365,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
 
     const setFieldValue: Contract["setFieldValue"] = (name, value, options = {}) => {
-      states.current[name] = {
-        ...states.current[name],
+      setState(name, (prevState) => ({
+        ...prevState,
         value,
-      };
+      }));
 
       if (Boolean(options.validate)) {
         setTalkative(name);
@@ -354,11 +388,11 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const resetField: Contract["resetField"] = (name) => {
       clearDebounceTimeout(name);
 
-      states.current[name] = {
+      setState(name, {
         value: getInitialValue(name),
         talkative: false,
-        validity: { type: "unknown" },
-      };
+        validity: { tag: "unknown" },
+      });
 
       runCallbacks(name);
     };
@@ -377,7 +411,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         listener(
           names.reduce(
             (acc, name) => {
-              acc[name] = transformState(name, states.current[name], { sanitize: false });
+              acc[name] = states.current[name].exposed;
               return acc;
             },
             {} as {
@@ -399,10 +433,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       (value: Values[N]): void => {
         const debounceInterval = getDebounceInterval(name);
 
-        states.current[name] = {
-          ...states.current[name],
+        setState(name, (prevState) => ({
+          ...prevState,
           value,
-        };
+        }));
 
         setTalkative(name, ["onChange"]);
         clearDebounceTimeout(name);
@@ -433,7 +467,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       const { validity } = states.current[name];
 
       // Avoid validating an untouched / already valid field
-      if (validity.type !== "unknown" && !isTalkative(name)) {
+      if (validity.tag !== "unknown" && !isTalkative(name)) {
         setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
         void internalValidateField(name);
       }
@@ -554,7 +588,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       resetForm,
       submitForm,
 
-      transformState,
+      setState,
       getOnChange,
       getOnBlur,
       getFocusNextField,
@@ -572,11 +606,11 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
-        states.current[name] = {
+        api.setState(name, {
           value: extractInitialValue(config.current[name].initialValue),
           talkative: false,
-          validity: { type: "unknown" },
-        };
+          validity: { tag: "unknown" },
+        });
 
         callbacks.current[name] = new Set();
         mounteds.current[name] = false;
@@ -600,7 +634,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         [name],
       );
 
-      const state = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+      useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
       React.useEffect(() => {
         const isFirstMounting = !mounteds.current[name];
@@ -623,7 +657,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }, [name]);
 
       return children({
-        ...api.transformState(name, state, { sanitize: false }),
+        ...states.current[name].exposed,
         ref: refs.current[name],
         focusNextField: React.useMemo(() => api.getFocusNextField(name), [name]),
         onBlur: React.useMemo(() => api.getOnBlur(name), [name]),
@@ -655,7 +689,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return children(
         names.reduce(
           (acc, name) => {
-            acc[name] = api.transformState(name, states.current[name], { sanitize: false });
+            acc[name] = states.current[name].exposed;
             return acc;
           },
           {} as {

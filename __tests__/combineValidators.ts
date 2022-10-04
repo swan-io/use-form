@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import { combineValidators } from "../src";
 import { resolveAfter } from "./utils/promises";
 

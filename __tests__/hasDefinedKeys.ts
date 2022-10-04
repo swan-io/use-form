@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import { hasDefinedKeys } from "../src";
 
 test("check that every key is defined", () => {

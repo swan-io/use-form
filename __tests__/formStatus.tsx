@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
+import { test } from "vitest";
 import { useForm } from "../src";
 import { resolveAfter } from "./utils/promises";
 

@@ -7,13 +7,6 @@ module.exports = {
     "plugin:react-hooks/recommended",
   ],
 
-  overrides: [
-    {
-      files: ["**/__{tests}__/**/*.{ts,tsx}"],
-      env: { jest: true },
-    },
-  ],
-
   settings: {
     react: { version: dependencies.react },
   },

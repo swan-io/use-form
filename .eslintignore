@@ -1,2 +1,5 @@
 *.js
+__tests__/
 website/
+vite.config.ts
+vitest-setup.ts

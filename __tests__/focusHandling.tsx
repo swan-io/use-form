@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
+import { expect, test } from "vitest";
 import { useForm } from "../src";
 
 test("the first errored field is focused after submission", async () => {

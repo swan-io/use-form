@@ -1733,7 +1733,7 @@ react-style-singleton@^2.1.0, react-style-singleton@^2.2.1:
     tslib "^2.0.0"
 
 "react-ux-form@file:..":
-  version "1.1.4"
+  version "1.1.5"
   dependencies:
     use-sync-external-store "^1.2.0"
 

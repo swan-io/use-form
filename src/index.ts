@@ -94,7 +94,10 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
-    options?: { avoidFocusOnError?: boolean },
+    options?: {
+      avoidFocusOnError?: boolean;
+      resetFeedbackOnSuccess?: boolean;
+    },
   ) => void;
 };
 
@@ -397,6 +400,14 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       runCallbacks(name);
     };
 
+    const resetFieldFeedback = (name: string) => {
+      setState(name, ({ value }) => ({
+        value,
+        talkative: false,
+        validity: { tag: "unknown" },
+      }));
+    };
+
     const validateField: Contract["validateField"] = (name) => {
       if (!isMounted(name)) {
         return Promise.resolve(undefined);
@@ -492,6 +503,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       forceUpdate();
     };
 
+    const resetFormFeedback = () => {
+      Object.keys(config.current).forEach(resetFieldFeedback);
+    };
+
     const isSyncSubmission = (
       results: ValidatorResult<ErrorMessage>[],
     ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
@@ -531,6 +546,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       // autofocusing first error is the default behaviour
       const shouldFocusOnError = !options.avoidFocusOnError;
+      const resetFeedbackOnSuccess = Boolean(options.resetFeedbackOnSuccess);
 
       names.forEach((name: Name, index) => {
         setTalkative(name);
@@ -539,9 +555,16 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       });
 
       if (isSyncSubmission(results)) {
-        if (results.every((result) => result === undefined)) {
+        const success = results.every((result) => result === undefined);
+
+        if (success) {
+          if (resetFeedbackOnSuccess) {
+            resetFormFeedback();
+          }
+
           return handleSyncEffect(onSuccess(values), wasEditing);
         }
+
         if (shouldFocusOnError) {
           focusFirstError(names, results);
         }
@@ -573,6 +596,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           return onFailure(errors);
         })
         .finally(() => {
+          if (resetFeedbackOnSuccess) {
+            resetFormFeedback();
+          }
+
           formStatus.current = "submitted";
           mounted.current && forceUpdate();
         });

@@ -28,6 +28,7 @@ export type FieldState<Value, ErrorMessage = string> = {
 export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N] | (() => Values[N]);
+    hideInitialValueFeedback?: boolean;
     strategy?: Strategy;
     debounceInterval?: number;
     equalityFn?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
@@ -201,6 +202,9 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   const fieldsListener = React.useRef() as React.MutableRefObject<Contract["FieldsListener"]>;
 
   const api = React.useMemo(() => {
+    const getHideInitialValueFeedback = (name: Name) =>
+      config.current[name].hideInitialValueFeedback ?? false;
+
     const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
     const getEqualityFn = (name: Name) => config.current[name].equalityFn ?? Object.is;
     const getInitialValue = (name: Name) => extractInitialValue(config.current[name].initialValue);
@@ -210,6 +214,17 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     const isMounted = (name: Name) => mounteds.current[name];
     const isTalkative = (name: Name) => states.current[name].talkative;
+
+    const shouldHideFeedback = <N extends Name>(name: N, value: Values[N]) => {
+      const hideInitialValueFeedback = getHideInitialValueFeedback(name);
+
+      if (!hideInitialValueFeedback) {
+        return false;
+      }
+
+      const equalityFn = getEqualityFn(name);
+      return equalityFn(getInitialValue(name), value);
+    };
 
     const setState = <N extends Name>(
       name: N,
@@ -295,6 +310,15 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       options: { sanitize?: boolean } = {},
     ): FieldState<Values[N], ErrorMessage> => {
       const { exposed } = states.current[name];
+
+      if (shouldHideFeedback(name, exposed.value)) {
+        return {
+          value: exposed.value,
+          validating: false,
+          valid: !getValidate(name),
+          error: undefined,
+        };
+      }
 
       if (!options.sanitize) {
         return exposed;
@@ -422,7 +446,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         listener(
           names.reduce(
             (acc, name) => {
-              acc[name] = states.current[name].exposed;
+              acc[name] = getFieldState(name);
               return acc;
             },
             {} as {
@@ -684,7 +708,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }, [name]);
 
       return children({
-        ...states.current[name].exposed,
+        ...api.getFieldState(name),
         ref: refs.current[name],
         focusNextField: React.useMemo(() => api.getFocusNextField(name), [name]),
         onBlur: React.useMemo(() => api.getOnBlur(name), [name]),
@@ -716,7 +740,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return children(
         names.reduce(
           (acc, name) => {
-            acc[name] = states.current[name].exposed;
+            acc[name] = api.getFieldState(name);
             return acc;
           },
           {} as {

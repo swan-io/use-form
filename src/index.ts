@@ -517,17 +517,33 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       name && focusField(name);
     };
 
-    const handleSyncEffect = (effect: Promise<unknown> | void, wasEditing: boolean) => {
+    const handleEffect = (
+      effect: Promise<unknown> | void,
+      resetFeedbackOnSuccess: boolean,
+      wasEditing: boolean,
+    ) => {
       if (isPromise(effect)) {
         forceUpdate();
 
         effect.finally(() => {
           formStatus.current = "submitted";
-          mounted.current && forceUpdate();
+
+          if (resetFeedbackOnSuccess) {
+            resetFormFeedback();
+          }
+          if (mounted.current) {
+            forceUpdate();
+          }
         });
       } else {
         formStatus.current = "submitted";
-        wasEditing && forceUpdate(); // Only needed to rerender and switch from editing to submitted
+
+        if (resetFeedbackOnSuccess) {
+          resetFormFeedback();
+        }
+        if (resetFeedbackOnSuccess || wasEditing) {
+          forceUpdate(); // Only needed to rerender and switch from editing to submitted
+        }
       }
     };
 
@@ -558,11 +574,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         const success = results.every((result) => result === undefined);
 
         if (success) {
-          if (resetFeedbackOnSuccess) {
-            resetFormFeedback();
-          }
-
-          return handleSyncEffect(onSuccess(values), wasEditing);
+          return handleEffect(onSuccess(values), resetFeedbackOnSuccess, wasEditing);
         }
 
         if (shouldFocusOnError) {
@@ -573,7 +585,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           errors[name] = results[index];
         });
 
-        return handleSyncEffect(onFailure(errors), wasEditing);
+        return handleEffect(onFailure(errors), resetFeedbackOnSuccess, wasEditing);
       }
 
       forceUpdate(); // Async validation flow: we need to give visual feedback
@@ -581,10 +593,12 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
+          const success = results.every((result) => result === undefined);
 
-          if (results.every((result) => result === undefined)) {
-            return onSuccess(values);
+          if (success) {
+            return handleEffect(onSuccess(values), resetFeedbackOnSuccess, wasEditing);
           }
+
           if (shouldFocusOnError) {
             focusFirstError(names, results);
           }
@@ -593,13 +607,9 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             errors[name] = results[index];
           });
 
-          return onFailure(errors);
+          return handleEffect(onFailure(errors), resetFeedbackOnSuccess, wasEditing);
         })
         .finally(() => {
-          if (resetFeedbackOnSuccess) {
-            resetFormFeedback();
-          }
-
           formStatus.current = "submitted";
           mounted.current && forceUpdate();
         });

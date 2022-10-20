@@ -28,7 +28,6 @@ export type FieldState<Value, ErrorMessage = string> = {
 export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N] | (() => Values[N]);
-    hideInitialValueValidFeedback?: boolean;
     strategy?: Strategy;
     debounceInterval?: number;
     equalityFn?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
@@ -202,9 +201,6 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
   const fieldsListener = React.useRef() as React.MutableRefObject<Contract["FieldsListener"]>;
 
   const api = React.useMemo(() => {
-    const getHideInitialValueValidFeedback = (name: Name) =>
-      config.current[name].hideInitialValueValidFeedback ?? false;
-
     const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
     const getEqualityFn = (name: Name) => config.current[name].equalityFn ?? Object.is;
     const getInitialValue = (name: Name) => extractInitialValue(config.current[name].initialValue);
@@ -214,17 +210,6 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     const isMounted = (name: Name) => mounteds.current[name];
     const isTalkative = (name: Name) => states.current[name].talkative;
-
-    const shouldHideValidFeedback = <N extends Name>(name: N, value: Values[N]) => {
-      const hideInitialValueValidFeedback = getHideInitialValueValidFeedback(name);
-
-      if (!hideInitialValueValidFeedback) {
-        return false;
-      }
-
-      const equalityFn = getEqualityFn(name);
-      return equalityFn(getInitialValue(name), value);
-    };
 
     const setState = <N extends Name>(
       name: N,
@@ -310,16 +295,6 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       options: { sanitize?: boolean } = {},
     ): FieldState<Values[N], ErrorMessage> => {
       const { exposed } = states.current[name];
-      const { valid, value } = exposed;
-
-      if (valid && shouldHideValidFeedback(name, value)) {
-        return {
-          validating: false,
-          value: value,
-          valid: !getValidate(name),
-          error: undefined,
-        };
-      }
 
       if (!options.sanitize) {
         return exposed;
@@ -329,7 +304,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       return {
         ...exposed,
-        value: sanitize(value) as Values[N],
+        value: sanitize(exposed.value) as Values[N],
       };
     };
 

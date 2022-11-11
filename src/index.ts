@@ -571,7 +571,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       });
 
       if (isSyncSubmission(results)) {
-        const success = results.every((result) => result === undefined);
+        const success = results.every((result) => typeof result === "undefined");
 
         if (success) {
           return handleEffect(onSuccess(values), resetFeedbackOnSuccess, wasEditing);
@@ -593,7 +593,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
-          const success = results.every((result) => result === undefined);
+          const success = results.every((result) => typeof result === "undefined");
 
           if (success) {
             return handleEffect(onSuccess(values), resetFeedbackOnSuccess, wasEditing);

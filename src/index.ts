@@ -268,7 +268,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const setTalkative = (name: Name, strategies?: Strategy[]): void => {
       const strategy = getStrategy(name);
 
-      if (!strategies || strategies.some((value) => strategy === value)) {
+      if (!strategies || strategies.some((item) => strategy === item)) {
         setState(name, (prevState) => ({
           ...prevState,
           talkative: true,

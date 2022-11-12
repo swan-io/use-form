@@ -514,7 +514,10 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
       const index = results.findIndex((result) => typeof result !== "undefined");
       const name = names[index];
-      name && focusField(name);
+
+      if (typeof name !== "undefined") {
+        focusField(name);
+      }
     };
 
     const handleEffect = (

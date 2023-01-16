@@ -67,7 +67,12 @@ export const CheckboxesForm = () => {
         </>
       }
     >
-      <form onReset={resetForm} onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        onReset={() => {
+          resetForm();
+        }}
+      >
         <Field name="termsAndConditions">
           {({ error, onChange, value }) => (
             <Checkbox

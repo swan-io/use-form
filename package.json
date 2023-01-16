@@ -40,7 +40,7 @@
     "lint": "eslint src --ext ts,tsx src",
     "test": "vitest --run",
     "test:watch": "vitest --watch",
-    "tscheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "prepack": "yarn lint && yarn test && yarn build"
   },
   "browserslist": [

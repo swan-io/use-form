@@ -74,7 +74,12 @@ export const IBANForm = () => {
         </>
       }
     >
-      <form onReset={resetForm} onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        onReset={() => {
+          resetForm();
+        }}
+      >
         <Field name="iban">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input

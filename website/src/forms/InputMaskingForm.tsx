@@ -96,7 +96,12 @@ export const InputMaskingForm = () => {
         </>
       }
     >
-      <form onReset={resetForm} onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        onReset={() => {
+          resetForm();
+        }}
+      >
         <Field name="cardNumber">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Rifm

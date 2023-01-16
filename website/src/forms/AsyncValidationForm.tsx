@@ -59,7 +59,12 @@ export const AsyncValidationForm = () => {
         </>
       }
     >
-      <form onReset={resetForm} onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        onReset={() => {
+          resetForm();
+        }}
+      >
         <Field name="emailAddress">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input

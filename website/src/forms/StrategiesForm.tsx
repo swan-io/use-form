@@ -81,7 +81,12 @@ export const StrategiesForm = () => {
       title="Validation strategies"
       description="All these fields use the same sanitization rules (the value is trimmed), the same validation rule (the value must be at least 3 characters long) but different validation strategies, so you can easily play with each."
     >
-      <form onReset={resetForm} onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        onReset={() => {
+          resetForm();
+        }}
+      >
         <Field name="onChange">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input

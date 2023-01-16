@@ -100,7 +100,12 @@ export const FieldsListenerForm = () => {
 
       <Spacer height={8} />
 
-      <form onReset={resetForm} onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        onReset={() => {
+          resetForm();
+        }}
+      >
         <Field name="firstName">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input

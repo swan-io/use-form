@@ -94,9 +94,7 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
-    options?: {
-      avoidFocusOnError?: boolean;
-    },
+    options?: { avoidFocusOnError?: boolean },
   ) => void;
 };
 
@@ -489,10 +487,9 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     };
 
     const resetForm: Contract["resetForm"] = (options = {}) => {
-      const feedbackOnly = Boolean(options.feedbackOnly);
       Object.keys(config.current).forEach((name) => resetField(name, options));
 
-      if (!feedbackOnly) {
+      if (!options.feedbackOnly) {
         formStatus.current = "untouched";
       }
 

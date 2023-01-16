@@ -365,7 +365,6 @@ const MyAwesomeForm = () => {
 ## Quickstart
 
 ```tsx
-import * as React from "react";
 import { useForm } from "react-ux-form";
 
 const MyAwesomeForm = () => {

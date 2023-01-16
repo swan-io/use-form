@@ -82,7 +82,7 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
   ) => void;
 
   focusField: (name: keyof Values) => void;
-  resetField: (name: keyof Values) => void;
+  resetField: (name: keyof Values, options?: { feedbackOnly?: boolean }) => void;
   validateField: (name: keyof Values) => Promise<ErrorMessage | void>;
 
   listenFields: <N extends keyof Values>(
@@ -90,13 +90,12 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
     listener: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
   ) => () => void;
 
-  resetForm: () => void;
+  resetForm: (options?: { feedbackOnly?: boolean }) => void;
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
     options?: {
       avoidFocusOnError?: boolean;
-      resetFeedbackOnSuccess?: boolean;
     },
   ) => void;
 };
@@ -388,24 +387,16 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
     };
 
-    const resetField: Contract["resetField"] = (name) => {
+    const resetField: Contract["resetField"] = (name, options = {}) => {
       clearDebounceTimeout(name);
 
-      setState(name, {
-        value: getInitialValue(name),
-        talkative: false,
-        validity: { tag: "unknown" },
-      });
-
-      runCallbacks(name);
-    };
-
-    const resetFieldFeedback = (name: string) => {
       setState(name, ({ value }) => ({
-        value,
+        value: Boolean(options.feedbackOnly) ? value : getInitialValue(name),
         talkative: false,
         validity: { tag: "unknown" },
       }));
+
+      runCallbacks(name);
     };
 
     const validateField: Contract["validateField"] = (name) => {
@@ -497,14 +488,15 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
     };
 
-    const resetForm: Contract["resetForm"] = () => {
-      Object.keys(config.current).forEach(resetField);
-      formStatus.current = "untouched";
-      forceUpdate();
-    };
+    const resetForm: Contract["resetForm"] = (options = {}) => {
+      const feedbackOnly = Boolean(options.feedbackOnly);
+      Object.keys(config.current).forEach((name) => resetField(name, options));
 
-    const resetFormFeedback = () => {
-      Object.keys(config.current).forEach(resetFieldFeedback);
+      if (!feedbackOnly) {
+        formStatus.current = "untouched";
+      }
+
+      forceUpdate();
     };
 
     const isSyncSubmission = (
@@ -520,20 +512,13 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
     };
 
-    const handleEffect = (
-      effect: Promise<unknown> | void,
-      resetFeedbackOnSuccess: boolean,
-      wasEditing: boolean,
-    ) => {
+    const handleEffect = (effect: Promise<unknown> | void, wasEditing: boolean) => {
       if (isPromise(effect)) {
         forceUpdate();
 
         effect.finally(() => {
           formStatus.current = "submitted";
 
-          if (resetFeedbackOnSuccess) {
-            resetFormFeedback();
-          }
           if (mounted.current) {
             forceUpdate();
           }
@@ -541,10 +526,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       } else {
         formStatus.current = "submitted";
 
-        if (resetFeedbackOnSuccess) {
-          resetFormFeedback();
-        }
-        if (resetFeedbackOnSuccess || wasEditing) {
+        if (wasEditing) {
           forceUpdate(); // Only needed to rerender and switch from editing to submitted
         }
       }
@@ -565,7 +547,6 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
       // autofocusing first error is the default behaviour
       const shouldFocusOnError = !options.avoidFocusOnError;
-      const resetFeedbackOnSuccess = Boolean(options.resetFeedbackOnSuccess);
 
       names.forEach((name: Name, index) => {
         setTalkative(name);
@@ -577,7 +558,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         const success = results.every((result) => typeof result === "undefined");
 
         if (success) {
-          return handleEffect(onSuccess(values), resetFeedbackOnSuccess, wasEditing);
+          return handleEffect(onSuccess(values), wasEditing);
         }
 
         if (shouldFocusOnError) {
@@ -588,7 +569,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           errors[name] = results[index];
         });
 
-        return handleEffect(onFailure(errors), resetFeedbackOnSuccess, wasEditing);
+        return handleEffect(onFailure(errors), wasEditing);
       }
 
       forceUpdate(); // Async validation flow: we need to give visual feedback
@@ -599,7 +580,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           const success = results.every((result) => typeof result === "undefined");
 
           if (success) {
-            return handleEffect(onSuccess(values), resetFeedbackOnSuccess, wasEditing);
+            return handleEffect(onSuccess(values), wasEditing);
           }
 
           if (shouldFocusOnError) {
@@ -610,7 +591,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             errors[name] = results[index];
           });
 
-          return handleEffect(onFailure(errors), resetFeedbackOnSuccess, wasEditing);
+          return handleEffect(onFailure(errors), wasEditing);
         })
         .finally(() => {
           formStatus.current = "submitted";
@@ -625,6 +606,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       resetField,
       validateField,
       listenFields,
+
       resetForm,
       submitForm,
 

@@ -389,7 +389,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       clearDebounceTimeout(name);
 
       setState(name, ({ value }) => ({
-        value: Boolean(options.feedbackOnly) ? value : getInitialValue(name),
+        value: !options.feedbackOnly ? getInitialValue(name) : value,
         talkative: false,
         validity: { tag: "unknown" },
       }));

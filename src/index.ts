@@ -82,7 +82,7 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
   ) => void;
 
   focusField: (name: keyof Values) => void;
-  resetField: (name: keyof Values) => void;
+  resetField: (name: keyof Values, options?: { feedbackOnly?: boolean }) => void;
   validateField: (name: keyof Values) => Promise<ErrorMessage | void>;
 
   listenFields: <N extends keyof Values>(
@@ -90,7 +90,7 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
     listener: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
   ) => () => void;
 
-  resetForm: () => void;
+  resetForm: (options?: { feedbackOnly?: boolean }) => void;
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
@@ -265,7 +265,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const setTalkative = (name: Name, strategies?: Strategy[]): void => {
       const strategy = getStrategy(name);
 
-      if (!strategies || strategies.some((value) => strategy === value)) {
+      if (!strategies || strategies.some((item) => strategy === item)) {
         setState(name, (prevState) => ({
           ...prevState,
           talkative: true,
@@ -385,14 +385,14 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
     };
 
-    const resetField: Contract["resetField"] = (name) => {
+    const resetField: Contract["resetField"] = (name, options = {}) => {
       clearDebounceTimeout(name);
 
-      setState(name, {
-        value: getInitialValue(name),
+      setState(name, ({ value }) => ({
+        value: !options.feedbackOnly ? getInitialValue(name) : value,
         talkative: false,
         validity: { tag: "unknown" },
-      });
+      }));
 
       runCallbacks(name);
     };
@@ -411,7 +411,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
         listener(
           names.reduce(
             (acc, name) => {
-              acc[name] = states.current[name].exposed;
+              acc[name] = getFieldState(name);
               return acc;
             },
             {} as {
@@ -486,9 +486,13 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
     };
 
-    const resetForm: Contract["resetForm"] = () => {
-      Object.keys(config.current).forEach(resetField);
-      formStatus.current = "untouched";
+    const resetForm: Contract["resetForm"] = (options = {}) => {
+      Object.keys(config.current).forEach((name) => resetField(name, options));
+
+      if (!options.feedbackOnly) {
+        formStatus.current = "untouched";
+      }
+
       forceUpdate();
     };
 
@@ -499,20 +503,29 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
       const index = results.findIndex((result) => typeof result !== "undefined");
       const name = names[index];
-      name && focusField(name);
+
+      if (typeof name !== "undefined") {
+        focusField(name);
+      }
     };
 
-    const handleSyncEffect = (effect: Promise<unknown> | void, wasEditing: boolean) => {
+    const handleEffect = (effect: Promise<unknown> | void, wasEditing: boolean) => {
       if (isPromise(effect)) {
         forceUpdate();
 
         effect.finally(() => {
           formStatus.current = "submitted";
-          mounted.current && forceUpdate();
+
+          if (mounted.current) {
+            forceUpdate();
+          }
         });
       } else {
         formStatus.current = "submitted";
-        wasEditing && forceUpdate(); // Only needed to rerender and switch from editing to submitted
+
+        if (wasEditing) {
+          forceUpdate(); // Only needed to rerender and switch from editing to submitted
+        }
       }
     };
 
@@ -539,9 +552,12 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       });
 
       if (isSyncSubmission(results)) {
-        if (results.every((result) => result === undefined)) {
-          return handleSyncEffect(onSuccess(values), wasEditing);
+        const success = results.every((result) => typeof result === "undefined");
+
+        if (success) {
+          return handleEffect(onSuccess(values), wasEditing);
         }
+
         if (shouldFocusOnError) {
           focusFirstError(names, results);
         }
@@ -550,7 +566,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           errors[name] = results[index];
         });
 
-        return handleSyncEffect(onFailure(errors), wasEditing);
+        return handleEffect(onFailure(errors), wasEditing);
       }
 
       forceUpdate(); // Async validation flow: we need to give visual feedback
@@ -558,10 +574,12 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
+          const success = results.every((result) => typeof result === "undefined");
 
-          if (results.every((result) => result === undefined)) {
-            return onSuccess(values);
+          if (success) {
+            return handleEffect(onSuccess(values), wasEditing);
           }
+
           if (shouldFocusOnError) {
             focusFirstError(names, results);
           }
@@ -570,7 +588,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             errors[name] = results[index];
           });
 
-          return onFailure(errors);
+          return handleEffect(onFailure(errors), wasEditing);
         })
         .finally(() => {
           formStatus.current = "submitted";
@@ -585,6 +603,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       resetField,
       validateField,
       listenFields,
+
       resetForm,
       submitForm,
 
@@ -657,7 +676,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }, [name]);
 
       return children({
-        ...states.current[name].exposed,
+        ...api.getFieldState(name),
         ref: refs.current[name],
         focusNextField: React.useMemo(() => api.getFocusNextField(name), [name]),
         onBlur: React.useMemo(() => api.getOnBlur(name), [name]),
@@ -689,7 +708,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       return children(
         names.reduce(
           (acc, name) => {
-            acc[name] = states.current[name].exposed;
+            acc[name] = api.getFieldState(name);
             return acc;
           },
           {} as {

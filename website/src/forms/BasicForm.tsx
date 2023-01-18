@@ -81,7 +81,12 @@ export const BasicForm = () => {
         </>
       }
     >
-      <form onReset={resetForm} onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        onReset={() => {
+          resetForm();
+        }}
+      >
         <Field name="firstName">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input

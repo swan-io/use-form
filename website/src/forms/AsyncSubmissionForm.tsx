@@ -57,7 +57,12 @@ export const AsyncSubmissionForm = () => {
       title="Async submission"
       description="Even if we do not recommend preventing the submission of the form until all the values in it are valid (which is a bad UX practice), the library still handle async submission just fine 🔥."
     >
-      <form onReset={resetForm} onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        onReset={() => {
+          resetForm();
+        }}
+      >
         <Field name="emailAddress">
           {({ error, onBlur, onChange, ref, valid, validating, value }) => (
             <Input

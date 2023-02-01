@@ -80,6 +80,7 @@ export type Form<Values extends Record<string, unknown>, ErrorMessage = string> 
     value: Values[N],
     options?: { validate?: boolean },
   ) => void;
+  setFieldError: (name: keyof Values, error?: ErrorMessage) => void;
 
   focusField: (name: keyof Values) => void;
   resetField: (name: keyof Values, options?: { feedbackOnly?: boolean }) => void;
@@ -280,7 +281,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }));
     };
 
-    const setValidateResult = (name: Name, error: ErrorMessage | void): void => {
+    const setError = (name: Name, error: ErrorMessage | void): void => {
       setState(name, (prevState) => ({
         ...prevState,
         validity: typeof error !== "undefined" ? { tag: "invalid", error } : { tag: "valid" },
@@ -324,7 +325,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
           setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
         }
 
-        setValidateResult(name, error);
+        setError(name, error);
         runCallbacks(name);
 
         return error;
@@ -347,7 +348,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
           }
 
-          setValidateResult(name, error);
+          setError(name, error);
           runCallbacks(name);
 
           return error;
@@ -375,6 +376,12 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
       }
 
       void internalValidateField(name);
+    };
+
+    const setFieldError: Contract["setFieldError"] = (name, error) => {
+      setError(name, error);
+      setTalkative(name);
+      runCallbacks(name);
     };
 
     const focusField: Contract["focusField"] = (name) => {
@@ -415,7 +422,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
               return acc;
             },
             {} as {
-              [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
+              [N1 in (typeof names)[number]]: FieldState<Values[N1], ErrorMessage>;
             },
           ),
         );
@@ -599,6 +606,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     return {
       getFieldState,
       setFieldValue,
+      setFieldError,
       focusField,
       resetField,
       validateField,
@@ -712,7 +720,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
             return acc;
           },
           {} as {
-            [N1 in typeof names[number]]: FieldState<Values[N1], ErrorMessage>;
+            [N1 in (typeof names)[number]]: FieldState<Values[N1], ErrorMessage>;
           },
         ),
       );
@@ -730,6 +738,7 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
 
     getFieldState: api.getFieldState,
     setFieldValue: api.setFieldValue,
+    setFieldError: api.setFieldError,
     focusField: api.focusField,
     resetField: api.resetField,
     validateField: api.validateField,

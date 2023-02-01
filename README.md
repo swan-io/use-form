@@ -91,6 +91,7 @@ const {
   FieldsListener,
   getFieldState,
   setFieldValue,
+  setFieldError,
   focusField,
   resetField,
   validateField,
@@ -227,6 +228,14 @@ type setFieldValue = (
     validate?: boolean;
   },
 ) => void;
+```
+
+#### setFieldError
+
+Will make the field _talkative_.
+
+```tsx
+type setFieldError = (name: FieldName, error?: ErrorMessage) => void;
 ```
 
 #### focusField

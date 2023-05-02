@@ -14,11 +14,12 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: yarn install --pure-lockfile && yarn --cwd website install --pure-lockfile
-
-      - name: Build
-        run: yarn build && yarn --cwd website build
+      - name: Install dependencies and build
+        run: |
+          yarn install --pure-lockfile
+          yarn prepack
+          yarn --cwd website install --pure-lockfile
+          yarn --cwd website build
 
       - name: Deploy
         uses: s0/git-publish-subdir-action@develop

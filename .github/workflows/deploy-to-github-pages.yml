@@ -1,29 +1,31 @@
 name: Deploy to GitHub Pages
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   deploy:
-    name: Deploy to GitHub Pages
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
-
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: 18
           cache: "yarn"
           cache-dependency-path: |
             yarn.lock
             website/yarn.lock
 
-      - name: yarn install and build
+      - name: Install dependencies
         run: |
-          yarn install
+          yarn install --pure-lockfile
+          yarn --cwd website install --pure-lockfile
+
+      - name: Build
+        run: |
           yarn build
-          yarn --cwd website install
           yarn --cwd website build
 
       - name: Deploy

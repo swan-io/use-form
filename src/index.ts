@@ -4,6 +4,8 @@ import { useSyncExternalStore } from "use-sync-external-store/shim";
 // For server-side rendering / react-native
 const useIsoLayoutEffect = typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
 
+type AnyRecord = Record<string, unknown>;
+
 export type ValidatorResult<ErrorMessage = string> =
   | ErrorMessage
   | void
@@ -25,7 +27,7 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
-export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = string> = {
+export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N] | (() => Values[N]);
     strategy?: Strategy;
@@ -47,7 +49,7 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
   };
 };
 
-export type Form<Values extends Record<string, unknown>, ErrorMessage = string> = {
+export type Form<Values extends AnyRecord, ErrorMessage = string> = {
   formStatus: FormStatus;
 
   Field: (<N extends keyof Values>(props: {
@@ -143,14 +145,14 @@ export const combineValidators =
     }
   };
 
-export const hasDefinedKeys = <T extends Record<string, unknown>, K extends keyof T = keyof T>(
+export const hasDefinedKeys = <T extends AnyRecord, K extends keyof T = keyof T>(
   object: T,
   keys: K[],
 ): object is T & {
   [K1 in K]-?: Exclude<T[K1], undefined>;
 } => keys.every((key) => typeof object[key] !== "undefined");
 
-export const useForm = <Values extends Record<string, unknown>, ErrorMessage = string>(
+export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
 ): Form<Values, ErrorMessage> => {
   type Contract = Form<Values, ErrorMessage>;

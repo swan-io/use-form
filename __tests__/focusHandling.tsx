@@ -99,7 +99,7 @@ test("the first errored field is focused after submission", async () => {
   await screen.findByText("firstName valid");
   await screen.findByText("lastName error");
 
-  expect(lastNameInput).toHaveFocus();
+  expect(document.activeElement).toBe(lastNameInput);
 });
 
 test("the user can disable autofocus on first error", async () => {
@@ -169,7 +169,7 @@ test("the user can disable autofocus on first error", async () => {
 
   await screen.findByText("error");
 
-  expect(input).not.toHaveFocus();
+  expect(document.activeElement).not.toBe(input);
 });
 
 test("focusField and focusNextField behave like expected", async () => {
@@ -249,8 +249,8 @@ test("focusField and focusNextField behave like expected", async () => {
   const focusFirstNameButton = await screen.findByText("Focus firstName");
 
   fireEvent.click(focusFirstNameButton);
-  expect(firstNameInput).toHaveFocus();
+  expect(document.activeElement).toBe(firstNameInput);
 
   fireEvent.input(firstNameInput, { target: { value: "Nicolas" } });
-  expect(lastNameInput).toHaveFocus();
+  expect(document.activeElement).toBe(lastNameInput);
 });

@@ -32,16 +32,18 @@ export type FormConfig<Values extends Record<string, unknown>, ErrorMessage = st
     debounceInterval?: number;
     equalityFn?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
-    validate?: (
-      value: Values[N],
-      helpers: {
-        focusField: (name: keyof Values) => void;
-        getFieldState: <N extends keyof Values>(
-          name: N,
-          options?: { sanitize?: boolean },
-        ) => FieldState<Values[N], ErrorMessage>;
-      },
-    ) => ValidatorResult<ErrorMessage>;
+    validate?:
+      | ((
+          value: Values[N],
+          helpers: {
+            focusField: (name: keyof Values) => void;
+            getFieldState: <N extends keyof Values>(
+              name: N,
+              options?: { sanitize?: boolean },
+            ) => FieldState<Values[N], ErrorMessage>;
+          },
+        ) => ValidatorResult<ErrorMessage>)
+      | Validator<Values[N], ErrorMessage>[];
   };
 };
 
@@ -204,7 +206,16 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const getInitialValue = (name: Name) => extractInitialValue(config.current[name].initialValue);
     const getSanitize = (name: Name) => config.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
-    const getValidate = (name: Name) => config.current[name].validate ?? noop;
+
+    const getValidate = (name: Name) => {
+      const { validate } = config.current[name];
+
+      return validate
+        ? typeof validate === "function"
+          ? validate
+          : combineValidators(...validate)
+        : noop;
+    };
 
     const isMounted = (name: Name) => mounteds.current[name];
     const isTalkative = (name: Name) => states.current[name].talkative;

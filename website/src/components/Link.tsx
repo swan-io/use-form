@@ -1,14 +1,15 @@
 import { useTheme } from "@chakra-ui/system";
+import { useLinkProps } from "@swan-io/chicane";
 import * as React from "react";
-import { Link as WouterLink, LinkProps, useRoute } from "wouter";
 
-export const Link = (props: LinkProps & { href: string }) => {
+export const Link = ({ to, children }: { to: string; children: string }) => {
   const { colors } = useTheme();
-  const [active] = useRoute(props.href);
+  const { active, onClick } = useLinkProps({ href: to });
 
   return (
-    <WouterLink
-      {...props}
+    <a
+      href={to}
+      onClick={onClick}
       style={{
         borderRadius: 4,
         color: colors.gray[600],
@@ -24,6 +25,8 @@ export const Link = (props: LinkProps & { href: string }) => {
           color: colors.green[700],
         }),
       }}
-    />
+    >
+      {children}
+    </a>
   );
 };

@@ -12,14 +12,15 @@
     "@chakra-ui/system": "^2.5.8",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@swan-io/chicane": "^1.4.0",
     "card-validator": "^8.1.1",
     "framer-motion": "^10.12.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-ux-form": "file:../",
     "rifm": "^0.12.1",
-    "validator": "^13.9.0",
-    "wouter": "^2.11.0"
+    "ts-pattern": "^5.0.1",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.13",

@@ -6,7 +6,7 @@ export const Page = ({
   title,
   description,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   title: string;
   description?: React.ReactNode;
 }) => (

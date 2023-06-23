@@ -208,13 +208,8 @@ export const useForm = <Values extends Record<string, unknown>, ErrorMessage = s
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
 
     const getValidate = (name: Name) => {
-      const { validate } = config.current[name];
-
-      return validate
-        ? typeof validate === "function"
-          ? validate
-          : combineValidators(...validate)
-        : noop;
+      const validate = config.current[name].validate ?? noop;
+      return typeof validate === "function" ? validate : combineValidators(...validate);
     };
 
     const isMounted = (name: Name) => mounteds.current[name];

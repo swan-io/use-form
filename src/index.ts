@@ -1,8 +1,17 @@
-import * as React from "react";
+import {
+  MutableRefObject,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from "react";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 
 // For server-side rendering / react-native
-const useIsoLayoutEffect = typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
+const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 type AnyRecord = Record<string, unknown>;
 
@@ -54,13 +63,13 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
     name: N;
     children: (
       props: FieldState<Values[N], ErrorMessage> & {
-        ref: React.MutableRefObject<any>;
+        ref: MutableRefObject<any>;
         onChange: (value: Values[N]) => void;
         onBlur: () => void;
         focusNextField: () => void;
       },
-    ) => React.ReactElement | null;
-  }) => React.ReactElement | null) & {
+    ) => ReactElement | null;
+  }) => ReactElement | null) & {
     displayName?: string;
   };
 
@@ -68,8 +77,8 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
     names: N[];
     children: (states: {
       [N1 in N]: FieldState<Values[N1], ErrorMessage>;
-    }) => React.ReactElement | null;
-  }) => React.ReactElement | null) & {
+    }) => ReactElement | null;
+  }) => ReactElement | null) & {
     displayName?: string;
   };
 
@@ -156,16 +165,16 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   type Contract = Form<Values, ErrorMessage>;
   type Name = keyof Values;
 
-  const [, forceUpdate] = React.useReducer(() => [], []);
-  const mounted = React.useRef(false);
-  const config = React.useRef(fields);
-  const formStatus = React.useRef<FormStatus>("untouched");
+  const [, forceUpdate] = useReducer(() => [], []);
+  const mounted = useRef(false);
+  const config = useRef(fields);
+  const formStatus = useRef<FormStatus>("untouched");
 
   useIsoLayoutEffect(() => {
     config.current = fields;
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     mounted.current = true;
 
     return () => {
@@ -185,22 +194,22 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     }>;
   };
 
-  const states = React.useRef() as React.MutableRefObject<StateMap>;
+  const states = useRef() as MutableRefObject<StateMap>;
 
   type CallbackMap = Record<Name, Set<() => void>>;
   type MountedMap = Record<Name, boolean>;
-  type RefMap = Record<Name, React.MutableRefObject<any>>;
+  type RefMap = Record<Name, MutableRefObject<any>>;
   type TimeoutMap = Record<Name, number | undefined>;
 
-  const callbacks = React.useRef() as React.MutableRefObject<CallbackMap>;
-  const mounteds = React.useRef() as React.MutableRefObject<MountedMap>;
-  const refs = React.useRef() as React.MutableRefObject<RefMap>;
-  const timeouts = React.useRef() as React.MutableRefObject<TimeoutMap>;
+  const callbacks = useRef() as MutableRefObject<CallbackMap>;
+  const mounteds = useRef() as MutableRefObject<MountedMap>;
+  const refs = useRef() as MutableRefObject<RefMap>;
+  const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
-  const field = React.useRef() as React.MutableRefObject<Contract["Field"]>;
-  const fieldsListener = React.useRef() as React.MutableRefObject<Contract["FieldsListener"]>;
+  const field = useRef() as MutableRefObject<Contract["Field"]>;
+  const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
-  const api = React.useMemo(() => {
+  const api = useMemo(() => {
     const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
     const getEqualityFn = (name: Name) => config.current[name].equalityFn ?? Object.is;
     const getInitialValue = (name: Name) => extractInitialValue(config.current[name].initialValue);
@@ -213,9 +222,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
     const setState = <N extends Name>(
       name: N,
-      state: React.SetStateAction<
-        { value: Values[N] } & Pick<StateMap[N], "talkative" | "validity">
-      >,
+      state: SetStateAction<{ value: Values[N] } & Pick<StateMap[N], "talkative" | "validity">>,
     ) => {
       const currentState = states.current[name];
 
@@ -649,7 +656,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     }
 
     const Field: Contract["Field"] = ({ name, children }) => {
-      const { subscribe, getSnapshot } = React.useMemo(
+      const { subscribe, getSnapshot } = useMemo(
         () => ({
           getSnapshot: () => states.current[name],
           subscribe: (callback: () => void): (() => void) => {
@@ -665,7 +672,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
-      React.useEffect(() => {
+      useEffect(() => {
         const isFirstMounting = !mounteds.current[name];
 
         if (isFirstMounting) {
@@ -688,9 +695,9 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       return children({
         ...api.getFieldState(name),
         ref: refs.current[name],
-        focusNextField: React.useMemo(() => api.getFocusNextField(name), [name]),
-        onBlur: React.useMemo(() => api.getOnBlur(name), [name]),
-        onChange: React.useMemo(() => api.getOnChange(name), [name]),
+        focusNextField: useMemo(() => api.getFocusNextField(name), [name]),
+        onBlur: useMemo(() => api.getOnBlur(name), [name]),
+        onChange: useMemo(() => api.getOnChange(name), [name]),
       });
     };
 
@@ -698,7 +705,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     field.current = Field;
 
     const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
-      const { subscribe, getSnapshot } = React.useMemo(
+      const { subscribe, getSnapshot } = useMemo(
         () => ({
           getSnapshot: () => JSON.stringify(names.map((name) => states.current[name])),
           subscribe: (callback: () => void): (() => void) => {

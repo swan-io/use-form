@@ -58,11 +58,7 @@
   "dependencies": {
     "use-sync-external-store": "^1.2.0"
   },
-  "resolutions": {
-    "@types/testing-library__jest-dom": "github:zoontek/types-testing-library-vitest-dom"
-  },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
     "@types/react": "^17.0.62",
     "@types/use-sync-external-store": "^0.0.3",

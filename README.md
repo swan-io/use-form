@@ -397,8 +397,8 @@ const MyAwesomeForm = () => {
 
   return (
     <form
-      onSubmit={({ preventDefault }) => {
-        preventDefault();
+      onSubmit={(event: React.FormEvent) => {
+        event.preventDefault();
 
         submitForm(
           (values) => console.log("values", values), // all fields are valid

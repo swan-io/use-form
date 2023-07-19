@@ -94,6 +94,7 @@ const {
   setFieldError,
   focusField,
   resetField,
+  sanitizeField,
   validateField,
   listenFields,
   resetForm,
@@ -257,6 +258,14 @@ type resetField = (
     feedbackOnly?: boolean;
   },
 ) => void;
+```
+
+#### sanitizeField
+
+Sanitize the field value.
+
+```tsx
+type sanitizeField = (name: FieldName) => void;
 ```
 
 #### validateField

@@ -95,6 +95,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
   focusField: (name: keyof Values) => void;
   resetField: (name: keyof Values, options?: { feedbackOnly?: boolean }) => void;
+  sanitizeField: (name: keyof Values) => void;
   validateField: (name: keyof Values) => Promise<ErrorMessage | void>;
 
   listenFields: <N extends keyof Values>(
@@ -268,7 +269,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       return debounced;
     };
 
-    const runCallbacks = (name: Name): void => {
+    const runRenderCallbacks = (name: Name): void => {
       callbacks.current[name].forEach((callback) => callback());
     };
 
@@ -335,14 +336,14 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         }
 
         setError(name, error);
-        runCallbacks(name);
+        runRenderCallbacks(name);
 
         return error;
       }
 
       if (!debounced) {
         setValidating(name);
-        runCallbacks(name);
+        runRenderCallbacks(name);
       }
 
       return promiseOrError
@@ -358,7 +359,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           }
 
           setError(name, error);
-          runCallbacks(name);
+          runRenderCallbacks(name);
 
           return error;
         })
@@ -390,7 +391,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const setFieldError: Contract["setFieldError"] = (name, error) => {
       setError(name, error);
       setTalkative(name);
-      runCallbacks(name);
+      runRenderCallbacks(name);
     };
 
     const focusField: Contract["focusField"] = (name) => {
@@ -410,7 +411,19 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         validity: { tag: "unknown" },
       }));
 
-      runCallbacks(name);
+      runRenderCallbacks(name);
+    };
+
+    const sanitizeField: Contract["sanitizeField"] = (name) => {
+      const sanitize = getSanitize(name);
+
+      setState(name, ({ talkative, value, validity }) => ({
+        value: sanitize(value),
+        talkative,
+        validity,
+      }));
+
+      runRenderCallbacks(name);
     };
 
     const validateField: Contract["validateField"] = (name) => {
@@ -468,7 +481,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         }
 
         setValidating(name);
-        runCallbacks(name);
+        runRenderCallbacks(name);
 
         timeouts.current[name] = setTimeout(() => {
           if (isMounted(name)) {
@@ -618,6 +631,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       setFieldError,
       focusField,
       resetField,
+      sanitizeField,
       validateField,
       listenFields,
 
@@ -750,6 +764,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     setFieldError: api.setFieldError,
     focusField: api.focusField,
     resetField: api.resetField,
+    sanitizeField: api.sanitizeField,
     validateField: api.validateField,
     listenFields: api.listenFields,
 

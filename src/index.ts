@@ -122,6 +122,28 @@ const isPromise = <T>(value: unknown): value is Promise<T> =>
   (typeof value === "object" || typeof value === "function") &&
   typeof (value as { then?: Function }).then === "function";
 
+export const createOptionalValidator =
+  <Value, ErrorMessage = string>(
+    validator: Validator<Value, ErrorMessage>,
+    emptyValue?: Value,
+  ): Validator<Value, ErrorMessage> =>
+  (value) => {
+    const isEmptyValue = value === (typeof emptyValue !== "undefined" ? emptyValue : "");
+    const result = validator(value);
+
+    if (isPromise(result)) {
+      return result.then((asyncResult) => {
+        if (!isEmptyValue && typeof asyncResult !== "undefined") {
+          return asyncResult;
+        }
+      });
+    }
+
+    if (!isEmptyValue && typeof result !== "undefined") {
+      return result;
+    }
+  };
+
 export const combineValidators =
   <Value, ErrorMessage = string>(
     ...validators: (Validator<Value, ErrorMessage> | false)[]

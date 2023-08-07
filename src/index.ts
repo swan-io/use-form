@@ -128,19 +128,8 @@ export const createOptionalValidator =
     emptyValue?: Value,
   ): Validator<Value, ErrorMessage> =>
   (value) => {
-    const isEmptyValue = value === (typeof emptyValue !== "undefined" ? emptyValue : "");
-    const result = validator(value);
-
-    if (isPromise(result)) {
-      return result.then((asyncResult) => {
-        if (!isEmptyValue && typeof asyncResult !== "undefined") {
-          return asyncResult;
-        }
-      });
-    }
-
-    if (!isEmptyValue && typeof result !== "undefined") {
-      return result;
+    if (value !== (typeof emptyValue !== "undefined" ? emptyValue : "")) {
+      return validator(value);
     }
   };
 

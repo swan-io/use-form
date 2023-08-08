@@ -153,6 +153,21 @@ export const combineValidators =
     }
   };
 
+const isEmptyString = (value: unknown) => value === "";
+
+export const toOptionalValidator =
+  <Value, ErrorMessage = string>(
+    validator: Validator<Value, ErrorMessage>,
+    ...[isEmptyValue = isEmptyString]: Value extends string
+      ? [isEmptyValue?: (value: Value) => boolean]
+      : [isEmptyValue: (value: Value) => boolean]
+  ): Validator<Value, ErrorMessage> =>
+  (value) => {
+    if (!isEmptyValue(value)) {
+      return validator(value);
+    }
+  };
+
 export const hasDefinedKeys = <T extends AnyRecord, K extends keyof T = keyof T>(
   object: T,
   keys: K[],

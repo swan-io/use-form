@@ -360,6 +360,39 @@ const MyAwesomeForm = () => {
 };
 ```
 
+### toOptionalValidator
+
+Very often, we want to execute validation only if a value is set. By wrapping any validator (or combined validators) with `toOptionalValidator`, you can bypass the validation if the value is empty.
+
+```tsx
+import { toOptionalValidator, Validator } from "react-ux-form";
+
+// This validator will error if the string length is < 3 (even if it's an empty string)
+const validator: Validator<string> = (value) => {
+  if (value.length < 3) {
+    return "Must be at least 3 characters";
+  }
+};
+
+// This validator will error if value is not empty string and if the string length is < 3
+const optionalValidator = toOptionalValidator(validator);
+```
+
+This function also accept a second param (required for non-string validators) to specify what is the empty value.
+
+```tsx
+import { toOptionalValidator, Validator } from "react-ux-form";
+
+const validator: Validator<number> = (value) => {
+  if (value < 10) {
+    return "Must pick at least 10 items";
+  }
+};
+
+// We also accept a value of 0, as we consider it "empty"
+const optionalValidator = toOptionalValidator(validator, 0);
+```
+
 ### hasDefinedKeys
 
 As some of your fields might be unmounted on submit, the `submitForm` method could not guarantee that every field value is defined and valid. We export `hasDefinedKeys` helper function that allows you to test if some object keys are defined.

@@ -153,16 +153,17 @@ export const combineValidators =
     }
   };
 
+const isEmptyString = (value: unknown) => value === "";
+
 export const toOptionalValidator =
-  <Value, ErrorMessage = string, EmptyValue extends Value = Value>(
+  <Value, ErrorMessage = string>(
     validator: Validator<Value, ErrorMessage>,
-    // @ts-expect-error
-    ...[emptyValue = ""]: Value extends string
-      ? [emptyValue?: EmptyValue]
-      : [emptyValue: EmptyValue]
+    ...[isEmptyValue = isEmptyString]: Value extends string
+      ? [isEmptyValue?: (value: Value) => boolean]
+      : [isEmptyValue: (value: Value) => boolean]
   ): Validator<Value, ErrorMessage> =>
   (value) => {
-    if (value !== emptyValue) {
+    if (!isEmptyValue(value)) {
       return validator(value);
     }
   };

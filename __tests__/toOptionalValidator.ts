@@ -34,7 +34,7 @@ test("sync validator to optional validator (with custom empty value)", () => {
   expect(validator(1)).toBe(error);
   expect(validator(2)).not.toBeDefined();
 
-  const optionalValidator = toOptionalValidator(validator, 0);
+  const optionalValidator = toOptionalValidator(validator, (value) => value === 0);
 
   expect(optionalValidator(0)).not.toBeDefined();
   expect(optionalValidator(1)).toBe(error);
@@ -74,7 +74,7 @@ test("async validator to optional validator (with custom empty value)", async ()
   await expect(validator(1)).resolves.toBe(error);
   await expect(validator(2)).resolves.not.toBeDefined();
 
-  const optionalValidator = toOptionalValidator(validator, 0);
+  const optionalValidator = toOptionalValidator(validator, (value) => value === 0);
 
   expect(optionalValidator(0)).not.toBeDefined(); // validator will be sync in this case
   await expect(optionalValidator(1)).resolves.toBe(error);

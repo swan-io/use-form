@@ -378,7 +378,7 @@ const validator: Validator<string> = (value) => {
 const optionalValidator = toOptionalValidator(validator);
 ```
 
-This function also accept a second param (required for non-string validators) to specify what is the empty value.
+This function also accept a second param (required for non-string validators) to specify what is an empty value.
 
 ```tsx
 import { toOptionalValidator, Validator } from "react-ux-form";
@@ -390,7 +390,7 @@ const validator: Validator<number> = (value) => {
 };
 
 // This validator will also accept a value of 0, as we consider it "empty"
-const optionalValidator = toOptionalValidator(validator, 0);
+const optionalValidator = toOptionalValidator(validator, (value) => value === 0);
 ```
 
 ### hasDefinedKeys

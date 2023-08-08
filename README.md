@@ -389,7 +389,7 @@ const validator: Validator<number> = (value) => {
   }
 };
 
-// We also accept a value of 0, as we consider it "empty"
+// This validator will also accept a value of 0, as we consider it "empty"
 const optionalValidator = toOptionalValidator(validator, 0);
 ```
 

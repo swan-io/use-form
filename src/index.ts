@@ -122,7 +122,7 @@ const isPromise = <T>(value: unknown): value is Promise<T> =>
   (typeof value === "object" || typeof value === "function") &&
   typeof (value as { then?: Function }).then === "function";
 
-export const createOptionalValidator =
+export const toOptionalValidator =
   <Value, ErrorMessage = string>(
     validator: Validator<Value, ErrorMessage>,
     emptyValue?: Value,

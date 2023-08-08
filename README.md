@@ -362,7 +362,7 @@ const MyAwesomeForm = () => {
 
 ### toOptionalValidator
 
-Very often, we want to execute validation only if a value is not empty. By wrapping any validator (or combined validators) with `toOptionalValidator`, you can bypass the validation for such cases.
+Very often, we want to execute validation only if a value is not empty. By wrapping any validator (or combined validators) with `toOptionalValidator`, you can bypass the validation in such cases.
 
 ```tsx
 import { toOptionalValidator, Validator } from "react-ux-form";

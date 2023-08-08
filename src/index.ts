@@ -63,6 +63,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
     name: N;
     children: (
       props: FieldState<Values[N], ErrorMessage> & {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref: MutableRefObject<any>;
         onChange: (value: Values[N]) => void;
         onBlur: () => void;
@@ -120,7 +121,7 @@ const extractInitialValue = <Value>(value: Value | (() => Value)): Value =>
 const isPromise = <T>(value: unknown): value is Promise<T> =>
   !!value &&
   (typeof value === "object" || typeof value === "function") &&
-  typeof (value as { then?: Function }).then === "function";
+  typeof (value as { then?: () => void }).then === "function";
 
 export const combineValidators =
   <Value, ErrorMessage = string>(
@@ -158,11 +159,13 @@ const isEmptyString = (value: unknown) => value === "";
 export const toOptionalValidator =
   <Value, ErrorMessage = string>(
     validator: Validator<Value, ErrorMessage>,
-    ...[isEmptyValue = isEmptyString]: Value extends string
+    ...args: Value extends string
       ? [isEmptyValue?: (value: Value) => boolean]
       : [isEmptyValue: (value: Value) => boolean]
   ): Validator<Value, ErrorMessage> =>
   (value) => {
+    const [isEmptyValue = isEmptyString] = args;
+
     if (!isEmptyValue(value)) {
       return validator(value);
     }
@@ -214,6 +217,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
   type CallbackMap = Record<Name, Set<() => void>>;
   type MountedMap = Record<Name, boolean>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type RefMap = Record<Name, MutableRefObject<any>>;
   type TimeoutMap = Record<Name, number | undefined>;
 
@@ -557,7 +561,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       if (isPromise(effect)) {
         forceUpdate();
 
-        effect.finally(() => {
+        void effect.finally(() => {
           formStatus.current = "submitted";
 
           if (mounted.current) {
@@ -615,7 +619,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       forceUpdate(); // Async validation flow: we need to give visual feedback
 
-      Promise.all(results.map((result) => Promise.resolve(result)))
+      void Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
           const success = results.every((result) => typeof result === "undefined");

@@ -122,17 +122,6 @@ const isPromise = <T>(value: unknown): value is Promise<T> =>
   (typeof value === "object" || typeof value === "function") &&
   typeof (value as { then?: Function }).then === "function";
 
-export const toOptionalValidator =
-  <Value, ErrorMessage = string>(
-    validator: Validator<Value, ErrorMessage>,
-    emptyValue?: Value,
-  ): Validator<Value, ErrorMessage> =>
-  (value) => {
-    if (value !== (typeof emptyValue !== "undefined" ? emptyValue : "")) {
-      return validator(value);
-    }
-  };
-
 export const combineValidators =
   <Value, ErrorMessage = string>(
     ...validators: (Validator<Value, ErrorMessage> | false)[]
@@ -161,6 +150,20 @@ export const combineValidators =
 
     if (nextValidators.length > 0) {
       return combineValidators(...nextValidators)(value);
+    }
+  };
+
+export const toOptionalValidator =
+  <Value, ErrorMessage = string, EmptyValue extends Value = Value>(
+    validator: Validator<Value, ErrorMessage>,
+    // @ts-expect-error
+    ...[emptyValue = ""]: Value extends string
+      ? [emptyValue?: EmptyValue]
+      : [emptyValue: EmptyValue]
+  ): Validator<Value, ErrorMessage> =>
+  (value) => {
+    if (value !== emptyValue) {
+      return validator(value);
     }
   };
 

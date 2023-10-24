@@ -38,7 +38,7 @@ export type FieldState<Value, ErrorMessage = string> = {
 
 export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
   [N in keyof Values]: {
-    initialValue: Values[N] | (() => Values[N]);
+    initialValue: Values[N];
     strategy?: Strategy;
     debounceInterval?: number;
     isEqual?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
@@ -113,9 +113,6 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
 const identity = <T>(value: T) => value;
 const noop = () => {};
-
-const extractInitialValue = <Value>(value: Value | (() => Value)): Value =>
-  typeof value === "function" ? (value as () => Value)() : value;
 
 const isPromise = <T>(value: unknown): value is Promise<T> =>
   !!value &&
@@ -222,7 +219,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   const api = useMemo(() => {
     const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
     const getIsEqual = (name: Name) => config.current[name].isEqual ?? Object.is;
-    const getInitialValue = (name: Name) => extractInitialValue(config.current[name].initialValue);
+    const getInitialValue = (name: Name) => config.current[name].initialValue;
     const getSanitize = (name: Name) => config.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
@@ -504,6 +501,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
     const resetForm: Contract["resetForm"] = () => {
       Object.keys(config.current).forEach((name) => resetField(name));
+
       formStatus.current = "untouched";
       forceUpdate();
     };
@@ -585,7 +583,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         return handleEffect(onFailure(errors), wasEditing);
       }
 
-      forceUpdate(); // Async validation flow: we need to give visual feedback
+      forceUpdate(); // submit is async: we need to give visual feedback
 
       void Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
@@ -642,7 +640,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
         api.setState(name, {
-          value: extractInitialValue(config.current[name].initialValue),
+          value: config.current[name].initialValue,
           talkative: false,
           validity: { tag: "unknown" },
         });

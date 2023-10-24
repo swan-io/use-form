@@ -104,7 +104,8 @@ const {
     // Properties below are optional (those are the default values)
     strategy: "onSuccessOrBlur",
     debounceInterval: 0,
-    equalityFn: (value1, value2) => Object.is(value1, value2),
+    isEqual: (valueBeforeValidate, valueAfterValidate) =>
+      Object.is(valueBeforeValidate, valueAfterValidate),
     sanitize: (value) => value,
     validate: (value, { focusField, getFieldState }) => {},
   },
@@ -126,7 +127,7 @@ type fieldConfig = {
 
   // When performing async validation, it might happen that the value has changed between the start and the end of its execution
   // That's why we compare the two values: to ensure that the feedback given to the user is correct
-  equalityFn: (value1: Value, value2: Value) => boolean;
+  isEqual: (value1: Value, value2: Value) => boolean;
 
   // Will be run on value before validation and submission. Useful from trimming whitespaces
   sanitize: (value: Value) => Value;

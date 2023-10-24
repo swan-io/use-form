@@ -1,4 +1,4 @@
-const { dependencies } = require("./package.json");
+const { devDependencies } = require("./package.json");
 const path = require("path");
 
 module.exports = {
@@ -7,13 +7,14 @@ module.exports = {
     "plugin:react-hooks/recommended",
   ],
 
-  settings: {
-    react: { version: dependencies.react },
-  },
   parserOptions: {
     project: path.resolve(__dirname + "/tsconfig.json"),
   },
-
+  settings: {
+    react: {
+      version: devDependencies.react.replace(/[^.\d]/g, ""),
+    },
+  },
   rules: {
     "@typescript-eslint/no-unsafe-call": "off",
     "@typescript-eslint/no-unsafe-member-access": "off",

@@ -171,8 +171,6 @@ A component that exposes everything you need locally as a `children` render prop
       onBlur: () => void;
       // The onChange handler (required)
       onChange: (value: Value) => void;
-      // Focus the next field (uses the field config declaration order in useForm)
-      focusNextField: () => void;
     }) => /* … */
   }
 </Field>

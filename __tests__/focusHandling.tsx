@@ -79,7 +79,7 @@ test("the first errored field is focused after submission", async () => {
         </Field>
 
         <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm((values) => {})}>Submit</button>
+        <button onClick={(e) => submitForm()}>Submit</button>
       </form>
     );
   };
@@ -142,19 +142,7 @@ test("the user can disable autofocus on first error", async () => {
           )}
         </Field>
 
-        <button
-          onClick={(e) =>
-            submitForm(
-              (values) => {},
-              () => {},
-              {
-                avoidFocusOnError: true,
-              },
-            )
-          }
-        >
-          Submit
-        </button>
+        <button onClick={(e) => submitForm({ avoidFocusOnError: true })}>Submit</button>
       </form>
     );
   };

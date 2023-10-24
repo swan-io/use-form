@@ -104,11 +104,11 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
   ) => () => void;
 
   resetForm: () => void;
-  submitForm: (
-    onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
-    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
-    options?: { avoidFocusOnError?: boolean },
-  ) => void;
+  submitForm: (options?: {
+    onSuccess?: (values: Partial<Values>) => Promise<unknown> | void;
+    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void;
+    avoidFocusOnError?: boolean;
+  }) => void;
 };
 
 const identity = <T>(value: T) => value;
@@ -541,7 +541,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }
     };
 
-    const submitForm: Contract["submitForm"] = (onSuccess, onFailure = noop, options = {}) => {
+    const submitForm: Contract["submitForm"] = ({
+      onSuccess = noop,
+      onFailure = noop,
+      avoidFocusOnError = false,
+    } = {}) => {
       if (formStatus.current === "submitting") {
         return; // Avoid concurrent submissions
       }
@@ -555,7 +559,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const results: ValidatorResult<ErrorMessage>[] = [];
 
       // autofocusing first error is the default behaviour
-      const shouldFocusOnError = !options.avoidFocusOnError;
+      const shouldFocusOnError = !avoidFocusOnError;
 
       names.forEach((name: Name, index) => {
         setTalkative(name);

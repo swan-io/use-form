@@ -46,8 +46,8 @@ export const BasicForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) => {
+    submitForm({
+      onSuccess: (values) => {
         console.log("values", values);
 
         toast({
@@ -57,7 +57,7 @@ export const BasicForm = () => {
           isClosable: true,
         });
       },
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -67,7 +67,7 @@ export const BasicForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (

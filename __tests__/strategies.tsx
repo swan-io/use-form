@@ -168,7 +168,7 @@ test("validation strategies give feedback at the right time", async () => {
         </Field>
 
         <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm((values) => {})}>Submit</button>
+        <button onClick={(e) => submitForm()}>Submit</button>
       </form>
     );
   };

@@ -48,8 +48,8 @@ export const CreditCardForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) => {
+    submitForm({
+      onSuccess: (values) => {
         console.log("values", values);
 
         toast({
@@ -59,7 +59,7 @@ export const CreditCardForm = () => {
           isClosable: true,
         });
       },
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -69,7 +69,7 @@ export const CreditCardForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (

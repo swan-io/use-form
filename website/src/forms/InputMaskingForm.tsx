@@ -45,8 +45,8 @@ export const InputMaskingForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) => {
+    submitForm({
+      onSuccess: (values) => {
         console.log("values", values);
 
         toast({
@@ -56,7 +56,7 @@ export const InputMaskingForm = () => {
           isClosable: true,
         });
       },
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -66,7 +66,7 @@ export const InputMaskingForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (

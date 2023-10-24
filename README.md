@@ -307,14 +307,12 @@ type resetForm = () => void;
 Submit your form. Each callback could return a `Promise` to keep `formStatus` in `submitting` state.
 
 ```tsx
-type submitForm = (
-  onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
-  onFailure?: (errors: Partial<ErrorMessages>) => Promise<unknown> | void,
-  options?: {
-    // by default, it will try to focus the first errored field (which is a good practice)
-    avoidFocusOnError?: boolean;
-  },
-) => void;
+type submitForm = (options?: {
+  onSuccess?: (values: Partial<Values>) => Promise<unknown> | void;
+  onFailure?: (errors: Partial<ErrorMessages>) => Promise<unknown> | void;
+  // by default, it will try to focus the first errored field (which is a good practice)
+  avoidFocusOnError?: boolean;
+}) => void;
 ```
 
 ### combineValidators
@@ -409,10 +407,10 @@ const MyAwesomeForm = () => {
       onSubmit={(event: React.FormEvent) => {
         event.preventDefault();
 
-        submitForm(
-          (values) => console.log("values", values), // all fields are valid
-          (errors) => console.log("errors", errors), // at least one field is invalid
-        );
+        submitForm({
+          onSuccess: (values) => console.log("values", values), // all fields are valid
+          onFailure: (errors) => console.log("errors", errors), // at least one field is invalid
+        });
       }}
     >
       <Field name="firstName">

@@ -311,7 +311,7 @@ type submitForm = (options?: {
   onSuccess?: (values: Values) => Promise<unknown> | void;
   onFailure?: (errors: Partial<ErrorMessages>) => Promise<unknown> | void;
   // by default, it will try to focus the first errored field (which is a good practice)
-  avoidFocusOnError?: boolean;
+  shouldFocusOnError?: boolean;
 }) => void;
 ```
 

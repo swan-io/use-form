@@ -107,7 +107,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
   submitForm: (options?: {
     onSuccess?: (values: Partial<Values>) => Promise<unknown> | void;
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void;
-    avoidFocusOnError?: boolean;
+    shouldFocusOnError?: boolean;
   }) => void;
 };
 
@@ -542,7 +542,8 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const submitForm: Contract["submitForm"] = ({
       onSuccess = noop,
       onFailure = noop,
-      avoidFocusOnError = false,
+      // autofocusing first error is the default behaviour
+      shouldFocusOnError = true,
     } = {}) => {
       if (formStatus.current === "submitting") {
         return; // Avoid concurrent submissions
@@ -555,9 +556,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const values = {} as Values;
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
-
-      // autofocusing first error is the default behaviour
-      const shouldFocusOnError = !avoidFocusOnError;
 
       names.forEach((name: Name, index) => {
         setTalkative(name);

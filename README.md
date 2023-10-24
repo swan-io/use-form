@@ -308,7 +308,7 @@ Submit your form. Each callback could return a `Promise` to keep `formStatus` in
 
 ```tsx
 type submitForm = (options?: {
-  onSuccess?: (values: Partial<Values>) => Promise<unknown> | void;
+  onSuccess?: (values: Values) => Promise<unknown> | void;
   onFailure?: (errors: Partial<ErrorMessages>) => Promise<unknown> | void;
   // by default, it will try to focus the first errored field (which is a good practice)
   avoidFocusOnError?: boolean;

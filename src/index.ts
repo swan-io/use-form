@@ -41,7 +41,7 @@ export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
     initialValue: Values[N];
     strategy?: Strategy;
     debounceInterval?: number;
-    isEqual?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
+    isEqual?: (preValidationValue: Values[N], postValidationValue: Values[N]) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],

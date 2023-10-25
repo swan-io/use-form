@@ -553,7 +553,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       formStatus.current = "submitting";
 
       const names: Name[] = Object.keys(states.current);
-      const values = {} as Values;
+      const values: Partial<Values> = {};
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
 

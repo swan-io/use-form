@@ -167,6 +167,13 @@ export const toOptionalValidator =
     }
   };
 
+export const hasDefinedKeys = <T extends AnyRecord, K extends keyof T = keyof T>(
+  object: T,
+  keys: K[],
+): object is T & {
+  [K1 in K]-?: Exclude<T[K1], undefined>;
+} => keys.every((key) => typeof object[key] !== "undefined");
+
 export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
 ): Form<Values, ErrorMessage> => {

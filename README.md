@@ -20,6 +20,7 @@ $ yarn add react-ux-form
 - Subscription-based field updates (avoid re-render the whole form on each keystroke 🔥)
 - Validation strategies ✨
 - Field sanitization
+- Mounted-only fields validation
 - Advanced focus handling
 - Best-in-class TypeScript support
 - Sync and async field validation
@@ -33,6 +34,7 @@ Because, as silly as it seems, we couldn't find any existing library which fits 
 - We want validation strategies per field because we fell in love with them when we read the [re-formality](https://github.com/MinimaHQ/re-formality) documentation (which is unfortunately only available for [ReScript](https://rescript-lang.org/)).
 - It should be able to handle huge forms without a single performance hiccup.
 - Validation should be simple, reusable, and testable (aka just functions).
+- It shouldn't even try to validate unmounted fields.
 - It should have built-in focus management (to improve the keyboard flow of our React Native forms).
 
 ## Validation strategies ✨

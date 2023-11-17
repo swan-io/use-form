@@ -249,15 +249,10 @@ type focusField = (name: FieldName) => void;
 
 #### resetField
 
-Hide user feedback (the field is not _talkative_ anymore). If `feedbackOnly` is not set to `true`, value will also be resetted to `initialValue`.
+Hide user feedback (the field is not _talkative_ anymore) and set value to `initialValue`.
 
 ```tsx
-type resetField = (
-  name: FieldName,
-  options?: {
-    feedbackOnly?: boolean;
-  },
-) => void;
+type resetField = (name: FieldName) => void;
 ```
 
 #### sanitizeField
@@ -304,10 +299,10 @@ React.useEffect(() => {
 
 #### resetForm
 
-Hide user feedback for all fields (they are not _talkative_ anymore). If `feedbackOnly` is not set to `true`, values will also be resetted to their corresponding `initialValue` and `formStatus` will be resetted to `untouched`.
+Hide user feedback for all fields (they are not _talkative_ anymore). Reset values to their corresponding `initialValue` and `formStatus` to `untouched`.
 
 ```tsx
-type resetForm = (options?: { feedbackOnly?: boolean }) => void;
+type resetForm = () => void;
 ```
 
 #### submitForm

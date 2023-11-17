@@ -95,7 +95,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
   setFieldError: (name: keyof Values, error?: ErrorMessage) => void;
 
   focusField: (name: keyof Values) => void;
-  resetField: (name: keyof Values, options?: { feedbackOnly?: boolean }) => void;
+  resetField: (name: keyof Values) => void;
   sanitizeField: (name: keyof Values) => void;
   validateField: (name: keyof Values) => Promise<ErrorMessage | void>;
 
@@ -104,7 +104,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
     listener: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
   ) => () => void;
 
-  resetForm: (options?: { feedbackOnly?: boolean }) => void;
+  resetForm: () => void;
   submitForm: (
     onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
@@ -421,11 +421,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }
     };
 
-    const resetField: Contract["resetField"] = (name, options = {}) => {
+    const resetField: Contract["resetField"] = (name) => {
       clearDebounceTimeout(name);
 
-      setState(name, ({ value }) => ({
-        value: !options.feedbackOnly ? getInitialValue(name) : value,
+      setState(name, () => ({
+        value: getInitialValue(name),
         talkative: false,
         validity: { tag: "unknown" },
       }));
@@ -534,13 +534,9 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }
     };
 
-    const resetForm: Contract["resetForm"] = (options = {}) => {
-      Object.keys(config.current).forEach((name) => resetField(name, options));
-
-      if (!options.feedbackOnly) {
-        formStatus.current = "untouched";
-      }
-
+    const resetForm: Contract["resetForm"] = () => {
+      Object.keys(config.current).forEach((name) => resetField(name));
+      formStatus.current = "untouched";
       forceUpdate();
     };
 

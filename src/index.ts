@@ -41,7 +41,7 @@ export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
     initialValue: Values[N] | (() => Values[N]);
     strategy?: Strategy;
     debounceInterval?: number;
-    equalityFn?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
+    isEqual?: (valueBeforeValidate: Values[N], valueAfterValidate: Values[N]) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],
@@ -230,7 +230,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
   const api = useMemo(() => {
     const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
-    const getEqualityFn = (name: Name) => config.current[name].equalityFn ?? Object.is;
+    const getIsEqual = (name: Name) => config.current[name].isEqual ?? Object.is;
     const getInitialValue = (name: Name) => extractInitialValue(config.current[name].initialValue);
     const getSanitize = (name: Name) => config.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
@@ -366,10 +366,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       return promiseOrError
         .then((error) => {
-          const equalityFn = getEqualityFn(name);
+          const isEqual = getIsEqual(name);
           const valueAtEnd = sanitizeAtStart(states.current[name].exposed.value);
 
-          if (!equalityFn(valueAtStart, valueAtEnd)) {
+          if (!isEqual(valueAtStart, valueAtEnd)) {
             return;
           }
           if (error === undefined) {

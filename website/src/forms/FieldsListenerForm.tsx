@@ -46,8 +46,8 @@ export const FieldsListenerForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) => {
+    submitForm({
+      onSuccess: (values) => {
         console.log("values", values);
 
         toast({
@@ -57,7 +57,7 @@ export const FieldsListenerForm = () => {
           isClosable: true,
         });
       },
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -67,7 +67,7 @@ export const FieldsListenerForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (

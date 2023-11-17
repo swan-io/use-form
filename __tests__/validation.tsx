@@ -46,7 +46,7 @@ test("input validation evolve though time", async () => {
         </Field>
 
         <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm((values) => {})}>Submit</button>
+        <button onClick={(e) => submitForm()}>Submit</button>
       </form>
     );
   };
@@ -105,7 +105,7 @@ test("input validation evolve though time with async validation", async () => {
         </Field>
 
         <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm((values) => {})}>Submit</button>
+        <button onClick={(e) => submitForm()}>Submit</button>
       </form>
     );
   };

@@ -27,8 +27,8 @@ export const AsyncSubmissionForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) =>
+    submitForm({
+      onSuccess: (values) =>
         resolveAfter(2000).then(() => {
           console.log("values", values);
 
@@ -39,7 +39,7 @@ export const AsyncSubmissionForm = () => {
             isClosable: true,
           });
         }),
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -49,7 +49,7 @@ export const AsyncSubmissionForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (

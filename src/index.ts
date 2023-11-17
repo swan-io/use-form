@@ -104,11 +104,11 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
   ) => () => void;
 
   resetForm: () => void;
-  submitForm: (
-    onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
-    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void,
-    options?: { avoidFocusOnError?: boolean },
-  ) => void;
+  submitForm: (options?: {
+    onSuccess?: (values: Partial<Values>) => Promise<unknown> | void;
+    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void;
+    focusOnFirstError?: boolean;
+  }) => void;
 };
 
 const identity = <T>(value: T) => value;
@@ -559,7 +559,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }
     };
 
-    const submitForm: Contract["submitForm"] = (onSuccess, onFailure = noop, options = {}) => {
+    const submitForm: Contract["submitForm"] = ({
+      onSuccess = noop,
+      onFailure = noop,
+      focusOnFirstError = true,
+    } = {}) => {
       if (formStatus.current === "submitting") {
         return; // Avoid concurrent submissions
       }
@@ -571,9 +575,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const values: Partial<Values> = {};
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
-
-      // autofocusing first error is the default behaviour
-      const shouldFocusOnError = !options.avoidFocusOnError;
 
       names.forEach((name: Name, index) => {
         setTalkative(name);
@@ -588,7 +589,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           return handleEffect(onSuccess(values), wasEditing);
         }
 
-        if (shouldFocusOnError) {
+        if (focusOnFirstError) {
           focusFirstError(names, results);
         }
 
@@ -610,7 +611,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
             return handleEffect(onSuccess(values), wasEditing);
           }
 
-          if (shouldFocusOnError) {
+          if (focusOnFirstError) {
             focusFirstError(names, results);
           }
 

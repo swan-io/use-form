@@ -67,7 +67,6 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
         ref: MutableRefObject<any>;
         onChange: (value: Values[N]) => void;
         onBlur: () => void;
-        focusNextField: () => void;
       },
     ) => ReactElement | null;
   }) => ReactElement | null) & {
@@ -521,19 +520,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }
     };
 
-    const getFocusNextField = (name: Name) => () => {
-      const keys: Name[] = Object.keys(config.current);
-      const index = keys.findIndex((key) => key === name);
-
-      if (typeof index !== "undefined") {
-        const nextField = keys[index + 1];
-
-        if (typeof nextField !== "undefined") {
-          focusField(nextField);
-        }
-      }
-    };
-
     const resetForm: Contract["resetForm"] = () => {
       Object.keys(config.current).forEach((name) => resetField(name));
       formStatus.current = "untouched";
@@ -656,7 +642,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       setState,
       getOnChange,
       getOnBlur,
-      getFocusNextField,
     };
   }, []);
 
@@ -724,7 +709,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       return children({
         ...api.getFieldState(name),
         ref: refs.current[name],
-        focusNextField: useMemo(() => api.getFocusNextField(name), [name]),
         onBlur: useMemo(() => api.getOnBlur(name), [name]),
         onChange: useMemo(() => api.getOnChange(name), [name]),
       });

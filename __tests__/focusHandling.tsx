@@ -172,7 +172,7 @@ test("the user can disable autofocus on first error", async () => {
   expect(document.activeElement).not.toBe(input);
 });
 
-test("focusField and focusNextField behave like expected", async () => {
+test("focusField behave like expected", async () => {
   const Test = () => {
     const { Field, focusField } = useForm({
       firstName: { initialValue: "" },
@@ -182,7 +182,7 @@ test("focusField and focusNextField behave like expected", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, focusNextField, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
@@ -198,7 +198,7 @@ test("focusField and focusNextField behave like expected", async () => {
                   onChange(value);
 
                   if (value.length > 3) {
-                    focusNextField();
+                    focusField("lastName");
                   }
                 }}
               />

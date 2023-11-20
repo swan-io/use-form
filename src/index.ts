@@ -92,12 +92,15 @@ export const toOptionalValidator =
     }
   };
 
+export const isFieldMounted = <T>(value: T): value is Exclude<T, NotMounted> =>
+  value !== NOT_MOUNTED;
+
 export const areFieldsMounted = <T extends AnyRecord, K extends keyof T = keyof T>(
-  object: T,
+  values: T,
   keys: K[],
-): object is T & {
+): values is T & {
   [K1 in K]: Exclude<T[K1], NotMounted>;
-} => keys.every((key) => object[key] !== NOT_MOUNTED);
+} => keys.every(isFieldMounted);
 
 export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,

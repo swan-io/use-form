@@ -1,8 +1,12 @@
 import { MutableRefObject, ReactElement } from "react";
-import { NotMounted } from "./notMounted";
+import { Unset } from "./areValuesSet";
 
 export type AnyRecord = Record<string, unknown>;
 export type EmptyRecord = Record<PropertyKey, never>;
+
+export type UnsettableRecord<T extends AnyRecord> = {
+  [K in keyof T]: T[K] | Unset;
+};
 
 export type Simplify<T extends AnyRecord> = T extends EmptyRecord
   ? EmptyRecord
@@ -98,10 +102,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
   resetForm: () => void;
   submitForm: (options?: {
-    onSuccess?: (values: {
-      [K in keyof Values]: Values[K] | NotMounted;
-    }) => Promise<unknown> | void;
-
+    onSuccess?: (values: UnsettableRecord<Values>) => Promise<unknown> | void;
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void;
     focusOnFirstError?: boolean;
   }) => void;

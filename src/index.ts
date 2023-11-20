@@ -99,11 +99,8 @@ export const isFieldMounted = <T>(value: T): value is Exclude<T, NotMounted> =>
 export const areFieldsMounted = <T extends AnyRecord, K extends keyof T = keyof T>(
   values: T,
   keys: K[],
-): values is Simplify<
-  T & {
-    [K1 in K]: Exclude<T[K1], NotMounted>;
-  }
-> => keys.every(isFieldMounted);
+): values is Simplify<T & { [K1 in K]: Exclude<T[K1], NotMounted> }> =>
+  keys.every((key) => values[key] !== NOT_MOUNTED);
 
 export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,

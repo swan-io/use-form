@@ -2,6 +2,11 @@ import { MutableRefObject, ReactElement } from "react";
 import { NotMounted } from "./notMounted";
 
 export type AnyRecord = Record<string, unknown>;
+export type EmptyRecord = Record<PropertyKey, never>;
+
+export type Simplify<T extends AnyRecord> = T extends EmptyRecord
+  ? EmptyRecord
+  : { [K in keyof T]: T[K] };
 
 export type ValidatorResult<ErrorMessage = string> =
   | ErrorMessage

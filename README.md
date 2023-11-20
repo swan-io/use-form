@@ -385,12 +385,12 @@ const validator: Validator<number> = (value) => {
 const optionalValidator = toOptionalValidator(validator, (value) => value === 0);
 ```
 
-### hasDefinedKeys
+### areFieldsMounted
 
-As some of your fields might be unmounted on submit, the `submitForm` method could not guarantee that every field value is defined and valid. We export `hasDefinedKeys` helper function that allows you to test if some object keys are defined.
+As some of your fields might be unmounted on submit, the `submitForm` method could not guarantee that every field value is defined and valid. We export `areFieldsMounted` helper function that allows you to test if some object keys are defined.
 
 ```tsx
-import { hasDefinedKeys, useForm } from "react-ux-form";
+import { areFieldsMounted, useForm } from "react-ux-form";
 
 const MyAwesomeForm = () => {
   const { Field, submitForm } = useForm({
@@ -400,8 +400,8 @@ const MyAwesomeForm = () => {
 
   const handleSubmit = () => {
     submitForm((values) => {
-      if (hasDefinedKeys(values, ["firstName", "lastName"])) {
-        // values.firstName and values.lastName are defined (the fields are mounted)
+      if (areFieldsMounted(values, ["firstName", "lastName"])) {
+        // values.firstName and values.lastName are defined
       }
     });
   };

@@ -1,6 +1,5 @@
 import {
   MutableRefObject,
-  ReactElement,
   SetStateAction,
   useEffect,
   useLayoutEffect,
@@ -9,107 +8,30 @@ import {
   useRef,
   useSyncExternalStore,
 } from "react";
+import { NOT_MOUNTED, NotMounted } from "./notMounted";
+import {
+  AnyRecord,
+  FieldState,
+  Form,
+  FormConfig,
+  FormStatus,
+  Strategy,
+  Validator,
+  ValidatorResult,
+} from "./types";
+
+export {
+  FieldState,
+  Form,
+  FormConfig,
+  FormStatus,
+  Strategy,
+  Validator,
+  ValidatorResult,
+} from "./types";
 
 // For server-side rendering / react-native
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
-
-type AnyRecord = Record<string, unknown>;
-
-export type ValidatorResult<ErrorMessage = string> =
-  | ErrorMessage
-  | void
-  | Promise<ErrorMessage | void>;
-
-export type Validator<Value, ErrorMessage = string> = (
-  value: Value,
-) => ValidatorResult<ErrorMessage>;
-
-export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
-
-// Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md
-export type Strategy = "onChange" | "onSuccess" | "onBlur" | "onSuccessOrBlur" | "onSubmit";
-
-export type FieldState<Value, ErrorMessage = string> = {
-  value: Value;
-  validating: boolean;
-  valid: boolean;
-  error: ErrorMessage | undefined;
-};
-
-export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
-  [N in keyof Values]: {
-    initialValue: Values[N] | (() => Values[N]);
-    strategy?: Strategy;
-    debounceInterval?: number;
-    isEqual?: (preValidationValue: Values[N], postValidationValue: Values[N]) => boolean;
-    sanitize?: (value: Values[N]) => Values[N];
-    validate?: (
-      value: Values[N],
-      helpers: {
-        focusField: (name: keyof Values) => void;
-        getFieldState: <N extends keyof Values>(
-          name: N,
-          options?: { sanitize?: boolean },
-        ) => FieldState<Values[N], ErrorMessage>;
-      },
-    ) => ValidatorResult<ErrorMessage>;
-  };
-};
-
-export type Form<Values extends AnyRecord, ErrorMessage = string> = {
-  formStatus: FormStatus;
-
-  Field: (<N extends keyof Values>(props: {
-    name: N;
-    children: (
-      props: FieldState<Values[N], ErrorMessage> & {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ref: MutableRefObject<any>;
-        onChange: (value: Values[N]) => void;
-        onBlur: () => void;
-      },
-    ) => ReactElement | null;
-  }) => ReactElement | null) & {
-    displayName?: string;
-  };
-
-  FieldsListener: (<N extends keyof Values>(props: {
-    names: N[];
-    children: (states: {
-      [N1 in N]: FieldState<Values[N1], ErrorMessage>;
-    }) => ReactElement | null;
-  }) => ReactElement | null) & {
-    displayName?: string;
-  };
-
-  getFieldState: <N extends keyof Values>(
-    name: N,
-    options?: { sanitize?: boolean },
-  ) => FieldState<Values[N], ErrorMessage>;
-  setFieldValue: <N extends keyof Values>(
-    name: N,
-    value: Values[N],
-    options?: { validate?: boolean },
-  ) => void;
-  setFieldError: (name: keyof Values, error?: ErrorMessage) => void;
-
-  focusField: (name: keyof Values) => void;
-  resetField: (name: keyof Values) => void;
-  sanitizeField: (name: keyof Values) => void;
-  validateField: (name: keyof Values) => Promise<ErrorMessage | void>;
-
-  listenFields: <N extends keyof Values>(
-    names: N[],
-    listener: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
-  ) => () => void;
-
-  resetForm: () => void;
-  submitForm: (options?: {
-    onSuccess?: (values: Partial<Values>) => Promise<unknown> | void;
-    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void;
-    focusOnFirstError?: boolean;
-  }) => void;
-};
 
 const identity = <T>(value: T) => value;
 const noop = () => {};
@@ -170,12 +92,12 @@ export const toOptionalValidator =
     }
   };
 
-export const hasDefinedKeys = <T extends AnyRecord, K extends keyof T = keyof T>(
+export const areFieldsMounted = <T extends AnyRecord, K extends keyof T = keyof T>(
   object: T,
   keys: K[],
 ): object is T & {
-  [K1 in K]-?: Exclude<T[K1], undefined>;
-} => keys.every((key) => typeof object[key] !== "undefined");
+  [K1 in K]: Exclude<T[K1], NotMounted>;
+} => keys.every((key) => object[key] !== NOT_MOUNTED);
 
 export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
@@ -571,15 +493,23 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const wasEditing = formStatus.current === "editing";
       formStatus.current = "submitting";
 
-      const names: Name[] = Object.keys(mounteds.current).filter((name) => mounteds.current[name]);
-      const values: Partial<Values> = {};
+      const names: Name[] = Object.keys(states.current);
+
+      const values = {} as {
+        [K in keyof Values]: Values[K] | typeof NOT_MOUNTED;
+      };
+
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
 
       names.forEach((name: Name, index) => {
-        setTalkative(name);
-        values[name] = getFieldState(name, { sanitize: true }).value;
-        results[index] = internalValidateField(name);
+        if (isMounted(name)) {
+          setTalkative(name);
+          values[name] = getFieldState(name, { sanitize: true }).value;
+          results[index] = internalValidateField(name);
+        } else {
+          values[name] = NOT_MOUNTED;
+        }
       });
 
       if (isSyncSubmission(results)) {

@@ -49,7 +49,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
   type StateMap = {
     [N in Name]: Readonly<{
-      exposed: FieldState<Values[N], ErrorMessage>;
+      value: Values[N];
       talkative: boolean;
       validity:
         | { readonly tag: "unknown" }
@@ -93,36 +93,26 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       name: N,
       state: SetStateAction<{ value: Values[N] } & Pick<StateMap[N], "talkative" | "validity">>,
     ) => {
-      const currentState = states.current[name];
+      states.current[name] = typeof state === "function" ? state(states.current[name]) : state;
+    };
 
-      const nextState =
-        typeof state === "function"
-          ? state({
-              value: currentState.exposed.value,
-              talkative: currentState.talkative,
-              validity: currentState.validity,
-            })
-          : state;
+    const getState = <N extends Name>(name: N): FieldState<Values[N], ErrorMessage> => {
+      const state = states.current[name];
 
-      const exposed =
-        !nextState.talkative || nextState.validity.tag === "unknown"
-          ? // Avoid giving feedback too soon
-            {
-              validating: false,
-              valid: getValidate(name) == noop,
-              error: undefined,
-            }
-          : {
-              validating: nextState.validity.tag === "validating",
-              valid: nextState.validity.tag === "valid",
-              error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
-            };
-
-      states.current[name] = {
-        talkative: nextState.talkative,
-        validity: nextState.validity,
-        exposed: { ...exposed, value: nextState.value },
-      };
+      return !state.talkative || state.validity.tag === "unknown"
+        ? // Avoid giving feedback too soon
+          {
+            value: state.value,
+            validating: false,
+            valid: getValidate(name) == noop,
+            error: undefined,
+          }
+        : {
+            value: state.value,
+            validating: state.validity.tag === "validating",
+            valid: state.validity.tag === "valid",
+            error: state.validity.tag === "invalid" ? state.validity.error : undefined,
+          };
     };
 
     const clearDebounceTimeout = (name: Name): boolean => {
@@ -170,17 +160,17 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       name: N,
       options: { sanitize?: boolean } = {},
     ): FieldState<Values[N], ErrorMessage> => {
-      const { exposed } = states.current[name];
+      const state = getState(name);
 
       if (!options.sanitize) {
-        return exposed;
+        return state;
       }
 
       const sanitize = getSanitize(name);
 
       return {
-        ...exposed,
-        value: sanitize(exposed.value) as Values[N],
+        ...state,
+        value: sanitize(state.value) as Values[N],
       };
     };
 
@@ -189,7 +179,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       const sanitizeAtStart = getSanitize(name);
       const validate = getValidate(name);
-      const valueAtStart = sanitizeAtStart(states.current[name].exposed.value);
+      const valueAtStart = sanitizeAtStart(getState(name).value);
 
       const promiseOrError = validate(valueAtStart, {
         getFieldState,
@@ -217,7 +207,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       return promiseOrError
         .then((error) => {
           const isEqual = getIsEqual(name);
-          const valueAtEnd = sanitizeAtStart(states.current[name].exposed.value);
+          const valueAtEnd = sanitizeAtStart(getState(name).value);
 
           if (!isEqual(valueAtStart, valueAtEnd)) {
             return;

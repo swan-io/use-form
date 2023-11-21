@@ -82,7 +82,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const getInitialValue = (name: Name) =>
       getPotentiallyLazyValue(config.current[name].initialValue);
 
-    const getSanitize = (name: Name) => config.current[name].sanitize ?? identity;
+    const getSanitize = <N extends Name>(name: N) => config.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
@@ -96,19 +96,24 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       states.current[name] = typeof state === "function" ? state(states.current[name]) : state;
     };
 
-    const getDerivedState = <N extends Name>(name: N): FieldState<Values[N], ErrorMessage> => {
+    const getFieldState = <N extends Name>(
+      name: N,
+      options: { sanitize?: boolean } = {},
+    ): FieldState<Values[N], ErrorMessage> => {
+      const { sanitize = false } = options;
       const state = states.current[name];
+      const value = sanitize ? getSanitize(name)(state.value) : state.value;
 
       return !state.talkative || state.validity.tag === "unknown"
         ? // Avoid giving feedback too soon
           {
-            value: state.value,
+            value,
             validating: false,
             valid: getValidate(name) == noop,
             error: undefined,
           }
         : {
-            value: state.value,
+            value,
             validating: state.validity.tag === "validating",
             valid: state.validity.tag === "valid",
             error: state.validity.tag === "invalid" ? state.validity.error : undefined,
@@ -156,30 +161,12 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }));
     };
 
-    const getFieldState = <N extends Name>(
-      name: N,
-      options: { sanitize?: boolean } = {},
-    ): FieldState<Values[N], ErrorMessage> => {
-      const state = getDerivedState(name);
-
-      if (!options.sanitize) {
-        return state;
-      }
-
-      const sanitize = getSanitize(name);
-
-      return {
-        ...state,
-        value: sanitize(state.value) as Values[N],
-      };
-    };
-
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
       const debounced = clearDebounceTimeout(name);
 
       const sanitizeAtStart = getSanitize(name);
       const validate = getValidate(name);
-      const valueAtStart = sanitizeAtStart(getDerivedState(name).value);
+      const valueAtStart = sanitizeAtStart(getFieldState(name).value);
 
       const promiseOrError = validate(valueAtStart, {
         getFieldState,
@@ -207,7 +194,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       return promiseOrError
         .then((error) => {
           const isEqual = getIsEqual(name);
-          const valueAtEnd = sanitizeAtStart(getDerivedState(name).value);
+          const valueAtEnd = sanitizeAtStart(getFieldState(name).value);
 
           if (!isEqual(valueAtStart, valueAtEnd)) {
             return;

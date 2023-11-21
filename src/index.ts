@@ -3,7 +3,7 @@ export { combineValidators } from "./combineValidators";
 export { toOptionalValidator } from "./toOptionalValidator";
 export { useForm } from "./useForm";
 
-export {
+export type {
   FieldState,
   Form,
   FormConfig,

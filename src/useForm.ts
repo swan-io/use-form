@@ -96,7 +96,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       states.current[name] = typeof state === "function" ? state(states.current[name]) : state;
     };
 
-    const getState = <N extends Name>(name: N): FieldState<Values[N], ErrorMessage> => {
+    const getDerivedState = <N extends Name>(name: N): FieldState<Values[N], ErrorMessage> => {
       const state = states.current[name];
 
       return !state.talkative || state.validity.tag === "unknown"
@@ -160,7 +160,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       name: N,
       options: { sanitize?: boolean } = {},
     ): FieldState<Values[N], ErrorMessage> => {
-      const state = getState(name);
+      const state = getDerivedState(name);
 
       if (!options.sanitize) {
         return state;
@@ -179,7 +179,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       const sanitizeAtStart = getSanitize(name);
       const validate = getValidate(name);
-      const valueAtStart = sanitizeAtStart(getState(name).value);
+      const valueAtStart = sanitizeAtStart(getDerivedState(name).value);
 
       const promiseOrError = validate(valueAtStart, {
         getFieldState,
@@ -207,7 +207,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       return promiseOrError
         .then((error) => {
           const isEqual = getIsEqual(name);
-          const valueAtEnd = sanitizeAtStart(getState(name).value);
+          const valueAtEnd = sanitizeAtStart(getDerivedState(name).value);
 
           if (!isEqual(valueAtStart, valueAtEnd)) {
             return;

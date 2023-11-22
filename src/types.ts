@@ -21,6 +21,12 @@ export type Validator<Value, ErrorMessage = string> = (
   value: Value,
 ) => ValidatorResult<ErrorMessage>;
 
+export type Validity<ErrorMessage = string> =
+  | { readonly tag: "unknown" }
+  | { readonly tag: "validating" }
+  | { readonly tag: "valid" }
+  | { readonly tag: "invalid"; error: ErrorMessage };
+
 export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
 
 // Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md

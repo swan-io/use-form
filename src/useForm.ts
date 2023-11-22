@@ -19,6 +19,7 @@ import {
   Strategy,
   UnsettableRecord,
   ValidatorResult,
+  Validity,
 } from "./types";
 
 // For server-side rendering / react-native
@@ -47,30 +48,19 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
   }, []);
 
-  type StateMap = {
-    [N in Name]: Readonly<{
-      value: Values[N];
-      talkative: boolean;
-      validity:
-        | { readonly tag: "unknown" }
-        | { readonly tag: "validating" }
-        | { readonly tag: "valid" }
-        | { readonly tag: "invalid"; error: ErrorMessage };
-    }>;
-  };
-
-  const states = useRef() as MutableRefObject<StateMap>;
-
-  type CallbackMap = Record<Name, Set<() => void>>;
-  type MountedMap = Record<Name, boolean>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  type RefMap = Record<Name, MutableRefObject<any>>;
-  type TimeoutMap = Record<Name, number | undefined>;
-
-  const callbacks = useRef() as MutableRefObject<CallbackMap>;
-  const mounteds = useRef() as MutableRefObject<MountedMap>;
-  const refs = useRef() as MutableRefObject<RefMap>;
-  const timeouts = useRef() as MutableRefObject<TimeoutMap>;
+  const states = useRef() as MutableRefObject<{
+    [N in Name]: {
+      readonly callbacks: Set<() => void>;
+      readonly ref: MutableRefObject<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+      mounted: boolean;
+      timeout: number | undefined;
+      exposed: Readonly<{
+        talkative: boolean;
+        value: Values[N];
+        validity: Validity<ErrorMessage>;
+      }>;
+    };
+  }>;
 
   const field = useRef() as MutableRefObject<Contract["Field"]>;
   const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
@@ -86,14 +76,19 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
-    const isMounted = (name: Name) => mounteds.current[name];
-    const isTalkative = (name: Name) => states.current[name].talkative;
+    const isMounted = (name: Name) => states.current[name].mounted;
+    const isTalkative = (name: Name) => states.current[name].exposed.talkative;
 
     const setState = <N extends Name>(
       name: N,
-      state: SetStateAction<{ value: Values[N] } & Pick<StateMap[N], "talkative" | "validity">>,
+      state: SetStateAction<{
+        talkative: boolean;
+        value: Values[N];
+        validity: Validity<ErrorMessage>;
+      }>,
     ) => {
-      states.current[name] = typeof state === "function" ? state(states.current[name]) : state;
+      states.current[name].exposed =
+        typeof state === "function" ? state(states.current[name].exposed) : state;
     };
 
     const getFieldState = <N extends Name>(
@@ -101,7 +96,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       options: { sanitize?: boolean } = {},
     ): FieldState<Values[N], ErrorMessage> => {
       const { sanitize = false } = options;
-      const state = states.current[name];
+      const state = states.current[name].exposed;
       const value = sanitize ? getSanitize(name)(state.value) : state.value;
 
       return !state.talkative || state.validity.tag === "unknown"
@@ -109,7 +104,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           {
             value,
             validating: false,
-            valid: getValidate(name) == noop,
+            valid: getValidate(name) === noop,
             error: undefined,
           }
         : {
@@ -121,19 +116,19 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const clearDebounceTimeout = (name: Name): boolean => {
-      const timeout = timeouts.current[name];
+      const { timeout } = states.current[name];
       const debounced = typeof timeout !== "undefined";
 
       if (debounced) {
         clearTimeout(timeout);
-        timeouts.current[name] = undefined;
+        states.current[name].timeout = undefined;
       }
 
       return debounced;
     };
 
     const runRenderCallbacks = (name: Name): void => {
-      callbacks.current[name].forEach((callback) => callback());
+      states.current[name].callbacks.forEach((callback) => callback());
     };
 
     const setTalkative = (name: Name, strategies?: Strategy[]): void => {
@@ -240,7 +235,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const focusField: Contract["focusField"] = (name) => {
-      const ref = refs.current[name];
+      const { ref } = states.current[name];
 
       if (ref.current && typeof ref.current.focus === "function") {
         ref.current.focus();
@@ -295,10 +290,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         );
       };
 
-      names.forEach((name) => callbacks.current[name].add(callback));
+      names.forEach((name) => states.current[name].callbacks.add(callback));
 
       return () => {
-        names.forEach((name) => callbacks.current[name].delete(callback));
+        names.forEach((name) => states.current[name].callbacks.delete(callback));
       };
     };
 
@@ -328,7 +323,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         setValidating(name);
         runRenderCallbacks(name);
 
-        timeouts.current[name] = setTimeout(() => {
+        states.current[name].timeout = setTimeout(() => {
           if (isMounted(name)) {
             void internalValidateField(name);
           } else {
@@ -338,7 +333,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       };
 
     const getOnBlur = (name: Name) => (): void => {
-      const { validity } = states.current[name];
+      const { validity } = states.current[name].exposed;
 
       // Avoid validating an untouched / already valid field
       if (validity.tag !== "unknown" && !isTalkative(name)) {
@@ -482,37 +477,33 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
   // Lazy initialization
   if (!states.current) {
-    states.current = {} as StateMap;
-
-    callbacks.current = {} as CallbackMap;
-    mounteds.current = {} as MountedMap;
-    refs.current = {} as RefMap;
-    timeouts.current = {} as TimeoutMap;
+    states.current = {} as (typeof states)["current"];
 
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
-        api.setState(name, {
-          value: getPotentiallyLazyValue(config.current[name].initialValue),
-          talkative: false,
-          validity: { tag: "unknown" },
-        });
-
-        callbacks.current[name] = new Set();
-        mounteds.current[name] = false;
-        refs.current[name] = { current: null };
-        timeouts.current[name] = undefined;
+        states.current[name] = {
+          callbacks: new Set(),
+          ref: { current: null },
+          mounted: false,
+          timeout: undefined,
+          exposed: {
+            value: getPotentiallyLazyValue(config.current[name].initialValue),
+            talkative: false,
+            validity: { tag: "unknown" },
+          },
+        };
       }
     }
 
     const Field: Contract["Field"] = ({ name, children }) => {
       const { subscribe, getSnapshot } = useMemo(
         () => ({
-          getSnapshot: () => states.current[name],
+          getSnapshot: () => states.current[name].exposed,
           subscribe: (callback: () => void): (() => void) => {
-            callbacks.current[name].add(callback);
+            states.current[name].callbacks.add(callback);
 
             return () => {
-              callbacks.current[name].delete(callback);
+              states.current[name].callbacks.delete(callback);
             };
           },
         }),
@@ -522,10 +513,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
       useEffect(() => {
-        const isFirstMounting = !mounteds.current[name];
+        const isFirstMounting = !states.current[name].mounted;
 
         if (isFirstMounting) {
-          mounteds.current[name] = true;
+          states.current[name].mounted = true;
         } else {
           if (process.env.NODE_ENV === "development") {
             console.error(
@@ -536,14 +527,14 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
         return () => {
           if (isFirstMounting) {
-            mounteds.current[name] = false;
+            states.current[name].mounted = false;
           }
         };
       }, [name]);
 
       return children({
         ...api.getFieldState(name),
-        ref: refs.current[name],
+        ref: states.current[name].ref,
         onBlur: useMemo(() => api.getOnBlur(name), [name]),
         onChange: useMemo(() => api.getOnChange(name), [name]),
       });
@@ -555,12 +546,12 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
       const { subscribe, getSnapshot } = useMemo(
         () => ({
-          getSnapshot: () => JSON.stringify(names.map((name) => states.current[name])),
+          getSnapshot: () => JSON.stringify(names.map((name) => states.current[name].exposed)),
           subscribe: (callback: () => void): (() => void) => {
-            names.forEach((name) => callbacks.current[name].add(callback));
+            names.forEach((name) => states.current[name].callbacks.add(callback));
 
             return () => {
-              names.forEach((name) => callbacks.current[name].delete(callback));
+              names.forEach((name) => states.current[name].callbacks.delete(callback));
             };
           },
         }),

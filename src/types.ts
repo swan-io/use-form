@@ -41,7 +41,7 @@ export type FieldState<Value, ErrorMessage = string> = {
 
 export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
   [N in keyof Values]: {
-    initialValue: Values[N] | (() => Values[N]);
+    initialValue: Values[N];
     strategy?: Strategy;
     debounceInterval?: number;
     isEqual?: (preValidationValue: Values[N], postValidationValue: Values[N]) => boolean;

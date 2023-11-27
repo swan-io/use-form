@@ -9,7 +9,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { UNSET } from "./areValuesSet";
-import { getPotentiallyLazyValue, identity, isPromise, noop } from "./helpers";
+import { identity, isPromise, noop } from "./helpers";
 import {
   AnyRecord,
   FieldState,
@@ -67,11 +67,8 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
   const api = useMemo(() => {
     const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
+    const getInitialValue = (name: Name) => config.current[name].initialValue;
     const getIsEqual = (name: Name) => config.current[name].isEqual ?? Object.is;
-
-    const getInitialValue = (name: Name) =>
-      getPotentiallyLazyValue(config.current[name].initialValue);
-
     const getSanitize = <N extends Name>(name: N) => config.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
@@ -487,7 +484,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           mounted: false,
           timeout: undefined,
           exposed: {
-            value: getPotentiallyLazyValue(config.current[name].initialValue),
+            value: config.current[name].initialValue,
             talkative: false,
             validity: { tag: "unknown" },
           },

@@ -96,7 +96,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const state = states.current[name].exposed;
       const value = sanitize ? getSanitize(name)(state.value) : state.value;
 
-      return !state.talkative || state.validity.tag === "unknown"
+      return !state.talkative
         ? // Avoid giving feedback too soon
           {
             value,
@@ -153,7 +153,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }));
     };
 
-    const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
+    const internalValidateField = <N extends Name>(
+      name: N,
+      { silent }: { silent: boolean },
+    ): ValidatorResult<ErrorMessage> => {
       const debounced = clearDebounceTimeout(name);
 
       const sanitizeAtStart = getSanitize(name);
@@ -167,36 +170,45 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       if (!isPromise(promiseOrError)) {
         const error = promiseOrError;
-
-        if (error === undefined) {
-          setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
-        }
-
         setError(name, error);
-        runRenderCallbacks(name);
+
+        if (!silent) {
+          if (typeof error === "undefined") {
+            setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
+          }
+
+          runRenderCallbacks(name); // TODO: should not run if not talkative
+        }
 
         return error;
       }
 
       if (!debounced) {
         setValidating(name);
-        runRenderCallbacks(name);
+
+        if (!silent) {
+          runRenderCallbacks(name); // TODO: should not run if not talkative
+        }
       }
 
       return promiseOrError
         .then((error) => {
           const isEqual = getIsEqual(name);
-          const valueAtEnd = sanitizeAtStart(getFieldState(name).value);
+          const valueAtEnd = sanitizeAtStart(getFieldState(name).value); // TODO: maybe don't use the sanitize at start (revalidate if sanitized value changed)
 
           if (!isEqual(valueAtStart, valueAtEnd)) {
             return;
           }
-          if (error === undefined) {
-            setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
-          }
 
           setError(name, error);
-          runRenderCallbacks(name);
+
+          if (!silent) {
+            if (typeof error === "undefined") {
+              setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
+            }
+
+            runRenderCallbacks(name); // TODO: should not run if not talkative
+          }
 
           return error;
         })
@@ -222,7 +234,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         setTalkative(name);
       }
 
-      void internalValidateField(name);
+      void internalValidateField(name, { silent: false });
     };
 
     const setFieldError: Contract["setFieldError"] = (name, error) => {
@@ -245,9 +257,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       setState(name, () => ({
         value: getInitialValue(name),
         talkative: false,
-        validity: { tag: "unknown" },
+        validity: { tag: "validating" },
       }));
 
+      void internalValidateField(name, { silent: true });
       runRenderCallbacks(name);
     };
 
@@ -269,7 +282,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }
 
       setTalkative(name);
-      return Promise.resolve(internalValidateField(name));
+      return Promise.resolve(internalValidateField(name, { silent: false }));
     };
 
     const listenFields: Contract["listenFields"] = (names, listener) => {
@@ -313,7 +326,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         }
 
         if (debounceInterval === 0) {
-          void internalValidateField(name);
+          void internalValidateField(name, { silent: false });
           return;
         }
 
@@ -322,7 +335,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
         states.current[name].timeout = setTimeout(() => {
           if (isMounted(name)) {
-            void internalValidateField(name);
+            void internalValidateField(name, { silent: false });
           } else {
             clearDebounceTimeout(name);
           }
@@ -330,12 +343,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       };
 
     const getOnBlur = (name: Name) => (): void => {
-      const { validity } = states.current[name].exposed;
-
-      // Avoid validating an untouched / already valid field
-      if (validity.tag !== "unknown" && !isTalkative(name)) {
+      // Avoid validating an already valid field
+      if (!isTalkative(name)) {
         setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
-        void internalValidateField(name);
+        void internalValidateField(name, { silent: false });
       }
     };
 
@@ -361,11 +372,14 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
 
+      // TODO: If there's errors here (ex: no field is "validating"), we might directly call onFailure()
+      // if !isPromise(onSuccess()) or !isPromise(onFailure()) (depending on success or error), no need for calling forceUpdate twice
+
       names.forEach((name: Name, index) => {
         if (isMounted(name)) {
           setTalkative(name);
           values[name] = getFieldState(name, { sanitize: true }).value;
-          results[index] = internalValidateField(name);
+          results[index] = internalValidateField(name, { silent: false });
         } else {
           values[name] = UNSET;
         }
@@ -418,9 +432,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       resetForm,
       submitForm,
 
-      setState,
-      getOnChange,
       getOnBlur,
+      getOnChange,
+      setState,
+      internalValidateField,
     };
   }, []);
 
@@ -438,9 +453,15 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           exposed: {
             value: config.current[name].initialValue,
             talkative: false,
-            validity: { tag: "unknown" },
+            validity: { tag: "validating" },
           },
         };
+      }
+    }
+
+    for (const name in config.current) {
+      if (Object.prototype.hasOwnProperty.call(config.current, name)) {
+        void api.internalValidateField(name, { silent: true });
       }
     }
 

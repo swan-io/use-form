@@ -345,39 +345,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       forceUpdate();
     };
 
-    const isSyncSubmission = (
-      results: ValidatorResult<ErrorMessage>[],
-    ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
-
-    const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
-      const index = results.findIndex((result) => typeof result !== "undefined");
-      const name = names[index];
-
-      if (typeof name !== "undefined") {
-        focusField(name);
-      }
-    };
-
-    const handleEffect = (effect: Promise<unknown> | void, wasEditing: boolean) => {
-      if (isPromise(effect)) {
-        forceUpdate();
-
-        void effect.finally(() => {
-          formStatus.current = "submitted";
-
-          if (mounted.current) {
-            forceUpdate();
-          }
-        });
-      } else {
-        formStatus.current = "submitted";
-
-        if (wasEditing) {
-          forceUpdate(); // Only needed to rerender and switch from editing to submitted
-        }
-      }
-    };
-
     const submitForm: Contract["submitForm"] = ({
       onSuccess = noop,
       onFailure = noop,
@@ -387,7 +354,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         return; // Avoid concurrent submissions
       }
 
-      const wasEditing = formStatus.current === "editing";
       formStatus.current = "submitting";
 
       const names: Name[] = Object.keys(states.current);
@@ -405,44 +371,30 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         }
       });
 
-      if (isSyncSubmission(results)) {
-        const success = results.every((result) => typeof result === "undefined");
-
-        if (success) {
-          return handleEffect(onSuccess(values), wasEditing);
-        }
-
-        if (focusOnFirstError) {
-          focusFirstError(names, results);
-        }
-
-        names.forEach((name, index) => {
-          errors[name] = results[index];
-        });
-
-        return handleEffect(onFailure(errors), wasEditing);
-      }
-
       forceUpdate(); // Async validation flow: we need to give visual feedback
 
       void Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
-          const success = results.every((result) => typeof result === "undefined");
+          const firstErrorIndex = results.findIndex((result) => typeof result !== "undefined");
 
-          if (success) {
-            return handleEffect(onSuccess(values), wasEditing);
-          }
-
-          if (focusOnFirstError) {
-            focusFirstError(names, results);
+          if (firstErrorIndex < 0) {
+            return onSuccess(values);
           }
 
           names.forEach((name, index) => {
             errors[name] = results[index];
           });
 
-          return handleEffect(onFailure(errors), wasEditing);
+          if (focusOnFirstError) {
+            const name = names[firstErrorIndex];
+
+            if (typeof name !== "undefined") {
+              focusField(name);
+            }
+          }
+
+          return onFailure(errors);
         })
         .finally(() => {
           formStatus.current = "submitted";

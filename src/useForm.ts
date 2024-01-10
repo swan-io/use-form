@@ -8,7 +8,7 @@ import {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { UNSET } from "./areValuesSet";
+import { NONE } from "./areFieldsMounted";
 import { identity, isPromise, noop } from "./helpers";
 import {
   AnyRecord,
@@ -16,8 +16,8 @@ import {
   Form,
   FormConfig,
   FormStatus,
+  PartialRecord,
   Strategy,
-  UnsettableRecord,
   ValidatorResult,
   Validity,
 } from "./types";
@@ -396,7 +396,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       formStatus.current = "submitting";
 
       const names: Name[] = Object.keys(states.current);
-      const values = {} as UnsettableRecord<Values>;
+      const values = {} as PartialRecord<Values>;
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
 
@@ -409,7 +409,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           values[name] = getFieldState(name, { sanitize: true }).value;
           results[index] = internalValidateField(name, { silent: false });
         } else {
-          values[name] = UNSET;
+          values[name] = NONE;
         }
       });
 

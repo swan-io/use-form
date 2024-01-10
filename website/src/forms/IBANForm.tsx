@@ -58,7 +58,12 @@ export const IBANForm = () => {
       description={
         <>
           You can try it by yourself using random IBAN from{" "}
-          <Link href="http://randomiban.com" isExternal={true} color="gray.600" fontWeight="medium">
+          <Link
+            href="http://randomiban.com"
+            isExternal={true}
+            color="gray.600"
+            fontWeight="medium"
+          >
             randomiban.com <ExternalLinkIcon marginTop={-1} />
           </Link>
           <br />

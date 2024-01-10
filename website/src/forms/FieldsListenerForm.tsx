@@ -75,8 +75,9 @@ export const FieldsListenerForm = () => {
       title="Fields listener"
       description={
         <>
-          Using <Code>listenFields</Code> and the <Code>{"<FieldsListener />"}</Code> component,
-          it's really easy to synchronise components states and perform side-effects several fields
+          Using <Code>listenFields</Code> and the{" "}
+          <Code>{"<FieldsListener />"}</Code> component, it's really easy to
+          synchronise components states and perform side-effects several fields
           values changes.
         </>
       }

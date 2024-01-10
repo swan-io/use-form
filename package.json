@@ -33,14 +33,13 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "build": "yarn clean && microbundle -f cjs,es",
     "clean": "rm -rf dist",
-    "dev": "microbundle watch",
-    "format": "prettier '**/*' -u -w",
-    "lint": "eslint src --ext ts,tsx src",
+    "format": "prettier '**/*' --ignore-unknown --write",
+    "lint": "eslint --ext ts,tsx __tests__ src",
     "test": "vitest --run",
     "test:watch": "vitest --watch",
     "typecheck": "tsc --noEmit",
+    "build": "yarn clean && microbundle -f cjs,es --tsconfig tsconfig.build.json",
     "prepack": "yarn typecheck && yarn lint && yarn test && yarn build"
   },
   "browserslist": [
@@ -49,8 +48,6 @@
     "not dead"
   ],
   "prettier": {
-    "printWidth": 100,
-    "trailingComma": "all",
     "plugins": [
       "prettier-plugin-organize-imports"
     ]
@@ -60,18 +57,18 @@
   },
   "devDependencies": {
     "@testing-library/react": "^14.1.2",
-    "@types/react": "^18.2.37",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "@typescript-eslint/parser": "^6.11.0",
-    "eslint": "^8.53.0",
+    "@types/react": "^18.2.47",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "jsdom": "^22.1.0",
+    "jsdom": "^23.2.0",
     "microbundle": "^0.15.1",
-    "prettier": "^3.1.0",
+    "prettier": "^3.1.1",
     "prettier-plugin-organize-imports": "^3.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "typescript": "^5.2.2",
-    "vitest": "^0.34.6"
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.3"
   }
 }

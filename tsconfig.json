@@ -1,17 +1,19 @@
 {
-  "include": ["src"],
+  "include": ["src", "__tests__"],
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "ES2015",
+    "module": "ESNext",
+    "target": "ES2018",
+    "lib": ["DOM", "DOM.Iterable", "ES2018"],
     "jsx": "react",
-    "lib": ["ES2015", "DOM"],
     "moduleResolution": "Node",
     "outDir": "dist/",
 
     "allowJs": false,
-    "strict": true,
     "declaration": true,
+    "noEmit": true,
     "sourceMap": true,
+    "strict": true,
+    "skipLibCheck": true,
     "stripInternal": true,
 
     // https://www.typescriptlang.org/tsconfig#Type_Checking_6248

@@ -99,7 +99,7 @@ test("FieldsListener is synchronized with fields states", async () => {
           )}
         </Field>
 
-        <button onClick={(e) => resetForm()}>Reset</button>
+        <button onClick={() => resetForm()}>Reset</button>
       </form>
     );
   };

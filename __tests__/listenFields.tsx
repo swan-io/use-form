@@ -21,15 +21,20 @@ test("Count the number of updates", async () => {
     const [fullName, setFullName] = React.useState("");
 
     React.useEffect(() => {
-      const removeListener = listenFields(["firstName", "lastName"], ({ firstName, lastName }) => {
-        nameUpdateCount++;
-        setFullName([firstName.value, lastName.value].filter(Boolean).join(" "));
-      });
+      const removeListener = listenFields(
+        ["firstName", "lastName"],
+        ({ firstName, lastName }) => {
+          nameUpdateCount++;
+          setFullName(
+            [firstName.value, lastName.value].filter(Boolean).join(" "),
+          );
+        },
+      );
 
       return () => {
         removeListener();
       };
-    }, []);
+    }, [listenFields]);
 
     return (
       <form onSubmit={(e) => e.preventDefault()}>

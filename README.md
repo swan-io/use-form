@@ -136,7 +136,9 @@ type fieldConfig = {
 
   // Used to perform field validation. It could return an error message (or nothing)
   // It also handle async: simply return a Promise that resolves with an error message (or nothing)
-  validate: (value: Value) => ErrorMessage | void | Promise<ErrorMessage | void>;
+  validate: (
+    value: Value,
+  ) => ErrorMessage | void | Promise<ErrorMessage | void>;
 };
 ```
 
@@ -382,7 +384,10 @@ const validator: Validator<number> = (value) => {
 };
 
 // This validator will also accept a value of 0, as we consider it "empty"
-const optionalValidator = toOptionalValidator(validator, (value) => value === 0);
+const optionalValidator = toOptionalValidator(
+  validator,
+  (value) => value === 0,
+);
 ```
 
 ### areFieldsMounted

@@ -29,7 +29,12 @@ export type Validity<ErrorMessage = string> =
 export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
 
 // Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md
-export type Strategy = "onChange" | "onSuccess" | "onBlur" | "onSuccessOrBlur" | "onSubmit";
+export type Strategy =
+  | "onChange"
+  | "onSuccess"
+  | "onBlur"
+  | "onSuccessOrBlur"
+  | "onSubmit";
 
 export type FieldState<Value, ErrorMessage = string> = {
   value: Value;
@@ -43,7 +48,10 @@ export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
     initialValue: Values[N];
     strategy?: Strategy;
     debounceInterval?: number;
-    isEqual?: (preValidationValue: Values[N], postValidationValue: Values[N]) => boolean;
+    isEqual?: (
+      preValidationValue: Values[N],
+      postValidationValue: Values[N],
+    ) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],
@@ -102,13 +110,17 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
   listenFields: <N extends keyof Values>(
     names: N[],
-    listener: (states: { [N1 in N]: FieldState<Values[N1], ErrorMessage> }) => void,
+    listener: (states: {
+      [N1 in N]: FieldState<Values[N1], ErrorMessage>;
+    }) => void,
   ) => () => void;
 
   resetForm: () => void;
   submitForm: (options?: {
     onSuccess?: (values: UnsettableRecord<Values>) => Promise<unknown> | void;
-    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => Promise<unknown> | void;
+    onFailure?: (
+      errors: Partial<Record<keyof Values, ErrorMessage>>,
+    ) => Promise<unknown> | void;
     focusOnFirstError?: boolean;
   }) => void;
 };

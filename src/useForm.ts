@@ -23,7 +23,8 @@ import {
 } from "./types";
 
 // For server-side rendering / react-native
-const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+const useIsoLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   fields: FormConfig<Values, ErrorMessage>,
@@ -63,14 +64,20 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   }>;
 
   const field = useRef() as MutableRefObject<Contract["Field"]>;
-  const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
+  const fieldsListener = useRef() as MutableRefObject<
+    Contract["FieldsListener"]
+  >;
 
   const api = useMemo(() => {
-    const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
+    const getDebounceInterval = (name: Name) =>
+      config.current[name].debounceInterval ?? 0;
     const getInitialValue = (name: Name) => config.current[name].initialValue;
-    const getIsEqual = (name: Name) => config.current[name].isEqual ?? Object.is;
-    const getSanitize = <N extends Name>(name: N) => config.current[name].sanitize ?? identity;
-    const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
+    const getIsEqual = (name: Name) =>
+      config.current[name].isEqual ?? Object.is;
+    const getSanitize = <N extends Name>(name: N) =>
+      config.current[name].sanitize ?? identity;
+    const getStrategy = (name: Name) =>
+      config.current[name].strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
     const isMounted = (name: Name) => states.current[name].mounted;
@@ -85,7 +92,9 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }>,
     ) => {
       states.current[name].exposed =
-        typeof state === "function" ? state(states.current[name].exposed) : state;
+        typeof state === "function"
+          ? state(states.current[name].exposed)
+          : state;
     };
 
     const getFieldState = <N extends Name>(
@@ -96,6 +105,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const state = states.current[name].exposed;
       const value = sanitize ? getSanitize(name)(state.value) : state.value;
 
+      // ON FIRST VALIDATE, VALID / VALIDATING etc will be lame
       return !state.talkative
         ? // Avoid giving feedback too soon
           {
@@ -108,7 +118,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
             value,
             validating: state.validity.tag === "validating",
             valid: state.validity.tag === "valid",
-            error: state.validity.tag === "invalid" ? state.validity.error : undefined,
+            error:
+              state.validity.tag === "invalid"
+                ? state.validity.error
+                : undefined,
           };
     };
 
@@ -149,7 +162,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const setError = (name: Name, error: ErrorMessage | void): void => {
       setState(name, (prevState) => ({
         ...prevState,
-        validity: typeof error !== "undefined" ? { tag: "invalid", error } : { tag: "valid" },
+        validity:
+          typeof error !== "undefined"
+            ? { tag: "invalid", error }
+            : { tag: "valid" },
       }));
     };
 
@@ -224,7 +240,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         });
     };
 
-    const setFieldValue: Contract["setFieldValue"] = (name, value, options = {}) => {
+    const setFieldValue: Contract["setFieldValue"] = (
+      name,
+      value,
+      options = {},
+    ) => {
       setState(name, (prevState) => ({
         ...prevState,
         value,
@@ -294,7 +314,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
               return acc;
             },
             {} as {
-              [N1 in (typeof names)[number]]: FieldState<Values[N1], ErrorMessage>;
+              [N1 in (typeof names)[number]]: FieldState<
+                Values[N1],
+                ErrorMessage
+              >;
             },
           ),
         );
@@ -303,7 +326,9 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       names.forEach((name) => states.current[name].callbacks.add(callback));
 
       return () => {
-        names.forEach((name) => states.current[name].callbacks.delete(callback));
+        names.forEach((name) =>
+          states.current[name].callbacks.delete(callback),
+        );
       };
     };
 
@@ -320,7 +345,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         setTalkative(name, ["onChange"]);
         clearDebounceTimeout(name);
 
-        if (formStatus.current === "untouched" || formStatus.current === "submitted") {
+        if (
+          formStatus.current === "untouched" ||
+          formStatus.current === "submitted"
+        ) {
           formStatus.current = "editing";
           forceUpdate();
         }
@@ -390,7 +418,9 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       void Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
-          const firstErrorIndex = results.findIndex((result) => typeof result !== "undefined");
+          const firstErrorIndex = results.findIndex(
+            (result) => typeof result !== "undefined",
+          );
 
           if (firstErrorIndex < 0) {
             return onSuccess(values);
@@ -513,15 +543,23 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     Field.displayName = "Field";
     field.current = Field;
 
-    const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
+    const FieldsListener: Contract["FieldsListener"] = ({
+      names,
+      children,
+    }) => {
       const { subscribe, getSnapshot } = useMemo(
         () => ({
-          getSnapshot: () => JSON.stringify(names.map((name) => states.current[name].exposed)),
+          getSnapshot: () =>
+            JSON.stringify(names.map((name) => states.current[name].exposed)),
           subscribe: (callback: () => void): (() => void) => {
-            names.forEach((name) => states.current[name].callbacks.add(callback));
+            names.forEach((name) =>
+              states.current[name].callbacks.add(callback),
+            );
 
             return () => {
-              names.forEach((name) => states.current[name].callbacks.delete(callback));
+              names.forEach((name) =>
+                states.current[name].callbacks.delete(callback),
+              );
             };
           },
         }),
@@ -538,7 +576,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
             return acc;
           },
           {} as {
-            [N1 in (typeof names)[number]]: FieldState<Values[N1], ErrorMessage>;
+            [N1 in (typeof names)[number]]: FieldState<
+              Values[N1],
+              ErrorMessage
+            >;
           },
         ),
       );

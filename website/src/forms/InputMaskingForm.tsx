@@ -16,15 +16,19 @@ const formatCardNumber = (string: string) => {
 
   const res = chars
     .reduce(
-      (acc, char, index) => ([4, 8, 12, 16].includes(index) ? `${acc} ${char}` : `${acc}${char}`),
+      (acc, char, index) =>
+        [4, 8, 12, 16].includes(index) ? `${acc} ${char}` : `${acc}${char}`,
       "",
     )
     .substr(0, 19);
 
-  return string.endsWith(" ") && [4, 9, 14, 19].includes(res.length) ? `${res} ` : res;
+  return string.endsWith(" ") && [4, 9, 14, 19].includes(res.length)
+    ? `${res} `
+    : res;
 };
 
-const appendSpace = (res: string) => ([4, 9, 14].includes(res.length) ? `${res} ` : res);
+const appendSpace = (res: string) =>
+  [4, 9, 14].includes(res.length) ? `${res} ` : res;
 
 export const InputMaskingForm = () => {
   const { Field, resetForm, submitForm } = useForm({

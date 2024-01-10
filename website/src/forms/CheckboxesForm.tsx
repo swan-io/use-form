@@ -62,8 +62,8 @@ export const CheckboxesForm = () => {
       title="Checkboxes"
       description={
         <>
-          Checkboxes that must be ticked are a great use-case for <Code>onChange</Code> validation
-          strategy.
+          Checkboxes that must be ticked are a great use-case for{" "}
+          <Code>onChange</Code> validation strategy.
         </>
       }
     >

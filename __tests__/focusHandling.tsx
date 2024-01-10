@@ -78,8 +78,8 @@ test("the first errored field is focused after submission", async () => {
           )}
         </Field>
 
-        <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm()}>Submit</button>
+        <button onClick={() => resetForm()}>Reset</button>
+        <button onClick={() => submitForm()}>Submit</button>
       </form>
     );
   };
@@ -104,7 +104,7 @@ test("the first errored field is focused after submission", async () => {
 
 test("the user can disable autofocus on first error", async () => {
   const Test = () => {
-    const { Field, resetForm, submitForm } = useForm({
+    const { Field, submitForm } = useForm({
       firstName: {
         initialValue: "",
         validate: (value) => {
@@ -142,7 +142,9 @@ test("the user can disable autofocus on first error", async () => {
           )}
         </Field>
 
-        <button onClick={(e) => submitForm({ focusOnFirstError: false })}>Submit</button>
+        <button onClick={() => submitForm({ focusOnFirstError: false })}>
+          Submit
+        </button>
       </form>
     );
   };
@@ -224,7 +226,7 @@ test("focusField behave like expected", async () => {
           )}
         </Field>
 
-        <button onClick={(e) => focusField("firstName")}>Focus firstName</button>
+        <button onClick={() => focusField("firstName")}>Focus firstName</button>
       </form>
     );
   };

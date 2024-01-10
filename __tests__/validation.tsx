@@ -45,8 +45,8 @@ test("input validation evolve though time", async () => {
           )}
         </Field>
 
-        <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm()}>Submit</button>
+        <button onClick={() => resetForm()}>Reset</button>
+        <button onClick={() => submitForm()}>Submit</button>
       </form>
     );
   };
@@ -73,7 +73,10 @@ test("input validation evolve though time with async validation", async () => {
         strategy: "onBlur",
         initialValue: "",
         validate: (value) =>
-          resolveAfter(100, value.length < 3 ? "Must be at least 3 characters" : undefined),
+          resolveAfter(
+            100,
+            value.length < 3 ? "Must be at least 3 characters" : undefined,
+          ),
       },
     });
 
@@ -104,8 +107,8 @@ test("input validation evolve though time with async validation", async () => {
           )}
         </Field>
 
-        <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm()}>Submit</button>
+        <button onClick={() => resetForm()}>Reset</button>
+        <button onClick={() => submitForm()}>Submit</button>
       </form>
     );
   };

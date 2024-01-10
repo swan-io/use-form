@@ -46,8 +46,8 @@ test("formStatus evolve though time", async () => {
 
         <div>formStatus: {formStatus}</div>
 
-        <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm()}>Submit</button>
+        <button onClick={() => resetForm()}>Reset</button>
+        <button onClick={() => submitForm()}>Submit</button>
       </form>
     );
   };
@@ -78,7 +78,10 @@ test("formStatus evolve though time with async validation", async () => {
         strategy: "onSuccess",
         initialValue: "",
         validate: (value) =>
-          resolveAfter(100, value.length < 3 ? "Must be at least 3 characters" : undefined),
+          resolveAfter(
+            100,
+            value.length < 3 ? "Must be at least 3 characters" : undefined,
+          ),
       },
     });
 
@@ -110,8 +113,8 @@ test("formStatus evolve though time with async validation", async () => {
 
         <div>formStatus: {formStatus}</div>
 
-        <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm()}>Submit</button>
+        <button onClick={() => resetForm()}>Reset</button>
+        <button onClick={() => submitForm()}>Submit</button>
       </form>
     );
   };
@@ -178,9 +181,11 @@ test("formStatus evolve though time with async submission", async () => {
 
         <div>formStatus: {formStatus}</div>
 
-        <button onClick={(e) => resetForm()}>Reset</button>
+        <button onClick={() => resetForm()}>Reset</button>
 
-        <button onClick={(e) => submitForm({ onSuccess: (values) => resolveAfter(100) })}>
+        <button
+          onClick={() => submitForm({ onSuccess: () => resolveAfter(100) })}
+        >
           Submit
         </button>
       </form>

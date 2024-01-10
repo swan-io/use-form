@@ -4,7 +4,7 @@ import { None } from "./areFieldsMounted";
 export type AnyRecord = Record<string, unknown>;
 export type EmptyRecord = Record<PropertyKey, never>;
 
-export type PartialRecord<T extends AnyRecord> = {
+export type OptionalRecord<T extends AnyRecord> = {
   [K in keyof T]: T[K] | None;
 };
 
@@ -117,7 +117,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
   resetForm: () => void;
   submitForm: (options?: {
-    onSuccess?: (values: PartialRecord<Values>) => Promise<unknown> | void;
+    onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown> | void;
     onFailure?: (
       errors: Partial<Record<keyof Values, ErrorMessage>>,
     ) => Promise<unknown> | void;

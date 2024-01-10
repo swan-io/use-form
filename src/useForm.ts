@@ -16,7 +16,7 @@ import {
   Form,
   FormConfig,
   FormStatus,
-  PartialRecord,
+  OptionalRecord,
   Strategy,
   ValidatorResult,
   Validity,
@@ -396,7 +396,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       formStatus.current = "submitting";
 
       const names: Name[] = Object.keys(states.current);
-      const values = {} as PartialRecord<Values>;
+      const values = {} as OptionalRecord<Values>;
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
 

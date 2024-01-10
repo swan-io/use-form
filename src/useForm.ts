@@ -33,8 +33,8 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   type Name = keyof Values;
 
   const [, forceUpdate] = useReducer(() => [], []);
-  const mounted = useRef(false);
   const config = useRef(fields);
+  const formMounted = useRef(false);
   const formStatus = useRef<FormStatus>("untouched");
 
   useIsoLayoutEffect(() => {
@@ -42,10 +42,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   });
 
   useEffect(() => {
-    mounted.current = true;
+    formMounted.current = true;
 
     return () => {
-      mounted.current = false;
+      formMounted.current = false;
     };
   }, []);
 
@@ -444,7 +444,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         .finally(() => {
           formStatus.current = "submitted";
 
-          if (mounted.current) {
+          if (formMounted.current) {
             forceUpdate();
           }
         });

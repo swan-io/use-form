@@ -1,16 +1,16 @@
 import { expect, test } from "vitest";
 import { areValuesSet, isValueSet } from "../src";
-import { UNMOUNTED, Unmounted } from "../src/areFieldsMounted";
+import { NONE, None } from "../src/areFieldsMounted";
 
 test("check that every key is defined", () => {
   const values: {
-    foo: string | Unmounted;
-    bar: string | Unmounted;
-    baz: string | Unmounted;
+    foo: string | None;
+    bar: string | None;
+    baz: string | None;
   } = {
     foo: "foo",
     bar: "bar",
-    baz: UNMOUNTED,
+    baz: NONE,
   };
 
   expect(isValueSet(values.foo)).toBe(true);

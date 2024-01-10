@@ -105,13 +105,12 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const state = states.current[name].exposed;
       const value = sanitize ? getSanitize(name)(state.value) : state.value;
 
-      // ON FIRST VALIDATE, VALID / VALIDATING etc will be lame
       return !state.talkative
         ? // Avoid giving feedback too soon
           {
             value,
             validating: false,
-            valid: getValidate(name) === noop,
+            valid: false,
             error: undefined,
           }
         : {
@@ -193,7 +192,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
             setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
           }
 
-          runRenderCallbacks(name); // TODO: should not run if not talkative
+          runRenderCallbacks(name);
         }
 
         return error;
@@ -203,7 +202,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         setValidating(name);
 
         if (!silent) {
-          runRenderCallbacks(name); // TODO: should not run if not talkative
+          runRenderCallbacks(name);
         }
       }
 
@@ -223,7 +222,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
               setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
             }
 
-            runRenderCallbacks(name); // TODO: should not run if not talkative
+            runRenderCallbacks(name);
           }
 
           return error;
@@ -400,12 +399,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
 
-      // TODO: If there's errors here (ex: no field is "validating"), we might directly call onFailure()
-      // if !isPromise(onSuccess()) or !isPromise(onFailure()) (depending on success or error), no need for calling forceUpdate twice
-
       names.forEach((name: Name, index) => {
         if (isMounted(name)) {
           setTalkative(name);
+
           values[name] = getFieldState(name, { sanitize: true }).value;
           results[index] = internalValidateField(name, { silent: false });
         } else {
@@ -413,11 +410,15 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         }
       });
 
+      // TODO: If there's errors here (ex: no field is "validating"), we might directly call onFailure()
+      // if !isPromise(onSuccess()) or !isPromise(onFailure()) (depending on success or error), no need for calling forceUpdate twice
+
       forceUpdate(); // Async validation flow: we need to give visual feedback
 
       void Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
+
           const firstErrorIndex = results.findIndex(
             (result) => typeof result !== "undefined",
           );

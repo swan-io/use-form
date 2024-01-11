@@ -375,29 +375,16 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       results: ValidatorResult<ErrorMessage>[],
     ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
 
+    const isSuccessfulSubmission = (
+      results: (ErrorMessage | undefined)[],
+    ): results is undefined[] => results.every((result) => typeof result === "undefined");
+
     const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
       const index = results.findIndex((result) => typeof result !== "undefined");
       const name = names[index];
 
       if (typeof name !== "undefined") {
         focusField(name);
-      }
-    };
-
-    const handleEffect = (effect: Promise<unknown> | void) => {
-      if (isPromise(effect)) {
-        forceUpdate();
-
-        void effect.finally(() => {
-          formStatus.current = "submitted";
-
-          if (mounted.current) {
-            forceUpdate();
-          }
-        });
-      } else {
-        formStatus.current = "submitted";
-        forceUpdate(); // Only needed to rerender and switch from editing to submitted
       }
     };
 
@@ -428,13 +415,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         results[index] = internalValidateField(name);
       });
 
-      if (isSyncSubmission(results)) {
-        const success = results.every((result) => typeof result === "undefined");
-
-        if (success) {
-          return handleEffect(onSuccess(values));
-        }
-
+      if (isSyncSubmission(results) && !isSuccessfulSubmission(results)) {
         if (focusOnFirstError) {
           focusFirstError(names, results);
         }
@@ -443,36 +424,35 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           errors[name] = results[index];
         });
 
-        return handleEffect(onFailure(errors));
+        formStatus.current = "submitted";
+        forceUpdate();
+
+        return onFailure(errors);
       }
 
-      forceUpdate(); // Async validation flow: we need to give visual feedback
+      forceUpdate(); // async flow
 
       void Promise.all(results.map((result) => Promise.resolve(result)))
         .then((uncasted) => {
           const results = uncasted as (ErrorMessage | undefined)[];
-          const success = results.every((result) => typeof result === "undefined");
 
-          if (success) {
-            return handleEffect(onSuccess(values));
+          if (isSuccessfulSubmission(results)) {
+            return onSuccess(values);
+          } else {
+            if (focusOnFirstError) {
+              focusFirstError(names, results);
+            }
+
+            names.forEach((name, index) => {
+              errors[name] = results[index];
+            });
+
+            return onFailure(errors);
           }
-
-          if (focusOnFirstError) {
-            focusFirstError(names, results);
-          }
-
-          names.forEach((name, index) => {
-            errors[name] = results[index];
-          });
-
-          return handleEffect(onFailure(errors));
         })
         .finally(() => {
           formStatus.current = "submitted";
-
-          if (mounted.current) {
-            forceUpdate();
-          }
+          mounted.current && forceUpdate();
         });
     };
 

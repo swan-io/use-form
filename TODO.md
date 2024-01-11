@@ -6,7 +6,7 @@
 # minimal update:
 
 - Option for values instead of undefined
-- don't show succes on untouched fields (but show error, validating)
+- don't show success on untouched fields (but show error, validating)
 - don't show validating / success on untouched fields
 - make onSubmit always async. if a field needs to be validated in async, don't display async loader
 

@@ -16,10 +16,7 @@ export const AsyncValidationForm = () => {
       debounceInterval: 250,
       sanitize: (value) => value.trim(),
       validate: (value) =>
-        resolveAfter(
-          1000,
-          !validator.isEmail(value) ? "A valid email is required" : undefined,
-        ),
+        resolveAfter(1000, !validator.isEmail(value) ? "A valid email is required" : undefined),
     },
   });
 
@@ -57,8 +54,8 @@ export const AsyncValidationForm = () => {
       title="Async validation"
       description={
         <>
-          Validation will be triggered on each keystroke,{" "}
-          <Code>debounceInterval</Code> is set to <Code>250</Code> (ms).
+          Validation will be triggered on each keystroke, <Code>debounceInterval</Code> is set to{" "}
+          <Code>250</Code> (ms).
         </>
       }
     >

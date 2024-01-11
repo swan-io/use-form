@@ -78,10 +78,7 @@ test("formStatus evolve though time with async validation", async () => {
         strategy: "onSuccess",
         initialValue: "",
         validate: (value) =>
-          resolveAfter(
-            100,
-            value.length < 3 ? "Must be at least 3 characters" : undefined,
-          ),
+          resolveAfter(100, value.length < 3 ? "Must be at least 3 characters" : undefined),
       },
     });
 
@@ -183,11 +180,7 @@ test("formStatus evolve though time with async submission", async () => {
 
         <button onClick={() => resetForm()}>Reset</button>
 
-        <button
-          onClick={() => submitForm({ onSuccess: () => resolveAfter(100) })}
-        >
-          Submit
-        </button>
+        <button onClick={() => submitForm({ onSuccess: () => resolveAfter(100) })}>Submit</button>
       </form>
     );
   };

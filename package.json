@@ -48,12 +48,16 @@
     "not dead"
   ],
   "prettier": {
+    "printWidth": 100,
     "plugins": [
       "prettier-plugin-organize-imports"
     ]
   },
   "peerDependencies": {
     "react": ">=18.0.0"
+  },
+  "dependencies": {
+    "@swan-io/boxed": "^2.0.0"
   },
   "devDependencies": {
     "@testing-library/react": "^14.1.2",

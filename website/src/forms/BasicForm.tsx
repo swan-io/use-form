@@ -75,8 +75,7 @@ export const BasicForm = () => {
       title="Basic"
       description={
         <>
-          A common form example which play with at least two different
-          strategies.
+          A common form example which play with at least two different strategies.
           <br />
           Note that all values are sanitized using trimming.
         </>

@@ -142,9 +142,7 @@ test("the user can disable autofocus on first error", async () => {
           )}
         </Field>
 
-        <button onClick={() => submitForm({ focusOnFirstError: false })}>
-          Submit
-        </button>
+        <button onClick={() => submitForm({ focusOnFirstError: false })}>Submit</button>
       </form>
     );
   };

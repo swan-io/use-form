@@ -94,7 +94,6 @@ const {
   setFieldError,
   focusField,
   resetField,
-  sanitizeField,
   validateField,
   listenFields,
   resetForm,
@@ -106,8 +105,7 @@ const {
     // Properties below are optional (those are the default values)
     strategy: "onSuccessOrBlur",
     debounceInterval: 0,
-    isEqual: (preValidationValue, postValidationValue) =>
-      Object.is(preValidationValue, postValidationValue),
+    isEqual: (value1, value2) => Object.is(value1, value2),
     sanitize: (value) => value,
     validate: (value, { focusField, getFieldState }) => {},
   },
@@ -129,16 +127,14 @@ type fieldConfig = {
 
   // When performing async validation, it might happen that the value has changed between the start and the end of its execution
   // That's why we compare the two values: to ensure that the feedback given to the user is correct
-  isEqual: (preValidationValue: Value, postValidationValue: Value) => boolean;
+  isEqual: (value1: Value, value2: Value) => boolean;
 
   // Will be run on value before validation and submission. Useful from trimming whitespaces
   sanitize: (value: Value) => Value;
 
   // Used to perform field validation. It could return an error message (or nothing)
   // It also handle async: simply return a Promise that resolves with an error message (or nothing)
-  validate: (
-    value: Value,
-  ) => ErrorMessage | void | Promise<ErrorMessage | void>;
+  validate: (value: Value) => ErrorMessage | void | Promise<ErrorMessage | void>;
 };
 ```
 
@@ -312,8 +308,8 @@ Submit your form. Each callback could return a `Promise` to keep `formStatus` in
 
 ```tsx
 type submitForm = (options?: {
-  onSuccess?: (values: Partial<Values>) => Promise<unknown> | void;
-  onFailure?: (errors: Partial<ErrorMessages>) => Promise<unknown> | void;
+  onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown>;
+  onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => void;
   // by default, it will try to focus the first errored field (which is a good practice)
   focusOnFirstError?: boolean;
 }) => void;
@@ -384,35 +380,7 @@ const validator: Validator<number> = (value) => {
 };
 
 // This validator will also accept a value of 0, as we consider it "empty"
-const optionalValidator = toOptionalValidator(
-  validator,
-  (value) => value === 0,
-);
-```
-
-### areFieldsMounted
-
-As some of your fields might be unmounted on submit, the `submitForm` method could not guarantee that every field value is defined and valid. We export `areFieldsMounted` helper function that allows you to test if some object keys are defined.
-
-```tsx
-import { areFieldsMounted, useForm } from "react-ux-form";
-
-const MyAwesomeForm = () => {
-  const { Field, submitForm } = useForm({
-    firstName: { initialValue: "" },
-    lastName: { initialValue: "" },
-  });
-
-  const handleSubmit = () => {
-    submitForm((values) => {
-      if (areFieldsMounted(values, ["firstName", "lastName"])) {
-        // values.firstName and values.lastName are defined
-      }
-    });
-  };
-
-  // …
-};
+const optionalValidator = toOptionalValidator(validator, (value) => value === 0);
 ```
 
 ## Quickstart

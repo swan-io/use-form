@@ -1,16 +1,12 @@
+import { Option } from "@swan-io/boxed";
 import { MutableRefObject, ReactElement } from "react";
-import { None } from "./areFieldsMounted";
 
 export type AnyRecord = Record<string, unknown>;
 export type EmptyRecord = Record<PropertyKey, never>;
 
 export type OptionalRecord<T extends AnyRecord> = {
-  [K in keyof T]: T[K] | None;
+  [K in keyof T]: Option<T[K]>;
 };
-
-export type Simplify<T extends AnyRecord> = T extends EmptyRecord
-  ? EmptyRecord
-  : { [K in keyof T]: T[K] };
 
 export type ValidatorResult<ErrorMessage = string> =
   | ErrorMessage
@@ -22,6 +18,7 @@ export type Validator<Value, ErrorMessage = string> = (
 ) => ValidatorResult<ErrorMessage>;
 
 export type Validity<ErrorMessage = string> =
+  | { readonly tag: "unknown" }
   | { readonly tag: "validating" }
   | { readonly tag: "valid" }
   | { readonly tag: "invalid"; error: ErrorMessage };
@@ -29,12 +26,7 @@ export type Validity<ErrorMessage = string> =
 export type FormStatus = "untouched" | "editing" | "submitting" | "submitted";
 
 // Kudos to https://github.com/MinimaHQ/re-formality/blob/master/docs/02-ValidationStrategies.md
-export type Strategy =
-  | "onChange"
-  | "onSuccess"
-  | "onBlur"
-  | "onSuccessOrBlur"
-  | "onSubmit";
+export type Strategy = "onChange" | "onSuccess" | "onBlur" | "onSuccessOrBlur" | "onSubmit";
 
 export type FieldState<Value, ErrorMessage = string> = {
   value: Value;
@@ -48,10 +40,7 @@ export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
     initialValue: Values[N];
     strategy?: Strategy;
     debounceInterval?: number;
-    isEqual?: (
-      preValidationValue: Values[N],
-      postValidationValue: Values[N],
-    ) => boolean;
+    isEqual?: (value1: Values[N], value2: Values[N]) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],
@@ -117,10 +106,8 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
   resetForm: () => void;
   submitForm: (options?: {
-    onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown> | void;
-    onFailure?: (
-      errors: Partial<Record<keyof Values, ErrorMessage>>,
-    ) => Promise<unknown> | void;
+    onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown>;
+    onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => void;
     focusOnFirstError?: boolean;
   }) => void;
 };

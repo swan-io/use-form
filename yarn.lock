@@ -1418,6 +1418,11 @@
     magic-string "^0.25.0"
     string.prototype.matchall "^4.0.6"
 
+"@swan-io/boxed@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-2.0.0.tgz#b56bd01f6dc192e7aa1ed0659f149ebdc030d308"
+  integrity sha512-2U098tBOTMShB1fbkapIVxDZJGnS7Sz5Hr4T1MX6xJETaTrFCj2YhCjR4wxrCqzHrDT3PVvaSI6HN4H3PUZHqA==
+
 "@testing-library/dom@^9.0.0":
   version "9.3.4"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-9.3.4.tgz#50696ec28376926fec0a1bf87d9dbac5e27f60ce"

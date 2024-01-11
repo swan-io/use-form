@@ -73,10 +73,7 @@ test("input validation evolve though time with async validation", async () => {
         strategy: "onBlur",
         initialValue: "",
         validate: (value) =>
-          resolveAfter(
-            100,
-            value.length < 3 ? "Must be at least 3 characters" : undefined,
-          ),
+          resolveAfter(100, value.length < 3 ? "Must be at least 3 characters" : undefined),
       },
     });
 

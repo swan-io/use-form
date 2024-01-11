@@ -1169,6 +1169,11 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.9.4.tgz#16295ccae354707c9bc6842906bdeaad4f3ba7a5"
   integrity sha512-LfdGXCV9rdEify1oxlN9eamvDSjv9md9ZVMAbNHA87xqIfFCxImxan9qZ8+Un54iK2nnqPlbnSi4R54ONtbWBw==
 
+"@swan-io/boxed@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-2.0.0.tgz#b56bd01f6dc192e7aa1ed0659f149ebdc030d308"
+  integrity sha512-2U098tBOTMShB1fbkapIVxDZJGnS7Sz5Hr4T1MX6xJETaTrFCj2YhCjR4wxrCqzHrDT3PVvaSI6HN4H3PUZHqA==
+
 "@swan-io/chicane@^1.4.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@swan-io/chicane/-/chicane-1.4.1.tgz#2b3decb510f21bcdaaa32bc5a7f151ace983ba1d"

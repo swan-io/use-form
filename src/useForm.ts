@@ -384,7 +384,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }
     };
 
-    const handleEffect = (effect: Promise<unknown> | void, wasEditing: boolean) => {
+    const handleEffect = (effect: Promise<unknown> | void) => {
       if (isPromise(effect)) {
         forceUpdate();
 
@@ -397,10 +397,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         });
       } else {
         formStatus.current = "submitted";
-
-        if (wasEditing) {
-          forceUpdate(); // Only needed to rerender and switch from editing to submitted
-        }
+        forceUpdate(); // Only needed to rerender and switch from editing to submitted
       }
     };
 
@@ -413,20 +410,19 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         return; // Avoid concurrent submissions
       }
 
-      const wasEditing = formStatus.current === "editing";
       formStatus.current = "submitting";
 
-      const allFields: Name[] = Object.keys(mounteds.current);
-      const mountedFields = allFields.filter((name) => mounteds.current[name]);
+      const keys: Name[] = Object.keys(mounteds.current);
+      const names = keys.filter((name) => mounteds.current[name]);
       const values = {} as OptionalRecord<Values>;
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
 
-      allFields.forEach((name) => {
+      keys.forEach((name) => {
         values[name] = Option.None();
       });
 
-      mountedFields.forEach((name: Name, index) => {
+      names.forEach((name: Name, index) => {
         setTalkative(name);
         values[name] = Option.Some(getFieldState(name, { sanitize: true }).value);
         results[index] = internalValidateField(name);
@@ -436,18 +432,18 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         const success = results.every((result) => typeof result === "undefined");
 
         if (success) {
-          return handleEffect(onSuccess(values), wasEditing);
+          return handleEffect(onSuccess(values));
         }
 
         if (focusOnFirstError) {
-          focusFirstError(mountedFields, results);
+          focusFirstError(names, results);
         }
 
-        mountedFields.forEach((name, index) => {
+        names.forEach((name, index) => {
           errors[name] = results[index];
         });
 
-        return handleEffect(onFailure(errors), wasEditing);
+        return handleEffect(onFailure(errors));
       }
 
       forceUpdate(); // Async validation flow: we need to give visual feedback
@@ -458,18 +454,18 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           const success = results.every((result) => typeof result === "undefined");
 
           if (success) {
-            return handleEffect(onSuccess(values), wasEditing);
+            return handleEffect(onSuccess(values));
           }
 
           if (focusOnFirstError) {
-            focusFirstError(mountedFields, results);
+            focusFirstError(names, results);
           }
 
-          mountedFields.forEach((name, index) => {
+          names.forEach((name, index) => {
             errors[name] = results[index];
           });
 
-          return handleEffect(onFailure(errors), wasEditing);
+          return handleEffect(onFailure(errors));
         })
         .finally(() => {
           formStatus.current = "submitted";

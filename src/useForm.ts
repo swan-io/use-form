@@ -77,7 +77,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
     const isMounted = (name: Name) => mounteds.current[name];
-    const isTalkative = (name: Name) => states.current[name].talkative;
 
     const setState = <N extends Name>(
       name: N,
@@ -94,23 +93,36 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
             })
           : state;
 
-      const exposed =
-        !nextState.talkative || nextState.validity.tag === "unknown"
-          ? // Avoid giving feedback too soon
-            {
-              valid: false,
-              error: undefined,
-            }
-          : {
-              valid: nextState.validity.tag === "valid",
-              error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
-            };
+      const exposed = nextState.talkative
+        ? {
+            valid: nextState.validity.tag === "valid",
+            error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
+          }
+        : {
+            // Avoid giving feedback too soon
+            valid: false,
+            error: undefined,
+          };
 
       states.current[name] = {
         talkative: nextState.talkative,
         validity: nextState.validity,
         exposed: { ...exposed, value: nextState.value },
       };
+    };
+
+    const setInitialState = <N extends Name>(name: N) => {
+      const sanitize = getSanitize(name);
+      const validate = getValidate(name);
+
+      const value = getInitialValue(name);
+      const error = validate(sanitize(value), { getFieldState, focusField: noop });
+
+      setState(name, {
+        value,
+        talkative: false,
+        validity: typeof error !== "undefined" ? { tag: "invalid", error } : { tag: "valid" },
+      });
     };
 
     const runRenderCallbacks = (name: Name): void => {
@@ -154,23 +166,19 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
-      const sanitizeAtStart = getSanitize(name);
+      const sanitize = getSanitize(name);
       const validate = getValidate(name);
-      const valueAtStart = sanitizeAtStart(states.current[name].exposed.value);
+      const value = sanitize(states.current[name].exposed.value);
+      const error = validate(value, { getFieldState, focusField });
 
-      const result = validate(valueAtStart, {
-        getFieldState,
-        focusField,
-      });
-
-      if (result === undefined) {
+      if (error === undefined) {
         setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
       }
 
-      setError(name, result);
+      setError(name, error);
       runRenderCallbacks(name);
 
-      return result;
+      return error;
     };
 
     const setFieldValue: Contract["setFieldValue"] = (name, value, options = {}) => {
@@ -201,12 +209,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const resetField: Contract["resetField"] = (name) => {
-      setState(name, () => ({
-        value: getInitialValue(name),
-        talkative: false,
-        validity: { tag: "unknown" },
-      }));
-
+      setInitialState(name);
       runRenderCallbacks(name);
     };
 
@@ -272,13 +275,8 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       };
 
     const getOnBlur = (name: Name) => (): void => {
-      const { validity } = states.current[name];
-
-      // Avoid validating an untouched / already valid field
-      if (validity.tag !== "unknown" && !isTalkative(name)) {
-        setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
-        void internalValidateField(name);
-      }
+      setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
+      void internalValidateField(name);
     };
 
     const resetForm: Contract["resetForm"] = () => {
@@ -288,10 +286,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       forceUpdate();
     };
 
-    const isSuccessfulSubmission = (
-      results: ValidatorResult<ErrorMessage>[],
-    ): results is undefined[] => results.every((result) => typeof result === "undefined");
-
     const focusFirstError = (names: Name[], results: ValidatorResult<ErrorMessage>[]) => {
       const index = results.findIndex((result) => typeof result !== "undefined");
       const name = names[index];
@@ -300,6 +294,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         focusField(name);
       }
     };
+
+    const isSuccessfulSubmission = (
+      results: ValidatorResult<ErrorMessage>[],
+    ): results is undefined[] => results.every((result) => typeof result === "undefined");
 
     const submitForm: Contract["submitForm"] = ({
       onSuccess = noop,
@@ -374,9 +372,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       resetForm,
       submitForm,
 
-      setState,
       getOnChange,
       getOnBlur,
+      setInitialState,
+      setState,
     };
   }, []);
 
@@ -390,11 +389,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
-        api.setState(name, {
-          value: config.current[name].initialValue,
-          talkative: false,
-          validity: { tag: "unknown" },
-        });
+        api.setInitialState(name);
 
         callbacks.current[name] = new Set();
         mounteds.current[name] = false;

@@ -88,7 +88,7 @@ export const StrategiesForm = () => {
         }}
       >
         <Field name="onChange">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="onChange"
               validation="Must be at least 3 characters long"
@@ -99,14 +99,13 @@ export const StrategiesForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="onSuccess">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="onSuccess"
               validation="Must be at least 3 characters long"
@@ -117,14 +116,13 @@ export const StrategiesForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="onBlur">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="onBlur"
               validation="Must be at least 3 characters long"
@@ -135,14 +133,13 @@ export const StrategiesForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="onSuccessOrBlur">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="onSuccessOrBlur (default)"
               validation="Must be at least 3 characters long"
@@ -153,14 +150,13 @@ export const StrategiesForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="onSubmit">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="onSubmit"
               validation="Must be at least 3 characters long"
@@ -171,7 +167,6 @@ export const StrategiesForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}

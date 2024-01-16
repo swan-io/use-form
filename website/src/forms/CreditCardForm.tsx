@@ -106,7 +106,7 @@ export const CreditCardForm = () => {
         }}
       >
         <Field name="cardNumber">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="Card number"
               validation="Must be valid"
@@ -117,14 +117,13 @@ export const CreditCardForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="expirationDate">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="Expiration date"
               validation="Must be valid"
@@ -135,14 +134,13 @@ export const CreditCardForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="cvc">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="CVC"
               validation="Must be valid"
@@ -153,7 +151,6 @@ export const CreditCardForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}

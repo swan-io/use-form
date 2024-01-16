@@ -9,12 +9,10 @@ test("FieldsListener is synchronized with fields states", async () => {
 
   const FirstNameViewer = ({
     value,
-    validating,
     valid,
     error,
   }: {
     value: string;
-    validating: boolean;
     valid: boolean;
     error?: string;
   }) => {
@@ -25,7 +23,6 @@ test("FieldsListener is synchronized with fields states", async () => {
         <div>value: {value}</div>
         {!(valid || error) && <div>idle</div>}
         {valid && <div>valid</div>}
-        {validating && <div>validating</div>}
         {error && <div>error</div>}
       </>
     );

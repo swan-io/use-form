@@ -1,4 +1,3 @@
-import { isPromise } from "./helpers";
 import { Validator } from "./types";
 
 export const combineValidators =
@@ -8,19 +7,8 @@ export const combineValidators =
   (value) => {
     const [validator, ...nextValidators] = validators;
 
-    if (validator) {
+    if (validator != null && validator !== false) {
       const result = validator(value);
-
-      if (isPromise(result)) {
-        return result.then((error) => {
-          if (typeof error !== "undefined") {
-            return error;
-          }
-          if (nextValidators.length > 0) {
-            return combineValidators(...nextValidators)(value);
-          }
-        });
-      }
 
       if (typeof result !== "undefined") {
         return result;

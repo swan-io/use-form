@@ -23,7 +23,6 @@ $ yarn add react-ux-form
 - Mounted-only fields validation
 - Advanced focus handling
 - Best-in-class TypeScript support
-- Sync and async field validation
 - Sync and async form submission
 
 ## Motivation
@@ -104,8 +103,6 @@ const {
     initialValue: "",
     // Properties below are optional (those are the default values)
     strategy: "onSuccessOrBlur",
-    debounceInterval: 0,
-    isEqual: (value1, value2) => Object.is(value1, value2),
     sanitize: (value) => value,
     validate: (value, { focusField, getFieldState }) => {},
   },
@@ -122,19 +119,11 @@ type fieldConfig = {
   // The chosen strategy. See "validation strategies" paragraph
   strategy: Strategy;
 
-  // An amount of time (in ms) to wait before triggering validation
-  debounceInterval: number;
-
-  // When performing async validation, it might happen that the value has changed between the start and the end of its execution
-  // That's why we compare the two values: to ensure that the feedback given to the user is correct
-  isEqual: (value1: Value, value2: Value) => boolean;
-
   // Will be run on value before validation and submission. Useful from trimming whitespaces
   sanitize: (value: Value) => Value;
 
   // Used to perform field validation. It could return an error message (or nothing)
-  // It also handle async: simply return a Promise that resolves with an error message (or nothing)
-  validate: (value: Value) => ErrorMessage | void | Promise<ErrorMessage | void>;
+  validate: (value: Value) => ErrorMessage | void;
 };
 ```
 
@@ -160,8 +149,6 @@ A component that exposes everything you need locally as a `children` render prop
       ref: MutableRefObject;
       // The field value
       value: Value;
-      // Is the field validating? (only happen on async operations)
-      validating: boolean;
       // Is the field valid?
       valid: boolean;
       // The field is invalid: here its error message.
@@ -185,8 +172,6 @@ A component that listens for fields states changes. It's useful when a part of y
     (states: Record<"firstName" | "lastName", {
       // The field value
       value: Value;
-      // Is the field validating? (only happen on async operations)
-      validating: boolean;
       // Is the field valid?
       valid: boolean;
       // The field is invalid: here its error message.
@@ -208,7 +193,6 @@ type getFieldState = (
   },
 ) => {
   value: Value;
-  validating: boolean;
   valid: boolean;
   error?: ErrorMessage;
 };
@@ -265,7 +249,7 @@ type sanitizeField = (name: FieldName) => void;
 Once you manually call validation, the field automatically switches to _talkative_ state.
 
 ```tsx
-type validateField = (name: FieldName) => Promise<ErrorMessage | void>;
+type validateField = (name: FieldName) => ErrorMessage | void;
 ```
 
 #### listenFields
@@ -279,8 +263,6 @@ React.useEffect(() => {
     (states: Record<"firstName" | "lastName", {
       // The field value
       value: Value;
-      // Is the field validating? (only happen on async operations)
-      validating: boolean;
       // Is the field valid?
       valid: boolean;
       // The field is invalid: here its error message.
@@ -308,7 +290,7 @@ Submit your form. Each callback could return a `Promise` to keep `formStatus` in
 
 ```tsx
 type submitForm = (options?: {
-  onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown>;
+  onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown> | void;
   onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => void;
   // by default, it will try to focus the first errored field (which is a good practice)
   focusOnFirstError?: boolean;
@@ -317,7 +299,7 @@ type submitForm = (options?: {
 
 ### combineValidators
 
-As it's a very common case to use several validation functions per field, we export a `combineValidators` helper function that allows you to chain sync and async validation functions: it will run them sequentially until an error is returned.
+As it's a very common case to use several validation functions per field, we export a `combineValidators` helper function that allows you to chain sync validation functions: it will run them sequentially until an error is returned.
 
 ```tsx
 import { combineValidators, useForm } from "react-ux-form";

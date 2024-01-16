@@ -9,7 +9,7 @@ import {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { asyncNoop, identity, isPromise, syncNoop } from "./helpers";
+import { identity, isPromise, noop } from "./helpers";
 import {
   AnyRecord,
   FieldState,
@@ -62,23 +62,19 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   type MountedMap = Record<Name, boolean>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type RefMap = Record<Name, MutableRefObject<any>>;
-  type TimeoutMap = Record<Name, number | undefined>;
 
   const callbacks = useRef() as MutableRefObject<CallbackMap>;
   const mounteds = useRef() as MutableRefObject<MountedMap>;
   const refs = useRef() as MutableRefObject<RefMap>;
-  const timeouts = useRef() as MutableRefObject<TimeoutMap>;
 
   const field = useRef() as MutableRefObject<Contract["Field"]>;
   const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
-    const getDebounceInterval = (name: Name) => config.current[name].debounceInterval ?? 0;
-    const getIsEqual = (name: Name) => config.current[name].isEqual ?? Object.is;
     const getInitialValue = (name: Name) => config.current[name].initialValue;
     const getSanitize = (name: Name) => config.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
-    const getValidate = (name: Name) => config.current[name].validate ?? syncNoop;
+    const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
     const isMounted = (name: Name) => mounteds.current[name];
     const isTalkative = (name: Name) => states.current[name].talkative;
@@ -102,12 +98,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         !nextState.talkative || nextState.validity.tag === "unknown"
           ? // Avoid giving feedback too soon
             {
-              validating: false,
               valid: false,
               error: undefined,
             }
           : {
-              validating: nextState.validity.tag === "validating",
               valid: nextState.validity.tag === "valid",
               error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
             };
@@ -117,18 +111,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         validity: nextState.validity,
         exposed: { ...exposed, value: nextState.value },
       };
-    };
-
-    const clearDebounceTimeout = (name: Name): boolean => {
-      const timeout = timeouts.current[name];
-      const debounced = typeof timeout !== "undefined";
-
-      if (debounced) {
-        clearTimeout(timeout);
-        timeouts.current[name] = undefined;
-      }
-
-      return debounced;
     };
 
     const runRenderCallbacks = (name: Name): void => {
@@ -144,13 +126,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
           talkative: true,
         }));
       }
-    };
-
-    const setValidating = (name: Name): void => {
-      setState(name, (prevState) => ({
-        ...prevState,
-        validity: { tag: "validating" },
-      }));
     };
 
     const setError = (name: Name, error: ErrorMessage | void): void => {
@@ -179,62 +154,23 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
-      const debounced = clearDebounceTimeout(name);
-
       const sanitizeAtStart = getSanitize(name);
       const validate = getValidate(name);
       const valueAtStart = sanitizeAtStart(states.current[name].exposed.value);
 
-      const promiseOrError = validate(valueAtStart, {
+      const result = validate(valueAtStart, {
         getFieldState,
         focusField,
       });
 
-      if (!isPromise(promiseOrError)) {
-        const error = promiseOrError;
-
-        if (error === undefined) {
-          setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
-        }
-
-        setError(name, error);
-        runRenderCallbacks(name);
-
-        return error;
+      if (result === undefined) {
+        setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
       }
 
-      if (!debounced) {
-        setValidating(name);
-        runRenderCallbacks(name);
-      }
+      setError(name, result);
+      runRenderCallbacks(name);
 
-      return promiseOrError
-        .then((error) => {
-          const isEqual = getIsEqual(name);
-          const valueAtEnd = sanitizeAtStart(states.current[name].exposed.value);
-
-          if (!isEqual(valueAtStart, valueAtEnd)) {
-            return;
-          }
-          if (error === undefined) {
-            setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
-          }
-
-          setError(name, error);
-          runRenderCallbacks(name);
-
-          return error;
-        })
-        .catch((error) => {
-          if (process.env.NODE_ENV === "development") {
-            console.error(
-              `Something went wrong during "${String(
-                name,
-              )}" validation. Don't forget to handle Promise rejection.\n`,
-              error,
-            );
-          }
-        });
+      return result;
     };
 
     const setFieldValue: Contract["setFieldValue"] = (name, value, options = {}) => {
@@ -265,8 +201,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const resetField: Contract["resetField"] = (name) => {
-      clearDebounceTimeout(name);
-
       setState(name, () => ({
         value: getInitialValue(name),
         talkative: false,
@@ -290,11 +224,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
     const validateField: Contract["validateField"] = (name) => {
       if (!isMounted(name)) {
-        return Promise.resolve(undefined);
+        return undefined;
       }
 
       setTalkative(name);
-      return Promise.resolve(internalValidateField(name));
+      return internalValidateField(name);
     };
 
     const listenFields: Contract["listenFields"] = (names, listener) => {
@@ -322,36 +256,19 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const getOnChange =
       <N extends Name>(name: N) =>
       (value: Values[N]): void => {
-        const debounceInterval = getDebounceInterval(name);
-
         setState(name, (prevState) => ({
           ...prevState,
           value,
         }));
 
         setTalkative(name, ["onChange"]);
-        clearDebounceTimeout(name);
 
         if (formStatus.current === "untouched" || formStatus.current === "submitted") {
           formStatus.current = "editing";
           forceUpdate();
         }
 
-        if (debounceInterval === 0) {
-          void internalValidateField(name);
-          return;
-        }
-
-        setValidating(name);
-        runRenderCallbacks(name);
-
-        timeouts.current[name] = setTimeout(() => {
-          if (isMounted(name)) {
-            void internalValidateField(name);
-          } else {
-            clearDebounceTimeout(name);
-          }
-        }, debounceInterval) as unknown as number;
+        void internalValidateField(name);
       };
 
     const getOnBlur = (name: Name) => (): void => {
@@ -371,15 +288,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       forceUpdate();
     };
 
-    const isSyncSubmission = (
-      results: ValidatorResult<ErrorMessage>[],
-    ): results is (ErrorMessage | undefined)[] => results.every((result) => !isPromise(result));
-
     const isSuccessfulSubmission = (
-      results: (ErrorMessage | undefined)[],
+      results: ValidatorResult<ErrorMessage>[],
     ): results is undefined[] => results.every((result) => typeof result === "undefined");
 
-    const focusFirstError = (names: Name[], results: (ErrorMessage | undefined)[]) => {
+    const focusFirstError = (names: Name[], results: ValidatorResult<ErrorMessage>[]) => {
       const index = results.findIndex((result) => typeof result !== "undefined");
       const name = names[index];
 
@@ -389,8 +302,8 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const submitForm: Contract["submitForm"] = ({
-      onSuccess = asyncNoop,
-      onFailure = syncNoop,
+      onSuccess = noop,
+      onFailure = noop,
       focusOnFirstError = true,
     } = {}) => {
       if (formStatus.current === "submitting") {
@@ -415,45 +328,37 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         results[index] = internalValidateField(name);
       });
 
-      if (isSyncSubmission(results) && !isSuccessfulSubmission(results)) {
+      if (isSuccessfulSubmission(results)) {
+        const effect = onSuccess(values);
+
+        if (!isPromise(effect)) {
+          formStatus.current = "submitted";
+          return forceUpdate();
+        }
+
+        forceUpdate();
+
+        void effect.finally(() => {
+          formStatus.current = "submitted";
+
+          if (mounted.current) {
+            forceUpdate();
+          }
+        });
+      } else {
         if (focusOnFirstError) {
           focusFirstError(names, results);
         }
 
         names.forEach((name, index) => {
-          errors[name] = results[index];
+          errors[name] = results[index] as ErrorMessage | undefined;
         });
+
+        onFailure(errors);
 
         formStatus.current = "submitted";
         forceUpdate();
-
-        return onFailure(errors);
       }
-
-      forceUpdate(); // async flow
-
-      void Promise.all(results.map((result) => Promise.resolve(result)))
-        .then((uncasted) => {
-          const results = uncasted as (ErrorMessage | undefined)[];
-
-          if (isSuccessfulSubmission(results)) {
-            return onSuccess(values);
-          } else {
-            if (focusOnFirstError) {
-              focusFirstError(names, results);
-            }
-
-            names.forEach((name, index) => {
-              errors[name] = results[index];
-            });
-
-            return onFailure(errors);
-          }
-        })
-        .finally(() => {
-          formStatus.current = "submitted";
-          mounted.current && forceUpdate();
-        });
     };
 
     return {
@@ -482,7 +387,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     callbacks.current = {} as CallbackMap;
     mounteds.current = {} as MountedMap;
     refs.current = {} as RefMap;
-    timeouts.current = {} as TimeoutMap;
 
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
@@ -495,7 +399,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         callbacks.current[name] = new Set();
         mounteds.current[name] = false;
         refs.current[name] = { current: null };
-        timeouts.current[name] = undefined;
       }
     }
 

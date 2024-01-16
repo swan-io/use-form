@@ -48,7 +48,7 @@ test("validation strategies give feedback at the right time", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="onChange">
-          {({ error, onBlur, onChange, valid, validating, value }) => (
+          {({ error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="onChange">onChange</label>
 
@@ -65,14 +65,13 @@ test("validation strategies give feedback at the right time", async () => {
 
               {!(valid || error) && <div>onChange idle</div>}
               {valid && <div>onChange valid</div>}
-              {validating && <div>onChange validating</div>}
               {error && <div>onChange error</div>}
             </>
           )}
         </Field>
 
         <Field name="onSuccess">
-          {({ error, onBlur, onChange, valid, validating, value }) => (
+          {({ error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="onSuccess">onSuccess</label>
 
@@ -89,14 +88,13 @@ test("validation strategies give feedback at the right time", async () => {
 
               {!(valid || error) && <div>onSuccess idle</div>}
               {valid && <div>onSuccess valid</div>}
-              {validating && <div>onSuccess validating</div>}
               {error && <div>onSuccess error</div>}
             </>
           )}
         </Field>
 
         <Field name="onBlur">
-          {({ error, onBlur, onChange, valid, validating, value }) => (
+          {({ error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="onBlur">onBlur</label>
 
@@ -113,14 +111,13 @@ test("validation strategies give feedback at the right time", async () => {
 
               {!(valid || error) && <div>onBlur idle</div>}
               {valid && <div>onBlur valid</div>}
-              {validating && <div>onBlur validating</div>}
               {error && <div>onBlur error</div>}
             </>
           )}
         </Field>
 
         <Field name="onSuccessOrBlur">
-          {({ error, onBlur, onChange, valid, validating, value }) => (
+          {({ error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="onSuccessOrBlur">onSuccessOrBlur</label>
 
@@ -137,14 +134,13 @@ test("validation strategies give feedback at the right time", async () => {
 
               {!(valid || error) && <div>onSuccessOrBlur idle</div>}
               {valid && <div>onSuccessOrBlur valid</div>}
-              {validating && <div>onSuccessOrBlur validating</div>}
               {error && <div>onSuccessOrBlur error</div>}
             </>
           )}
         </Field>
 
         <Field name="onSubmit">
-          {({ error, onBlur, onChange, valid, validating, value }) => (
+          {({ error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="onSubmit">onSubmit</label>
 
@@ -161,7 +157,6 @@ test("validation strategies give feedback at the right time", async () => {
 
               {!(valid || error) && <div>onSubmit idle</div>}
               {valid && <div>onSubmit valid</div>}
-              {validating && <div>onSubmit validating</div>}
               {error && <div>onSubmit error</div>}
             </>
           )}

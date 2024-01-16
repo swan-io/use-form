@@ -81,7 +81,7 @@ export const IBANForm = () => {
         }}
       >
         <Field name="iban">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="IBAN"
               validation="Must be valid"
@@ -92,7 +92,6 @@ export const IBANForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}

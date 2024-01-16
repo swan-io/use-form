@@ -103,7 +103,7 @@ export const InputMaskingForm = () => {
         }}
       >
         <Field name="cardNumber">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Rifm
               accept={/\d+/g}
               mask={19 <= value.length}
@@ -123,7 +123,6 @@ export const InputMaskingForm = () => {
                   onChange={onChange}
                   ref={ref}
                   valid={valid}
-                  validating={validating}
                   value={value}
                 />
               )}

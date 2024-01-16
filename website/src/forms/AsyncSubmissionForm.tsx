@@ -64,7 +64,7 @@ export const AsyncSubmissionForm = () => {
         }}
       >
         <Field name="emailAddress">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="Email address"
               validation="Must be valid"
@@ -75,7 +75,6 @@ export const AsyncSubmissionForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}

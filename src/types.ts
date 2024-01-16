@@ -8,10 +8,7 @@ export type OptionalRecord<T extends AnyRecord> = {
   [K in keyof T]: Option<T[K]>;
 };
 
-export type ValidatorResult<ErrorMessage = string> =
-  | ErrorMessage
-  | void
-  | Promise<ErrorMessage | void>;
+export type ValidatorResult<ErrorMessage = string> = ErrorMessage | void;
 
 export type Validator<Value, ErrorMessage = string> = (
   value: Value,
@@ -19,7 +16,6 @@ export type Validator<Value, ErrorMessage = string> = (
 
 export type Validity<ErrorMessage = string> =
   | { readonly tag: "unknown" }
-  | { readonly tag: "validating" }
   | { readonly tag: "valid" }
   | { readonly tag: "invalid"; error: ErrorMessage };
 
@@ -30,7 +26,6 @@ export type Strategy = "onChange" | "onSuccess" | "onBlur" | "onSuccessOrBlur" |
 
 export type FieldState<Value, ErrorMessage = string> = {
   value: Value;
-  validating: boolean;
   valid: boolean;
   error: ErrorMessage | undefined;
 };
@@ -39,8 +34,6 @@ export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N];
     strategy?: Strategy;
-    debounceInterval?: number;
-    isEqual?: (value1: Values[N], value2: Values[N]) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],
@@ -95,7 +88,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
   focusField: (name: keyof Values) => void;
   resetField: (name: keyof Values) => void;
   sanitizeField: (name: keyof Values) => void;
-  validateField: (name: keyof Values) => Promise<ErrorMessage | void>;
+  validateField: (name: keyof Values) => ValidatorResult<ErrorMessage>;
 
   listenFields: <N extends keyof Values>(
     names: N[],
@@ -106,7 +99,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
   resetForm: () => void;
   submitForm: (options?: {
-    onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown>;
+    onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown> | void;
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => void;
     focusOnFirstError?: boolean;
   }) => void;

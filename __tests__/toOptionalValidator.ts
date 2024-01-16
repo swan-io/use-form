@@ -44,8 +44,7 @@ test("sync validator to optional validator (with custom empty value)", () => {
 test("async validator to optional validator", async () => {
   const error = "Must be at least 3 characters";
 
-  const validator: Validator<string> = (value) =>
-    new Promise((resolve) => resolve(value.length < 3 ? error : undefined));
+  const validator: Validator<string> = (value) => (value.length < 3 ? error : undefined);
 
   await expect(validator("")).resolves.toBe(error);
   await expect(validator("x")).resolves.toBe(error);
@@ -62,7 +61,7 @@ test("async validator to optional validator (with custom empty value)", async ()
   const error = "Number must be a position multiple of 2";
 
   const validator: Validator<number> = (value) =>
-    new Promise((resolve) => resolve(value <= 0 || value % 2 !== 0 ? error : undefined));
+    value <= 0 || value % 2 !== 0 ? error : undefined;
 
   await expect(validator(0)).resolves.toBe(error);
   await expect(validator(1)).resolves.toBe(error);

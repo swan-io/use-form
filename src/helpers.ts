@@ -1,6 +1,5 @@
-export const asyncNoop = () => Promise.resolve();
-export const syncNoop = () => {};
 export const identity = <T>(value: T) => value;
+export const noop = () => {};
 export const isEmptyString = (value: unknown) => value === "";
 
 export const isPromise = <T>(value: unknown): value is Promise<T> =>

@@ -8,7 +8,6 @@ import { P, match } from "ts-pattern";
 import { Link } from "./components/Link";
 import { Page } from "./components/Page";
 import { AsyncSubmissionForm } from "./forms/AsyncSubmissionForm";
-import { AsyncValidationForm } from "./forms/AsyncValidationForm";
 import { BasicForm } from "./forms/BasicForm";
 import { CheckboxesForm } from "./forms/CheckboxesForm";
 import { CreditCardForm } from "./forms/CreditCardForm";
@@ -72,7 +71,6 @@ export const App = () => {
             <Link to={Router.Home()}>Basic</Link>
             <Link to={Router.Strategies()}>Validation strategies</Link>
             <Link to={Router.FieldsListener()}>Fields listener</Link>
-            <Link to={Router.AsyncValidation()}>Async validation</Link>
             <Link to={Router.AsyncSubmission()}>Async submission</Link>
             <Link to={Router.Checkboxes()}>Checkboxes</Link>
             <Link to={Router.IBAN()}>IBAN</Link>
@@ -86,7 +84,6 @@ export const App = () => {
         .with({ name: "Home" }, () => <BasicForm />)
         .with({ name: "Strategies" }, () => <StrategiesForm />)
         .with({ name: "FieldsListener" }, () => <FieldsListenerForm />)
-        .with({ name: "AsyncValidation" }, () => <AsyncValidationForm />)
         .with({ name: "AsyncSubmission" }, () => <AsyncSubmissionForm />)
         .with({ name: "Checkboxes" }, () => <CheckboxesForm />)
         .with({ name: "IBAN" }, () => <IBANForm />)

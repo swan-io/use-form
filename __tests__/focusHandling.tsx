@@ -29,7 +29,7 @@ test("the first errored field is focused after submission", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
@@ -47,14 +47,13 @@ test("the first errored field is focused after submission", async () => {
 
               {!(valid || error) && <div>firstName idle</div>}
               {valid && <div>firstName valid</div>}
-              {validating && <div>firstName validating</div>}
               {error && <div>firstName error</div>}
             </>
           )}
         </Field>
 
         <Field name="lastName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="lastName">Last name</label>
 
@@ -72,7 +71,6 @@ test("the first errored field is focused after submission", async () => {
 
               {!(valid || error) && <div>lastName idle</div>}
               {valid && <div>lastName valid</div>}
-              {validating && <div>lastName validating</div>}
               {error && <div>lastName error</div>}
             </>
           )}
@@ -118,7 +116,7 @@ test("the user can disable autofocus on first error", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
@@ -136,7 +134,6 @@ test("the user can disable autofocus on first error", async () => {
 
               {!(valid || error) && <div>idle</div>}
               {valid && <div>valid</div>}
-              {validating && <div>validating</div>}
               {error && <div>error</div>}
             </>
           )}
@@ -170,7 +167,7 @@ test("focusField behave like expected", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
@@ -193,14 +190,13 @@ test("focusField behave like expected", async () => {
 
               {!(valid || error) && <div>firstName idle</div>}
               {valid && <div>firstName valid</div>}
-              {validating && <div>firstName validating</div>}
               {error && <div>firstName error</div>}
             </>
           )}
         </Field>
 
         <Field name="lastName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="lastName">Last name</label>
 
@@ -218,7 +214,6 @@ test("focusField behave like expected", async () => {
 
               {!(valid || error) && <div>lastName idle</div>}
               {valid && <div>lastName valid</div>}
-              {validating && <div>lastName validating</div>}
               {error && <div>lastName error</div>}
             </>
           )}

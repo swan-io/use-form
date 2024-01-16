@@ -88,7 +88,7 @@ export const BasicForm = () => {
         }}
       >
         <Field name="firstName">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="First name"
               validation="Required"
@@ -99,14 +99,13 @@ export const BasicForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="lastName">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="Last name"
               validation="Required"
@@ -117,14 +116,13 @@ export const BasicForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="emailAddress">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="Email address"
               validation="Must be valid"
@@ -135,7 +133,6 @@ export const BasicForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}

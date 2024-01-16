@@ -4,7 +4,6 @@ const routesObject = {
   Home: "/",
   Strategies: "/strategies",
   FieldsListener: "/fields-listener",
-  AsyncValidation: "/async-validation",
   AsyncSubmission: "/async-submission",
   Checkboxes: "/checkboxes",
   IBAN: "/iban",

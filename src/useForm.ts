@@ -93,16 +93,17 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
             })
           : state;
 
-      const exposed = nextState.talkative
-        ? {
-            valid: nextState.validity.tag === "valid",
-            error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
-          }
-        : {
-            // Avoid giving feedback too soon
-            valid: false,
-            error: undefined,
-          };
+      const exposed =
+        !nextState.talkative || nextState.validity.tag === "unknown"
+          ? // Avoid giving feedback too soon
+            {
+              valid: false,
+              error: undefined,
+            }
+          : {
+              valid: nextState.validity.tag === "valid",
+              error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
+            };
 
       states.current[name] = {
         talkative: nextState.talkative,
@@ -112,16 +113,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const setInitialState = <N extends Name>(name: N) => {
-      const sanitize = getSanitize(name);
-      const validate = getValidate(name);
-
-      const value = getInitialValue(name);
-      const error = validate(sanitize(value), { getFieldState, focusField: noop });
-
       setState(name, {
-        value,
+        value: getInitialValue(name),
         talkative: false,
-        validity: typeof error !== "undefined" ? { tag: "invalid", error } : { tag: "valid" },
+        validity: { tag: "unknown" },
       });
     };
 

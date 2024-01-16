@@ -15,6 +15,7 @@ export type Validator<Value, ErrorMessage = string> = (
 ) => ValidatorResult<ErrorMessage>;
 
 export type Validity<ErrorMessage = string> =
+  | { readonly tag: "unknown" }
   | { readonly tag: "valid" }
   | { readonly tag: "invalid"; error: ErrorMessage };
 

@@ -71,8 +71,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
-    const getInitialValue = (name: Name) => config.current[name].initialValue;
-    const getSanitize = (name: Name) => config.current[name].sanitize ?? identity;
+    const getSanitize = <N extends Name>(name: N) => config.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
@@ -85,26 +84,23 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       states.current[name] = typeof state === "function" ? state(states.current[name]) : state;
     };
 
-    const setInitialState = <N extends Name>(name: N) => {
-      setState(name, {
-        value: getInitialValue(name),
-        talkative: false,
-        validity: { tag: "unknown" },
-      });
-    };
-
-    const getState = <N extends Name>(name: N): FieldState<Values[N], ErrorMessage> => {
+    const getFieldState = <N extends Name>(
+      name: N,
+      options: { sanitize?: boolean } = {},
+    ): FieldState<Values[N], ErrorMessage> => {
+      const { sanitize = false } = options;
       const state = states.current[name];
+      const value = sanitize ? getSanitize(name)(state.value) : state.value;
 
       return !state.talkative || state.validity.tag === "unknown"
         ? // Avoid giving feedback too soon
           {
-            value: state.value,
+            value,
             valid: getValidate(name) == noop,
             error: undefined,
           }
         : {
-            value: state.value,
+            value,
             valid: state.validity.tag === "valid",
             error: state.validity.tag === "invalid" ? state.validity.error : undefined,
           };
@@ -132,28 +128,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }));
     };
 
-    const getFieldState = <N extends Name>(
-      name: N,
-      options: { sanitize?: boolean } = {},
-    ): FieldState<Values[N], ErrorMessage> => {
-      const state = getState(name);
-
-      if (!options.sanitize) {
-        return state;
-      }
-
-      const sanitize = getSanitize(name);
-
-      return {
-        ...state,
-        value: sanitize(state.value) as Values[N],
-      };
-    };
-
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
       const sanitize = getSanitize(name);
       const validate = getValidate(name);
-      const value = sanitize(getState(name).value);
+      const value = sanitize(getFieldState(name).value);
       const error = validate(value, { getFieldState, focusField });
 
       if (error === undefined) {
@@ -194,7 +172,12 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const resetField: Contract["resetField"] = (name) => {
-      setInitialState(name);
+      setState(name, {
+        value: config.current[name].initialValue,
+        talkative: false,
+        validity: { tag: "unknown" },
+      });
+
       runRenderCallbacks(name);
     };
 
@@ -357,10 +340,9 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       resetForm,
       submitForm,
 
+      setState,
       getOnChange,
       getOnBlur,
-      setInitialState,
-      setState,
     };
   }, []);
 
@@ -374,7 +356,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
-        api.setInitialState(name);
+        api.setState(name, {
+          value: config.current[name].initialValue,
+          talkative: false,
+          validity: { tag: "unknown" },
+        });
 
         callbacks.current[name] = new Set();
         mounteds.current[name] = false;

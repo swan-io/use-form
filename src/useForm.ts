@@ -65,6 +65,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
+    const getInitialValue = (name: Name) => arg.current[name].initialValue;
     const getSanitize = <N extends Name>(name: N) => arg.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => arg.current[name].strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => arg.current[name].validate ?? noop;
@@ -128,9 +129,18 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }));
     };
 
+    const focusField: Contract["focusField"] = (name) => {
+      const { ref } = fields.current[name];
+
+      if (ref.current && typeof ref.current.focus === "function") {
+        ref.current.focus();
+      }
+    };
+
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
       const sanitize = getSanitize(name);
       const validate = getValidate(name);
+
       const value = sanitize(getFieldState(name).value);
       const error = validate(value, { getFieldState, focusField });
 
@@ -145,12 +155,14 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const setFieldValue: Contract["setFieldValue"] = (name, value, options = {}) => {
+      const { validate = false } = options;
+
       setState(name, (prevState) => ({
         ...prevState,
         value,
       }));
 
-      if (Boolean(options.validate)) {
+      if (validate) {
         setTalkative(name);
       }
 
@@ -163,17 +175,9 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       runRenderCallbacks(name);
     };
 
-    const focusField: Contract["focusField"] = (name) => {
-      const { ref } = fields.current[name];
-
-      if (ref.current && typeof ref.current.focus === "function") {
-        ref.current.focus();
-      }
-    };
-
     const resetField: Contract["resetField"] = (name) => {
       setState(name, {
-        value: arg.current[name].initialValue,
+        value: getInitialValue(name),
         talkative: false,
         validity: { tag: "unknown" },
       });

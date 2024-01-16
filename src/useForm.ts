@@ -309,15 +309,8 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       });
 
       names.forEach((name: Name, index) => {
-        const sanitize = getSanitize(name);
-        const isEqual = getIsEqual(name);
-        const value = getFieldValue(name);
-
-        if (!isEqual(sanitize(getInitialValue(name)), sanitize(value))) {
-          setTalkative(name);
-        }
-
-        values[name] = Option.Some(value);
+        setTalkative(name);
+        values[name] = Option.Some(getFieldValue(name, { sanitize: true }));
         results[index] = internalValidateField(name);
       });
 

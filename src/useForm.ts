@@ -50,7 +50,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
   type StateMap = {
     [N in Name]: Readonly<{
-      exposed: FieldState<Values[N], ErrorMessage>;
+      value: Values[N];
       talkative: boolean;
       validity: Validity<ErrorMessage>;
     }>;
@@ -82,34 +82,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       name: N,
       state: SetStateAction<{ value: Values[N] } & Pick<StateMap[N], "talkative" | "validity">>,
     ) => {
-      const currentState = states.current[name];
-
-      const nextState =
-        typeof state === "function"
-          ? state({
-              value: currentState.exposed.value,
-              talkative: currentState.talkative,
-              validity: currentState.validity,
-            })
-          : state;
-
-      const exposed =
-        !nextState.talkative || nextState.validity.tag === "unknown"
-          ? // Avoid giving feedback too soon
-            {
-              valid: false,
-              error: undefined,
-            }
-          : {
-              valid: nextState.validity.tag === "valid",
-              error: nextState.validity.tag === "invalid" ? nextState.validity.error : undefined,
-            };
-
-      states.current[name] = {
-        talkative: nextState.talkative,
-        validity: nextState.validity,
-        exposed: { ...exposed, value: nextState.value },
-      };
+      states.current[name] = typeof state === "function" ? state(states.current[name]) : state;
     };
 
     const setInitialState = <N extends Name>(name: N) => {
@@ -118,6 +91,23 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         talkative: false,
         validity: { tag: "unknown" },
       });
+    };
+
+    const getState = <N extends Name>(name: N): FieldState<Values[N], ErrorMessage> => {
+      const state = states.current[name];
+
+      return !state.talkative || state.validity.tag === "unknown"
+        ? // Avoid giving feedback too soon
+          {
+            value: state.value,
+            valid: getValidate(name) == noop,
+            error: undefined,
+          }
+        : {
+            value: state.value,
+            valid: state.validity.tag === "valid",
+            error: state.validity.tag === "invalid" ? state.validity.error : undefined,
+          };
     };
 
     const runRenderCallbacks = (name: Name): void => {
@@ -146,24 +136,24 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       name: N,
       options: { sanitize?: boolean } = {},
     ): FieldState<Values[N], ErrorMessage> => {
-      const { exposed } = states.current[name];
+      const state = getState(name);
 
       if (!options.sanitize) {
-        return exposed;
+        return state;
       }
 
       const sanitize = getSanitize(name);
 
       return {
-        ...exposed,
-        value: sanitize(exposed.value) as Values[N],
+        ...state,
+        value: sanitize(state.value) as Values[N],
       };
     };
 
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
       const sanitize = getSanitize(name);
       const validate = getValidate(name);
-      const value = sanitize(states.current[name].exposed.value);
+      const value = sanitize(getState(name).value);
       const error = validate(value, { getFieldState, focusField });
 
       if (error === undefined) {

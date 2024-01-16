@@ -76,6 +76,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const getValidate = (name: Name) => config.current[name].validate ?? noop;
 
     const isMounted = (name: Name) => mounteds.current[name];
+    const isTalkative = (name: Name) => states.current[name].talkative;
 
     const setState = <N extends Name>(
       name: N,
@@ -243,8 +244,13 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       };
 
     const getOnBlur = (name: Name) => (): void => {
-      setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
-      void internalValidateField(name);
+      const { validity } = states.current[name];
+
+      // Avoid validating an untouched / already valid field
+      if (validity.tag !== "unknown" && !isTalkative(name)) {
+        setTalkative(name, ["onBlur", "onSuccessOrBlur"]);
+        void internalValidateField(name);
+      }
     };
 
     const resetForm: Contract["resetForm"] = () => {
@@ -340,7 +346,6 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       resetForm,
       submitForm,
 
-      setState,
       getOnChange,
       getOnBlur,
     };
@@ -356,11 +361,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
     for (const name in config.current) {
       if (Object.prototype.hasOwnProperty.call(config.current, name)) {
-        api.setState(name, {
+        states.current[name] = {
           value: config.current[name].initialValue,
           talkative: false,
           validity: { tag: "unknown" },
-        });
+        };
 
         callbacks.current[name] = new Set();
         mounteds.current[name] = false;

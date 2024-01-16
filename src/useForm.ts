@@ -65,7 +65,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
-    const getInitialValue = (name: Name) => arg.current[name].initialValue;
+    const getInitialValue = <N extends Name>(name: N) => arg.current[name].initialValue;
     const getSanitize = <N extends Name>(name: N) => arg.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => arg.current[name].strategy ?? "onSuccessOrBlur";
     const getValidate = (name: Name) => arg.current[name].validate ?? noop;
@@ -85,23 +85,18 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         typeof state === "function" ? state(fields.current[name].state) : state;
     };
 
-    const getFieldState = <N extends Name>(
-      name: N,
-      options: { sanitize?: boolean } = {},
-    ): FieldState<Values[N], ErrorMessage> => {
-      const { sanitize = false } = options;
+    const getFieldState = <N extends Name>(name: N): FieldState<Values[N], ErrorMessage> => {
       const { state } = fields.current[name];
-      const value = sanitize ? getSanitize(name)(state.value) : state.value;
 
       return !state.talkative || state.validity.tag === "unknown"
         ? // Avoid giving feedback too soon
           {
-            value,
+            value: state.value,
             valid: getValidate(name) === noop,
             error: undefined,
           }
         : {
-            value,
+            value: state.value,
             valid: state.validity.tag === "valid",
             error: state.validity.tag === "invalid" ? state.validity.error : undefined,
           };
@@ -129,6 +124,17 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }));
     };
 
+    const getFieldValue: Contract["getFieldValue"] = (name, options = {}) => {
+      const { sanitize = false } = options;
+
+      const value =
+        fields.current[name] == null
+          ? getInitialValue(name) // could be null during lazy init
+          : fields.current[name].state.value;
+
+      return sanitize ? getSanitize(name)(value) : value;
+    };
+
     const focusField: Contract["focusField"] = (name) => {
       const { ref } = fields.current[name];
 
@@ -138,11 +144,10 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const internalValidateField = <N extends Name>(name: N): ValidatorResult<ErrorMessage> => {
-      const sanitize = getSanitize(name);
       const validate = getValidate(name);
 
-      const value = sanitize(getFieldState(name).value);
-      const error = validate(value, { getFieldState, focusField });
+      const value = getFieldValue(name, { sanitize: true });
+      const error = validate(value, { getFieldValue, focusField });
 
       if (error === undefined) {
         setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
@@ -299,7 +304,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       names.forEach((name: Name, index) => {
         setTalkative(name);
-        values[name] = Option.Some(getFieldState(name, { sanitize: true }).value);
+        values[name] = Option.Some(getFieldValue(name, { sanitize: true }));
         results[index] = internalValidateField(name);
       });
 
@@ -337,7 +342,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     return {
-      getFieldState,
+      getFieldValue,
       setFieldValue,
       setFieldError,
       focusField,
@@ -351,6 +356,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       getOnChange,
       getOnBlur,
+      getFieldState,
     };
   }, []);
 
@@ -462,7 +468,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     Field: field.current,
     FieldsListener: fieldsListener.current,
 
-    getFieldState: api.getFieldState,
+    getFieldValue: api.getFieldValue,
     setFieldValue: api.setFieldValue,
     setFieldError: api.setFieldError,
     focusField: api.focusField,

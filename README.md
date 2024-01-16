@@ -88,7 +88,7 @@ const {
   formStatus,
   Field,
   FieldsListener,
-  getFieldState,
+  getFieldValue,
   setFieldValue,
   setFieldError,
   focusField,
@@ -104,7 +104,7 @@ const {
     // Properties below are optional (those are the default values)
     strategy: "onSuccessOrBlur",
     sanitize: (value) => value,
-    validate: (value, { focusField, getFieldState }) => {},
+    validate: (value, { focusField, getFieldValue }) => {},
   },
 });
 ```
@@ -181,21 +181,17 @@ A component that listens for fields states changes. It's useful when a part of y
 </FieldsListener>
 ```
 
-#### getFieldState
+#### getFieldValue
 
 By setting `sanitize: true`, you will enforce sanitization.
 
 ```tsx
-type getFieldState = (
+type getFieldValue = (
   name: FieldName,
   options?: {
     sanitize?: boolean;
   },
-) => {
-  value: Value;
-  valid: boolean;
-  error?: ErrorMessage;
-};
+) => Value;
 ```
 
 #### setFieldValue

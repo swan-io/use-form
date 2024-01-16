@@ -39,10 +39,10 @@ export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
       value: Values[N],
       helpers: {
         focusField: (name: keyof Values) => void;
-        getFieldState: <N extends keyof Values>(
+        getFieldValue: <N extends keyof Values>(
           name: N,
           options?: { sanitize?: boolean },
-        ) => FieldState<Values[N], ErrorMessage>;
+        ) => Values[N];
       },
     ) => ValidatorResult<ErrorMessage>;
   };
@@ -74,10 +74,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
     displayName?: string;
   };
 
-  getFieldState: <N extends keyof Values>(
-    name: N,
-    options?: { sanitize?: boolean },
-  ) => FieldState<Values[N], ErrorMessage>;
+  getFieldValue: <N extends keyof Values>(name: N, options?: { sanitize?: boolean }) => Values[N];
   setFieldValue: <N extends keyof Values>(
     name: N,
     value: Values[N],

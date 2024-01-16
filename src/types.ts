@@ -34,6 +34,7 @@ export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N];
     strategy?: Strategy;
+    isEqual?: (value1: Values[N], value2: Values[N]) => boolean;
     sanitize?: (value: Values[N]) => Values[N];
     validate?: (
       value: Values[N],

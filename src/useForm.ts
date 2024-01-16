@@ -65,6 +65,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
+    const getIsEqual = (name: Name) => arg.current[name].isEqual ?? Object.is;
     const getInitialValue = <N extends Name>(name: N) => arg.current[name].initialValue;
     const getSanitize = <N extends Name>(name: N) => arg.current[name].sanitize ?? identity;
     const getStrategy = (name: Name) => arg.current[name].strategy ?? "onSuccessOrBlur";
@@ -86,20 +87,22 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const getFieldState = <N extends Name>(name: N): FieldState<Values[N], ErrorMessage> => {
-      const { state } = fields.current[name];
+      const { talkative, value, validity } = fields.current[name].state;
 
-      return !state.talkative || state.validity.tag === "unknown"
-        ? // Avoid giving feedback too soon
-          {
-            value: state.value,
-            valid: getValidate(name) === noop,
-            error: undefined,
-          }
-        : {
-            value: state.value,
-            valid: state.validity.tag === "valid",
-            error: state.validity.tag === "invalid" ? state.validity.error : undefined,
-          };
+      // Avoid giving feedback too soon
+      if (!talkative || validity.tag === "unknown") {
+        return { value, valid: false, error: undefined };
+      }
+
+      const sanitize = getSanitize(name);
+      const isEqual = getIsEqual(name);
+
+      return {
+        value,
+        valid:
+          validity.tag === "valid" && !isEqual(sanitize(getInitialValue(name)), sanitize(value)),
+        error: validity.tag === "invalid" ? validity.error : undefined,
+      };
     };
 
     const runRenderCallbacks = (name: Name): void => {
@@ -117,19 +120,15 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       }
     };
 
-    const setError = (name: Name, error: ErrorMessage | void): void => {
-      setState(name, (prevState) => ({
-        ...prevState,
-        validity: typeof error !== "undefined" ? { tag: "invalid", error } : { tag: "valid" },
-      }));
-    };
+    const getValidity = (error: ErrorMessage | void): Validity<ErrorMessage> =>
+      typeof error === "undefined" ? { tag: "valid" } : { tag: "invalid", error };
 
     const getFieldValue: Contract["getFieldValue"] = (name, options = {}) => {
       const { sanitize = false } = options;
 
       const value =
         fields.current[name] == null
-          ? getInitialValue(name) // could be null during lazy init
+          ? getInitialValue(name) // Could be null during lazy initialization
           : fields.current[name].state.value;
 
       return sanitize ? getSanitize(name)(value) : value;
@@ -153,9 +152,12 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
         setTalkative(name, ["onSuccess", "onSuccessOrBlur"]);
       }
 
-      setError(name, error);
-      runRenderCallbacks(name);
+      setState(name, (prevState) => ({
+        ...prevState,
+        validity: getValidity(error),
+      }));
 
+      runRenderCallbacks(name);
       return error;
     };
 
@@ -175,7 +177,11 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const setFieldError: Contract["setFieldError"] = (name, error) => {
-      setError(name, error);
+      setState(name, (prevState) => ({
+        ...prevState,
+        validity: getValidity(error),
+      }));
+
       setTalkative(name);
       runRenderCallbacks(name);
     };
@@ -303,8 +309,15 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       });
 
       names.forEach((name: Name, index) => {
-        setTalkative(name);
-        values[name] = Option.Some(getFieldValue(name, { sanitize: true }));
+        const sanitize = getSanitize(name);
+        const isEqual = getIsEqual(name);
+        const value = getFieldValue(name);
+
+        if (!isEqual(sanitize(getInitialValue(name)), sanitize(value))) {
+          setTalkative(name);
+        }
+
+        values[name] = Option.Some(value);
         results[index] = internalValidateField(name);
       });
 

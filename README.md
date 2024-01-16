@@ -103,6 +103,7 @@ const {
     initialValue: "",
     // Properties below are optional (those are the default values)
     strategy: "onSuccessOrBlur",
+    isEqual: (value1, value2) => Object.is(value1, value2),
     sanitize: (value) => value,
     validate: (value, { focusField, getFieldValue }) => {},
   },
@@ -118,6 +119,9 @@ type fieldConfig = {
 
   // The chosen strategy. See "validation strategies" paragraph
   strategy: Strategy;
+
+  // Used to perform initial and current value comparaison
+  isEqual: (value1: Value, value2: Value) => boolean;
 
   // Will be run on value before validation and submission. Useful from trimming whitespaces
   sanitize: (value: Value) => Value;

@@ -26,18 +26,18 @@ import {
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
-  fields: FormConfig<Values, ErrorMessage>,
+  config: FormConfig<Values, ErrorMessage>,
 ): Form<Values, ErrorMessage> => {
   type Contract = Form<Values, ErrorMessage>;
   type Name = keyof Values;
 
   const [, forceUpdate] = useReducer(() => [], []);
   const mounted = useRef(false);
-  const config = useRef(fields);
+  const arg = useRef(config);
   const formStatus = useRef<FormStatus>("untouched");
 
   useIsoLayoutEffect(() => {
-    config.current = fields;
+    arg.current = config;
   });
 
   useEffect(() => {
@@ -48,15 +48,13 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
   }, []);
 
-  type StateMap = {
+  const fields = useRef() as MutableRefObject<{
     [N in Name]: Readonly<{
       value: Values[N];
       talkative: boolean;
       validity: Validity<ErrorMessage>;
     }>;
-  };
-
-  const states = useRef() as MutableRefObject<StateMap>;
+  }>;
 
   type CallbackMap = Record<Name, Set<() => void>>;
   type MountedMap = Record<Name, boolean>;
@@ -71,18 +69,22 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
-    const getSanitize = <N extends Name>(name: N) => config.current[name].sanitize ?? identity;
-    const getStrategy = (name: Name) => config.current[name].strategy ?? "onSuccessOrBlur";
-    const getValidate = (name: Name) => config.current[name].validate ?? noop;
+    const getSanitize = <N extends Name>(name: N) => arg.current[name].sanitize ?? identity;
+    const getStrategy = (name: Name) => arg.current[name].strategy ?? "onSuccessOrBlur";
+    const getValidate = (name: Name) => arg.current[name].validate ?? noop;
 
     const isMounted = (name: Name) => mounteds.current[name];
-    const isTalkative = (name: Name) => states.current[name].talkative;
+    const isTalkative = (name: Name) => fields.current[name].talkative;
 
     const setState = <N extends Name>(
       name: N,
-      state: SetStateAction<{ value: Values[N] } & Pick<StateMap[N], "talkative" | "validity">>,
+      state: SetStateAction<{
+        value: Values[N];
+        talkative: boolean;
+        validity: Validity<ErrorMessage>;
+      }>,
     ) => {
-      states.current[name] = typeof state === "function" ? state(states.current[name]) : state;
+      fields.current[name] = typeof state === "function" ? state(fields.current[name]) : state;
     };
 
     const getFieldState = <N extends Name>(
@@ -90,14 +92,14 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       options: { sanitize?: boolean } = {},
     ): FieldState<Values[N], ErrorMessage> => {
       const { sanitize = false } = options;
-      const state = states.current[name];
+      const state = fields.current[name];
       const value = sanitize ? getSanitize(name)(state.value) : state.value;
 
       return !state.talkative || state.validity.tag === "unknown"
         ? // Avoid giving feedback too soon
           {
             value,
-            valid: getValidate(name) == noop,
+            valid: getValidate(name) === noop,
             error: undefined,
           }
         : {
@@ -174,7 +176,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
     const resetField: Contract["resetField"] = (name) => {
       setState(name, {
-        value: config.current[name].initialValue,
+        value: arg.current[name].initialValue,
         talkative: false,
         validity: { tag: "unknown" },
       });
@@ -244,7 +246,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       };
 
     const getOnBlur = (name: Name) => (): void => {
-      const { validity } = states.current[name];
+      const { validity } = fields.current[name];
 
       // Avoid validating an untouched / already valid field
       if (validity.tag !== "unknown" && !isTalkative(name)) {
@@ -254,7 +256,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const resetForm: Contract["resetForm"] = () => {
-      Object.keys(config.current).forEach((name) => resetField(name));
+      Object.keys(arg.current).forEach((name) => resetField(name));
       formStatus.current = "untouched";
 
       forceUpdate();
@@ -352,17 +354,17 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
   }, []);
 
   // Lazy initialization
-  if (!states.current) {
-    states.current = {} as StateMap;
+  if (!fields.current) {
+    fields.current = {} as (typeof fields)["current"];
 
     callbacks.current = {} as CallbackMap;
     mounteds.current = {} as MountedMap;
     refs.current = {} as RefMap;
 
-    for (const name in config.current) {
-      if (Object.prototype.hasOwnProperty.call(config.current, name)) {
-        states.current[name] = {
-          value: config.current[name].initialValue,
+    for (const name in arg.current) {
+      if (Object.prototype.hasOwnProperty.call(arg.current, name)) {
+        fields.current[name] = {
+          value: arg.current[name].initialValue,
           talkative: false,
           validity: { tag: "unknown" },
         };
@@ -376,7 +378,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const Field: Contract["Field"] = ({ name, children }) => {
       const { subscribe, getSnapshot } = useMemo(
         () => ({
-          getSnapshot: () => states.current[name],
+          getSnapshot: () => fields.current[name],
           subscribe: (callback: () => void): (() => void) => {
             callbacks.current[name].add(callback);
 
@@ -424,7 +426,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
       const { subscribe, getSnapshot } = useMemo(
         () => ({
-          getSnapshot: () => JSON.stringify(names.map((name) => states.current[name])),
+          getSnapshot: () => JSON.stringify(names.map((name) => fields.current[name])),
           subscribe: (callback: () => void): (() => void) => {
             names.forEach((name) => callbacks.current[name].add(callback));
 

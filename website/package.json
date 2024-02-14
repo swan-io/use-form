@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc && vite build && cp 404.html dist",
     "dev": "vite",
-    "serve": "vite preview"
+    "serve": "yarn build && vite preview"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -13,8 +13,8 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@swan-io/chicane": "^1.4.1",
-    "card-validator": "^9.0.0",
-    "framer-motion": "^10.17.12",
+    "card-validator": "^9.1.0",
+    "framer-motion": "^11.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-ux-form": "link:../",
@@ -23,12 +23,12 @@
     "validator": "^13.11.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.8",
-    "@types/react": "^18.2.47",
-    "@types/react-dom": "^18.2.18",
-    "@types/validator": "^13.11.8",
-    "@vitejs/plugin-react-swc": "^3.5.0",
+    "@types/node": "^20.11.17",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@types/validator": "^13.11.9",
+    "@vitejs/plugin-react-swc": "^3.6.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.11"
+    "vite": "^5.1.1"
   }
 }

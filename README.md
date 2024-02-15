@@ -1,18 +1,18 @@
-# react-ux-form
+# @swan-io/use-form
 
-[![mit licence](https://img.shields.io/dub/l/vibe-d.svg?style=for-the-badge)](https://github.com/swan-io/react-ux-form/blob/main/LICENSE)
-[![npm version](https://img.shields.io/npm/v/react-ux-form?style=for-the-badge)](https://www.npmjs.org/package/react-ux-form)
-[![bundlephobia](https://img.shields.io/bundlephobia/minzip/react-ux-form?label=size&style=for-the-badge)](https://bundlephobia.com/result?p=react-ux-form)
+[![mit licence](https://img.shields.io/dub/l/vibe-d.svg?style=for-the-badge)](https://github.com/swan-io/use-form/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@swan-io/use-form?style=for-the-badge)](https://www.npmjs.org/package/@swan-io/use-form)
+[![bundlephobia](https://img.shields.io/bundlephobia/minzip/@swan-io/use-form?label=size&style=for-the-badge)](https://bundlephobia.com/result?p=@swan-io/use-form)
 
 A simple, fast, and opinionated form library for React & React Native focusing on UX.<br>
-👉 Take a look at [the demo website](https://swan-io.github.io/react-ux-form).
+👉 Take a look at [the demo website](https://swan-io.github.io/use-form).
 
 ## Setup
 
 ```bash
-$ npm install --save react-ux-form
+$ npm install --save @swan-io/use-form
 # --- or ---
-$ yarn add react-ux-form
+$ yarn add @swan-io/use-form
 ```
 
 ## Features
@@ -82,7 +82,7 @@ That's precisely why every field config could declare its own `strategy`:
 `useForm` takes one argument (a map of your fields configs) and returns a set of helpers (functions, components, and values) to manage your form state.
 
 ```tsx
-import { useForm } from "react-ux-form";
+import { useForm } from "@swan-io/use-form";
 
 const {
   formStatus,
@@ -303,7 +303,7 @@ type submitForm = (options?: {
 As it's a very common case to use several validation functions per field, we export a `combineValidators` helper function that allows you to chain sync validation functions: it will run them sequentially until an error is returned.
 
 ```tsx
-import { combineValidators, useForm } from "react-ux-form";
+import { combineValidators, useForm } from "@swan-io/use-form";
 
 const validateRequired = (value: string) => {
   if (!value) {
@@ -338,7 +338,7 @@ const MyAwesomeForm = () => {
 Very often, we want to execute validation only if a value is not empty. By wrapping any validator (or combined validators) with `toOptionalValidator`, you can bypass the validation in such cases.
 
 ```tsx
-import { toOptionalValidator, Validator } from "react-ux-form";
+import { toOptionalValidator, Validator } from "@swan-io/use-form";
 
 // This validator will error if the string length is < 3 (even if it's an empty string)
 const validator: Validator<string> = (value) => {
@@ -354,7 +354,7 @@ const optionalValidator = toOptionalValidator(validator);
 This function also accept a second param (required for non-string validators) to specify what is an empty value.
 
 ```tsx
-import { toOptionalValidator, Validator } from "react-ux-form";
+import { toOptionalValidator, Validator } from "@swan-io/use-form";
 
 const validator: Validator<number> = (value) => {
   if (value < 10) {
@@ -369,7 +369,7 @@ const optionalValidator = toOptionalValidator(validator, (value) => value === 0)
 ## Quickstart
 
 ```tsx
-import { useForm } from "react-ux-form";
+import { useForm } from "@swan-io/use-form";
 
 const MyAwesomeForm = () => {
   const { Field, submitForm } = useForm({
@@ -424,7 +424,7 @@ const MyAwesomeForm = () => {
 
 ## More examples
 
-A full set of examples is available on [the demo website](https://swan-io.github.io/react-ux-form) or in the [`/website` directory](https://github.com/swan-io/react-ux-form/tree/main/website) project. Just clone the repository, install its dependencies and start it!
+A full set of examples is available on [the demo website](https://swan-io.github.io/use-form) or in the [`/website` directory](https://github.com/swan-io/use-form/tree/main/website) project. Just clone the repository, install its dependencies and start it!
 
 ## Acknowledgements
 

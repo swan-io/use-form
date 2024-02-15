@@ -8,11 +8,11 @@ const source = path.join(__dirname, "..", "src");
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/react-ux-form/",
+  base: "/use-form/",
   build: { sourcemap: true },
   plugins: [react()],
   resolve: {
-    alias: { "react-ux-form": source },
+    alias: { "@swan-io/use-form": source },
     dedupe: ["@swan-io/boxed", "react", "react-dom"],
   },
 });

@@ -1,16 +1,16 @@
 {
-  "name": "react-ux-form",
-  "version": "2.0.0-alpha.0",
+  "name": "@swan-io/use-form",
+  "version": "1.0.0-rc.0",
   "license": "MIT",
   "description": "A simple, fast and opinionated form library for React & React Native focusing on UX.",
   "author": "Mathieu Acthernoene <mathieu.acthernoene@swan.io>",
   "contributors": [
     "Frederic Godin <frederic.godin@swan.io>"
   ],
-  "homepage": "https://github.com/swan-io/react-ux-form#readme",
+  "homepage": "https://github.com/swan-io/use-form#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/swan-io/react-ux-form.git"
+    "url": "https://github.com/swan-io/use-form.git"
   },
   "sideEffects": false,
   "source": "src/index.ts",

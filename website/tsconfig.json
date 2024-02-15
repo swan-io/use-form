@@ -22,7 +22,7 @@
     "forceConsistentCasingInFileNames": true,
 
     "paths": {
-      "react-ux-form": ["../src"]
+      "@swan-io/use-form": ["../src"]
     }
   }
 }

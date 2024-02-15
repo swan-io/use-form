@@ -3,9 +3,9 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { HStack, Spacer } from "@chakra-ui/layout";
 import { Link } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
+import { useForm } from "@swan-io/use-form";
 import cardValidator from "card-validator";
 import * as React from "react";
-import { useForm } from "react-ux-form";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
 

@@ -1,4 +1,4 @@
-import { Option } from "@swan-io/boxed";
+import { Future, Option } from "@swan-io/boxed";
 import { MutableRefObject, ReactElement } from "react";
 
 export type AnyRecord = Record<string, unknown>;
@@ -97,7 +97,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
   resetForm: () => void;
   submitForm: (options?: {
-    onSuccess?: (values: OptionalRecord<Values>) => Promise<unknown> | void;
+    onSuccess?: (values: OptionalRecord<Values>) => Future<unknown> | Promise<unknown> | void;
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => void;
     focusOnFirstError?: boolean;
   }) => void;

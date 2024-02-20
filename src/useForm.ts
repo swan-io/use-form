@@ -1,4 +1,4 @@
-import { Option } from "@swan-io/boxed";
+import { Future, Option } from "@swan-io/boxed";
 import {
   MutableRefObject,
   SetStateAction,
@@ -325,9 +325,14 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       if (isSuccessfulSubmission(results)) {
         const effect = onSuccess(values);
 
-        if (isPromise(effect)) {
+        // convert Future to Promise if needed
+        const promiseEffect: Promise<unknown> | void = Future.isFuture(effect)
+          ? effect.toPromise()
+          : effect;
+
+        if (isPromise(promiseEffect)) {
           forceUpdate();
-          void effect.finally(setFormSubmitted);
+          void promiseEffect.finally(setFormSubmitted);
         } else {
           setFormSubmitted();
         }

@@ -287,6 +287,14 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       results: ValidatorResult<ErrorMessage>[],
     ): results is undefined[] => results.every((result) => typeof result === "undefined");
 
+    const setFormSubmitted = () => {
+      formStatus.current = "submitted";
+
+      if (mounted.current) {
+        forceUpdate();
+      }
+    };
+
     const submitForm: Contract["submitForm"] = ({
       onSuccess = noop,
       onFailure = noop,
@@ -317,20 +325,12 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
       if (isSuccessfulSubmission(results)) {
         const effect = onSuccess(values);
 
-        if (!isPromise(effect)) {
-          formStatus.current = "submitted";
-          return forceUpdate();
+        if (isPromise(effect)) {
+          forceUpdate();
+          void effect.finally(setFormSubmitted);
+        } else {
+          setFormSubmitted();
         }
-
-        forceUpdate();
-
-        void effect.finally(() => {
-          formStatus.current = "submitted";
-
-          if (mounted.current) {
-            forceUpdate();
-          }
-        });
       } else {
         if (focusOnFirstError) {
           focusFirstError(names, results);

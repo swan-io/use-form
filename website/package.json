@@ -1,33 +1,34 @@
 {
-  "name": "react-ux-form-website",
+  "name": "use-form-website",
   "private": true,
   "scripts": {
     "build": "tsc && vite build && cp 404.html dist",
     "dev": "vite",
-    "serve": "vite preview"
+    "serve": "yarn build && vite preview"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.0.19",
-    "@chakra-ui/react": "^2.6.0",
-    "@chakra-ui/system": "^2.5.6",
-    "@emotion/react": "^11.10.8",
-    "@emotion/styled": "^11.10.8",
-    "@swan-io/chicane": "^1.4.0",
-    "card-validator": "^8.1.1",
-    "framer-motion": "^10.12.7",
+    "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/system": "^2.6.2",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@swan-io/chicane": "^1.4.1",
+    "@swan-io/use-form": "link:../",
+    "card-validator": "^9.1.0",
+    "framer-motion": "^11.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-ux-form": "file:../",
     "rifm": "^0.12.1",
-    "ts-pattern": "^5.0.1",
-    "validator": "^13.9.0"
+    "ts-pattern": "^5.0.6",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.1",
-    "@types/validator": "^13.7.17",
-    "@vitejs/plugin-react-swc": "^3.3.2",
-    "typescript": "^5.1.3",
-    "vite": "^4.3.9"
+    "@types/node": "^20.11.17",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@types/validator": "^13.11.9",
+    "@vitejs/plugin-react-swc": "^3.6.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.1"
   }
 }

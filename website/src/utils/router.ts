@@ -4,7 +4,6 @@ const routesObject = {
   Home: "/",
   Strategies: "/strategies",
   FieldsListener: "/fields-listener",
-  AsyncValidation: "/async-validation",
   AsyncSubmission: "/async-submission",
   Checkboxes: "/checkboxes",
   IBAN: "/iban",
@@ -15,5 +14,5 @@ const routesObject = {
 export const routes = Object.keys(routesObject) as (keyof typeof routesObject)[];
 
 export const Router = createRouter(routesObject, {
-  basePath: "/react-ux-form",
+  basePath: "/use-form",
 });

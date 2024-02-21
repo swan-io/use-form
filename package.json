@@ -1,16 +1,16 @@
 {
-  "name": "react-ux-form",
-  "version": "1.5.0",
+  "name": "@swan-io/use-form",
+  "version": "1.0.0-rc.0",
   "license": "MIT",
   "description": "A simple, fast and opinionated form library for React & React Native focusing on UX.",
   "author": "Mathieu Acthernoene <mathieu.acthernoene@swan.io>",
   "contributors": [
     "Frederic Godin <frederic.godin@swan.io>"
   ],
-  "homepage": "https://github.com/swan-io/react-ux-form#readme",
+  "homepage": "https://github.com/swan-io/use-form#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/swan-io/react-ux-form.git"
+    "url": "https://github.com/swan-io/use-form.git"
   },
   "sideEffects": false,
   "source": "src/index.ts",
@@ -33,15 +33,14 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "build": "yarn clean && microbundle -f cjs,es",
     "clean": "rm -rf dist",
-    "dev": "microbundle watch",
-    "format": "prettier '**/*' -u -w",
-    "lint": "eslint src --ext ts,tsx src",
+    "format": "prettier '**/*' --ignore-unknown --write",
+    "lint": "eslint --ext ts,tsx __tests__ src",
     "test": "vitest --run",
     "test:watch": "vitest --watch",
     "typecheck": "tsc --noEmit",
-    "prepack": "yarn lint && yarn test && yarn build"
+    "build": "yarn clean && microbundle -f cjs,es --tsconfig tsconfig.build.json",
+    "prepack": "yarn typecheck && yarn lint && yarn test && yarn build"
   },
   "browserslist": [
     ">0.2%",
@@ -50,29 +49,30 @@
   ],
   "prettier": {
     "printWidth": 100,
-    "trailingComma": "all"
+    "plugins": [
+      "prettier-plugin-organize-imports"
+    ]
   },
   "peerDependencies": {
-    "react": ">=16.8.0"
+    "react": ">=18.0.0"
   },
   "dependencies": {
-    "use-sync-external-store": "^1.2.0"
+    "@swan-io/boxed": "^2.0.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^12.1.5",
-    "@types/react": "^17.0.62",
-    "@types/use-sync-external-store": "^0.0.3",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
-    "@typescript-eslint/parser": "^6.3.0",
-    "eslint": "^8.46.0",
+    "@testing-library/react": "^14.2.1",
+    "@types/react": "^18.2.55",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "jsdom": "^22.1.0",
+    "jsdom": "^24.0.0",
     "microbundle": "^0.15.1",
-    "prettier": "2.8.8",
-    "prettier-plugin-organize-imports": "^3.2.3",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "typescript": "^5.1.6",
-    "vitest": "^0.34.1"
+    "prettier": "^3.2.5",
+    "prettier-plugin-organize-imports": "^3.2.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
   }
 }

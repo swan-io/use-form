@@ -29,7 +29,7 @@ test("the first errored field is focused after submission", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
@@ -47,14 +47,13 @@ test("the first errored field is focused after submission", async () => {
 
               {!(valid || error) && <div>firstName idle</div>}
               {valid && <div>firstName valid</div>}
-              {validating && <div>firstName validating</div>}
               {error && <div>firstName error</div>}
             </>
           )}
         </Field>
 
         <Field name="lastName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="lastName">Last name</label>
 
@@ -72,14 +71,13 @@ test("the first errored field is focused after submission", async () => {
 
               {!(valid || error) && <div>lastName idle</div>}
               {valid && <div>lastName valid</div>}
-              {validating && <div>lastName validating</div>}
               {error && <div>lastName error</div>}
             </>
           )}
         </Field>
 
-        <button onClick={(e) => resetForm()}>Reset</button>
-        <button onClick={(e) => submitForm((values) => {})}>Submit</button>
+        <button onClick={() => resetForm()}>Reset</button>
+        <button onClick={() => submitForm()}>Submit</button>
       </form>
     );
   };
@@ -104,7 +102,7 @@ test("the first errored field is focused after submission", async () => {
 
 test("the user can disable autofocus on first error", async () => {
   const Test = () => {
-    const { Field, resetForm, submitForm } = useForm({
+    const { Field, submitForm } = useForm({
       firstName: {
         initialValue: "",
         validate: (value) => {
@@ -118,7 +116,7 @@ test("the user can disable autofocus on first error", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
@@ -136,25 +134,12 @@ test("the user can disable autofocus on first error", async () => {
 
               {!(valid || error) && <div>idle</div>}
               {valid && <div>valid</div>}
-              {validating && <div>validating</div>}
               {error && <div>error</div>}
             </>
           )}
         </Field>
 
-        <button
-          onClick={(e) =>
-            submitForm(
-              (values) => {},
-              () => {},
-              {
-                avoidFocusOnError: true,
-              },
-            )
-          }
-        >
-          Submit
-        </button>
+        <button onClick={() => submitForm({ focusOnFirstError: false })}>Submit</button>
       </form>
     );
   };
@@ -172,7 +157,7 @@ test("the user can disable autofocus on first error", async () => {
   expect(document.activeElement).not.toBe(input);
 });
 
-test("focusField and focusNextField behave like expected", async () => {
+test("focusField behave like expected", async () => {
   const Test = () => {
     const { Field, focusField } = useForm({
       firstName: { initialValue: "" },
@@ -182,7 +167,7 @@ test("focusField and focusNextField behave like expected", async () => {
     return (
       <form onSubmit={(e) => e.preventDefault()}>
         <Field name="firstName">
-          {({ ref, focusNextField, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="firstName">First name</label>
 
@@ -198,21 +183,20 @@ test("focusField and focusNextField behave like expected", async () => {
                   onChange(value);
 
                   if (value.length > 3) {
-                    focusNextField();
+                    focusField("lastName");
                   }
                 }}
               />
 
               {!(valid || error) && <div>firstName idle</div>}
               {valid && <div>firstName valid</div>}
-              {validating && <div>firstName validating</div>}
               {error && <div>firstName error</div>}
             </>
           )}
         </Field>
 
         <Field name="lastName">
-          {({ ref, error, onBlur, onChange, valid, validating, value }) => (
+          {({ ref, error, onBlur, onChange, valid, value }) => (
             <>
               <label htmlFor="lastName">Last name</label>
 
@@ -230,13 +214,12 @@ test("focusField and focusNextField behave like expected", async () => {
 
               {!(valid || error) && <div>lastName idle</div>}
               {valid && <div>lastName valid</div>}
-              {validating && <div>lastName validating</div>}
               {error && <div>lastName error</div>}
             </>
           )}
         </Field>
 
-        <button onClick={(e) => focusField("firstName")}>Focus firstName</button>
+        <button onClick={() => focusField("firstName")}>Focus firstName</button>
       </form>
     );
   };

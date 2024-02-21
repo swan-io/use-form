@@ -1,18 +1,18 @@
-# react-ux-form
+# @swan-io/use-form
 
-[![mit licence](https://img.shields.io/dub/l/vibe-d.svg?style=for-the-badge)](https://github.com/swan-io/react-ux-form/blob/main/LICENSE)
-[![npm version](https://img.shields.io/npm/v/react-ux-form?style=for-the-badge)](https://www.npmjs.org/package/react-ux-form)
-[![bundlephobia](https://img.shields.io/bundlephobia/minzip/react-ux-form?label=size&style=for-the-badge)](https://bundlephobia.com/result?p=react-ux-form)
+[![mit licence](https://img.shields.io/dub/l/vibe-d.svg?style=for-the-badge)](https://github.com/swan-io/use-form/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@swan-io/use-form?style=for-the-badge)](https://www.npmjs.org/package/@swan-io/use-form)
+[![bundlephobia](https://img.shields.io/bundlephobia/minzip/@swan-io/use-form?label=size&style=for-the-badge)](https://bundlephobia.com/result?p=@swan-io/use-form)
 
 A simple, fast, and opinionated form library for React & React Native focusing on UX.<br>
-👉 Take a look at [the demo website](https://swan-io.github.io/react-ux-form).
+👉 Take a look at [the demo website](https://swan-io.github.io/use-form).
 
 ## Setup
 
 ```bash
-$ npm install --save react-ux-form
+$ npm install --save @swan-io/use-form
 # --- or ---
-$ yarn add react-ux-form
+$ yarn add @swan-io/use-form
 ```
 
 ## Features
@@ -23,7 +23,6 @@ $ yarn add react-ux-form
 - Mounted-only fields validation
 - Advanced focus handling
 - Best-in-class TypeScript support
-- Sync and async field validation
 - Sync and async form submission
 
 ## Motivation
@@ -83,13 +82,13 @@ That's precisely why every field config could declare its own `strategy`:
 `useForm` takes one argument (a map of your fields configs) and returns a set of helpers (functions, components, and values) to manage your form state.
 
 ```tsx
-import { useForm } from "react-ux-form";
+import { useForm } from "@swan-io/use-form";
 
 const {
   formStatus,
   Field,
   FieldsListener,
-  getFieldState,
+  getFieldValue,
   setFieldValue,
   setFieldError,
   focusField,
@@ -105,10 +104,9 @@ const {
     initialValue: "",
     // Properties below are optional (those are the default values)
     strategy: "onSuccessOrBlur",
-    debounceInterval: 0,
-    equalityFn: (value1, value2) => Object.is(value1, value2),
+    isEqual: (value1, value2) => Object.is(value1, value2),
     sanitize: (value) => value,
-    validate: (value, { focusField, getFieldState }) => {},
+    validate: (value, { focusField, getFieldValue }) => {},
   },
 });
 ```
@@ -123,19 +121,14 @@ type fieldConfig = {
   // The chosen strategy. See "validation strategies" paragraph
   strategy: Strategy;
 
-  // An amount of time (in ms) to wait before triggering validation
-  debounceInterval: number;
-
-  // When performing async validation, it might happen that the value has changed between the start and the end of its execution
-  // That's why we compare the two values: to ensure that the feedback given to the user is correct
-  equalityFn: (value1: Value, value2: Value) => boolean;
+  // Used to perform initial and current value comparaison
+  isEqual: (value1: Value, value2: Value) => boolean;
 
   // Will be run on value before validation and submission. Useful from trimming whitespaces
   sanitize: (value: Value) => Value;
 
   // Used to perform field validation. It could return an error message (or nothing)
-  // It also handle async: simply return a Promise that resolves with an error message (or nothing)
-  validate: (value: Value) => ErrorMessage | void | Promise<ErrorMessage | void>;
+  validate: (value: Value) => ErrorMessage | void;
 };
 ```
 
@@ -161,8 +154,6 @@ A component that exposes everything you need locally as a `children` render prop
       ref: MutableRefObject;
       // The field value
       value: Value;
-      // Is the field validating? (only happen on async operations)
-      validating: boolean;
       // Is the field valid?
       valid: boolean;
       // The field is invalid: here its error message.
@@ -171,8 +162,6 @@ A component that exposes everything you need locally as a `children` render prop
       onBlur: () => void;
       // The onChange handler (required)
       onChange: (value: Value) => void;
-      // Focus the next field (uses the field config declaration order in useForm)
-      focusNextField: () => void;
     }) => /* … */
   }
 </Field>
@@ -188,8 +177,6 @@ A component that listens for fields states changes. It's useful when a part of y
     (states: Record<"firstName" | "lastName", {
       // The field value
       value: Value;
-      // Is the field validating? (only happen on async operations)
-      validating: boolean;
       // Is the field valid?
       valid: boolean;
       // The field is invalid: here its error message.
@@ -199,22 +186,17 @@ A component that listens for fields states changes. It's useful when a part of y
 </FieldsListener>
 ```
 
-#### getFieldState
+#### getFieldValue
 
 By setting `sanitize: true`, you will enforce sanitization.
 
 ```tsx
-type getFieldState = (
+type getFieldValue = (
   name: FieldName,
   options?: {
     sanitize?: boolean;
   },
-) => {
-  value: Value;
-  validating: boolean;
-  valid: boolean;
-  error?: ErrorMessage;
-};
+) => Value;
 ```
 
 #### setFieldValue
@@ -249,15 +231,10 @@ type focusField = (name: FieldName) => void;
 
 #### resetField
 
-Hide user feedback (the field is not _talkative_ anymore). If `feedbackOnly` is not set to `true`, value will also be resetted to `initialValue`.
+Hide user feedback (the field is not _talkative_ anymore) and set value to `initialValue`.
 
 ```tsx
-type resetField = (
-  name: FieldName,
-  options?: {
-    feedbackOnly?: boolean;
-  },
-) => void;
+type resetField = (name: FieldName) => void;
 ```
 
 #### sanitizeField
@@ -273,7 +250,7 @@ type sanitizeField = (name: FieldName) => void;
 Once you manually call validation, the field automatically switches to _talkative_ state.
 
 ```tsx
-type validateField = (name: FieldName) => Promise<ErrorMessage | void>;
+type validateField = (name: FieldName) => ErrorMessage | void;
 ```
 
 #### listenFields
@@ -287,8 +264,6 @@ React.useEffect(() => {
     (states: Record<"firstName" | "lastName", {
       // The field value
       value: Value;
-      // Is the field validating? (only happen on async operations)
-      validating: boolean;
       // Is the field valid?
       valid: boolean;
       // The field is invalid: here its error message.
@@ -304,10 +279,10 @@ React.useEffect(() => {
 
 #### resetForm
 
-Hide user feedback for all fields (they are not _talkative_ anymore). If `feedbackOnly` is not set to `true`, values will also be resetted to their corresponding `initialValue` and `formStatus` will be resetted to `untouched`.
+Hide user feedback for all fields (they are not _talkative_ anymore). Reset values to their corresponding `initialValue` and `formStatus` to `untouched`.
 
 ```tsx
-type resetForm = (options?: { feedbackOnly?: boolean }) => void;
+type resetForm = () => void;
 ```
 
 #### submitForm
@@ -315,22 +290,20 @@ type resetForm = (options?: { feedbackOnly?: boolean }) => void;
 Submit your form. Each callback could return a `Promise` to keep `formStatus` in `submitting` state.
 
 ```tsx
-type submitForm = (
-  onSuccess: (values: Partial<Values>) => Promise<unknown> | void,
-  onFailure?: (errors: Partial<ErrorMessages>) => Promise<unknown> | void,
-  options?: {
-    // by default, it will try to focus the first errored field (which is a good practice)
-    avoidFocusOnError?: boolean;
-  },
-) => void;
+type submitForm = (options?: {
+  onSuccess?: (values: OptionalRecord<Values>) => Future<unknown> | Promise<unknown> | void;
+  onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => void;
+  // by default, it will try to focus the first errored field (which is a good practice)
+  focusOnFirstError?: boolean;
+}) => void;
 ```
 
 ### combineValidators
 
-As it's a very common case to use several validation functions per field, we export a `combineValidators` helper function that allows you to chain sync and async validation functions: it will run them sequentially until an error is returned.
+As it's a very common case to use several validation functions per field, we export a `combineValidators` helper function that allows you to chain sync validation functions: it will run them sequentially until an error is returned.
 
 ```tsx
-import { combineValidators, useForm } from "react-ux-form";
+import { combineValidators, useForm } from "@swan-io/use-form";
 
 const validateRequired = (value: string) => {
   if (!value) {
@@ -365,7 +338,7 @@ const MyAwesomeForm = () => {
 Very often, we want to execute validation only if a value is not empty. By wrapping any validator (or combined validators) with `toOptionalValidator`, you can bypass the validation in such cases.
 
 ```tsx
-import { toOptionalValidator, Validator } from "react-ux-form";
+import { toOptionalValidator, Validator } from "@swan-io/use-form";
 
 // This validator will error if the string length is < 3 (even if it's an empty string)
 const validator: Validator<string> = (value) => {
@@ -381,7 +354,7 @@ const optionalValidator = toOptionalValidator(validator);
 This function also accept a second param (required for non-string validators) to specify what is an empty value.
 
 ```tsx
-import { toOptionalValidator, Validator } from "react-ux-form";
+import { toOptionalValidator, Validator } from "@swan-io/use-form";
 
 const validator: Validator<number> = (value) => {
   if (value < 10) {
@@ -393,35 +366,10 @@ const validator: Validator<number> = (value) => {
 const optionalValidator = toOptionalValidator(validator, (value) => value === 0);
 ```
 
-### hasDefinedKeys
-
-As some of your fields might be unmounted on submit, the `submitForm` method could not guarantee that every field value is defined and valid. We export `hasDefinedKeys` helper function that allows you to test if some object keys are defined.
-
-```tsx
-import { hasDefinedKeys, useForm } from "react-ux-form";
-
-const MyAwesomeForm = () => {
-  const { Field, submitForm } = useForm({
-    firstName: { initialValue: "" },
-    lastName: { initialValue: "" },
-  });
-
-  const handleSubmit = () => {
-    submitForm((values) => {
-      if (hasDefinedKeys(values, ["firstName", "lastName"])) {
-        // values.firstName and values.lastName are defined (the fields are mounted)
-      }
-    });
-  };
-
-  // …
-};
-```
-
 ## Quickstart
 
 ```tsx
-import { useForm } from "react-ux-form";
+import { useForm } from "@swan-io/use-form";
 
 const MyAwesomeForm = () => {
   const { Field, submitForm } = useForm({
@@ -442,10 +390,10 @@ const MyAwesomeForm = () => {
       onSubmit={(event: React.FormEvent) => {
         event.preventDefault();
 
-        submitForm(
-          (values) => console.log("values", values), // all fields are valid
-          (errors) => console.log("errors", errors), // at least one field is invalid
-        );
+        submitForm({
+          onSuccess: (values) => console.log("values", values), // all fields are valid
+          onFailure: (errors) => console.log("errors", errors), // at least one field is invalid
+        });
       }}
     >
       <Field name="firstName">
@@ -476,7 +424,7 @@ const MyAwesomeForm = () => {
 
 ## More examples
 
-A full set of examples is available on [the demo website](https://swan-io.github.io/react-ux-form) or in the [`/website` directory](https://github.com/swan-io/react-ux-form/tree/main/website) project. Just clone the repository, install its dependencies and start it!
+A full set of examples is available on [the demo website](https://swan-io.github.io/use-form) or in the [`/website` directory](https://github.com/swan-io/use-form/tree/main/website) project. Just clone the repository, install its dependencies and start it!
 
 ## Acknowledgements
 

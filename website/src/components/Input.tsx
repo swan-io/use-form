@@ -3,9 +3,8 @@ import { useId } from "@chakra-ui/hooks";
 import { CheckIcon, WarningIcon } from "@chakra-ui/icons";
 import { Input as ChakraInput, InputGroup, InputProps, InputRightElement } from "@chakra-ui/input";
 import { Box, Flex, Spacer, Text } from "@chakra-ui/layout";
-import { Spinner } from "@chakra-ui/spinner";
+import { Strategy } from "@swan-io/use-form";
 import * as React from "react";
-import { Strategy } from "react-ux-form";
 
 type Props = {
   error?: string;
@@ -17,7 +16,6 @@ type Props = {
   onChange?: InputProps["onChange"];
   onChangeText?: (text: string) => void;
   valid: boolean;
-  validating: boolean;
   value: string;
 };
 
@@ -33,7 +31,6 @@ export const Input = React.forwardRef<HTMLInputElement, Props>(
       onChange,
       onChangeText,
       valid,
-      validating,
       value,
     },
     forwardedRef,
@@ -75,12 +72,6 @@ export const Input = React.forwardRef<HTMLInputElement, Props>(
           {valid && (
             <InputRightElement>
               <CheckIcon color="green.500" />
-            </InputRightElement>
-          )}
-
-          {validating && (
-            <InputRightElement>
-              <Spinner color="blue.500" size="sm" />
             </InputRightElement>
           )}
 

@@ -1,6 +1,5 @@
 import { expect, test } from "vitest";
 import { combineValidators } from "../src";
-import { resolveAfter } from "./utils/promises";
 
 const validateRequired = (value: string) => {
   if (!value) {
@@ -14,15 +13,13 @@ const validateMinLength = (minLength: number) => (value: string) => {
   }
 };
 
-// can be done synchronously but add a delay to simulate async validation
-const validateEmail = async (email: string) => {
-  await resolveAfter(100);
+const validateEmail = (email: string) => {
   if (!/.+@.+\..{2,}/.test(email)) {
     return "invalid email";
   }
 };
 
-test("combine sync validations", () => {
+test("combine required and min length sync validations", () => {
   const validate = combineValidators(validateRequired, validateMinLength(6));
 
   const input1 = "";
@@ -42,23 +39,20 @@ test("combine sync validations", () => {
   expect(output3).toBe(expected3);
 });
 
-test("combine sync and async validations", async () => {
+test("combine min length and email sync validations", () => {
   const validate = combineValidators(validateMinLength(6), validateEmail);
 
   const input1 = "hello";
   const expected1 = "too short value";
-  // no need to await because there shouldn't be any async validation
   const output1 = validate(input1);
 
   const input2 = "hello@swan";
   const expected2 = "invalid email";
-  // use await because email validation make `validate` async
-  const output2 = await validate(input2);
+  const output2 = validate(input2);
 
   const input3 = "hello@swan.io";
   const expected3 = undefined;
-  // use await because email validation make `validate` async
-  const output3 = await validate(input3);
+  const output3 = validate(input3);
 
   expect(output1).toBe(expected1);
   expect(output2).toBe(expected2);

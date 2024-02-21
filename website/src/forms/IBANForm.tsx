@@ -3,8 +3,8 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { HStack, Spacer } from "@chakra-ui/layout";
 import { Link } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
+import { useForm } from "@swan-io/use-form";
 import * as React from "react";
-import { useForm } from "react-ux-form";
 import validator from "validator";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
@@ -28,8 +28,8 @@ export const IBANForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) => {
+    submitForm({
+      onSuccess: (values) => {
         console.log("values", values);
 
         toast({
@@ -39,7 +39,7 @@ export const IBANForm = () => {
           isClosable: true,
         });
       },
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -49,7 +49,7 @@ export const IBANForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (
@@ -81,7 +81,7 @@ export const IBANForm = () => {
         }}
       >
         <Field name="iban">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="IBAN"
               validation="Must be valid"
@@ -92,7 +92,6 @@ export const IBANForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}

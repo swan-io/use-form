@@ -3,9 +3,9 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { HStack, Spacer } from "@chakra-ui/layout";
 import { Link } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
+import { useForm } from "@swan-io/use-form";
 import cardValidator from "card-validator";
 import * as React from "react";
-import { useForm } from "react-ux-form";
 import { Rifm } from "rifm";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
@@ -45,8 +45,8 @@ export const InputMaskingForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) => {
+    submitForm({
+      onSuccess: (values) => {
         console.log("values", values);
 
         toast({
@@ -56,7 +56,7 @@ export const InputMaskingForm = () => {
           isClosable: true,
         });
       },
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -66,7 +66,7 @@ export const InputMaskingForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (
@@ -103,7 +103,7 @@ export const InputMaskingForm = () => {
         }}
       >
         <Field name="cardNumber">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Rifm
               accept={/\d+/g}
               mask={19 <= value.length}
@@ -123,7 +123,6 @@ export const InputMaskingForm = () => {
                   onChange={onChange}
                   ref={ref}
                   valid={valid}
-                  validating={validating}
                   value={value}
                 />
               )}

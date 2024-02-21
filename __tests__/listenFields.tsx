@@ -29,7 +29,7 @@ test("Count the number of updates", async () => {
       return () => {
         removeListener();
       };
-    }, []);
+    }, [listenFields]);
 
     return (
       <form onSubmit={(e) => e.preventDefault()}>

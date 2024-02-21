@@ -2,8 +2,8 @@ import { Button } from "@chakra-ui/button";
 import { Checkbox } from "@chakra-ui/checkbox";
 import { Code, HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
+import { useForm } from "@swan-io/use-form";
 import * as React from "react";
-import { useForm } from "react-ux-form";
 import { Page } from "../components/Page";
 
 export const CheckboxesForm = () => {
@@ -33,8 +33,8 @@ export const CheckboxesForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) => {
+    submitForm({
+      onSuccess: (values) => {
         console.log("values", values);
 
         toast({
@@ -44,7 +44,7 @@ export const CheckboxesForm = () => {
           isClosable: true,
         });
       },
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -54,7 +54,7 @@ export const CheckboxesForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (

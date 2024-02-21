@@ -1,8 +1,8 @@
 import { Button } from "@chakra-ui/button";
 import { HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
+import { useForm } from "@swan-io/use-form";
 import * as React from "react";
-import { useForm } from "react-ux-form";
 import validator from "validator";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
@@ -27,8 +27,8 @@ export const AsyncSubmissionForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) =>
+    submitForm({
+      onSuccess: (values) =>
         resolveAfter(2000).then(() => {
           console.log("values", values);
 
@@ -39,7 +39,7 @@ export const AsyncSubmissionForm = () => {
             isClosable: true,
           });
         }),
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -49,7 +49,7 @@ export const AsyncSubmissionForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (
@@ -64,7 +64,7 @@ export const AsyncSubmissionForm = () => {
         }}
       >
         <Field name="emailAddress">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="Email address"
               validation="Must be valid"
@@ -75,7 +75,6 @@ export const AsyncSubmissionForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}

@@ -1,8 +1,8 @@
 import { Button } from "@chakra-ui/button";
 import { HStack, Spacer } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
+import { useForm } from "@swan-io/use-form";
 import * as React from "react";
-import { useForm } from "react-ux-form";
 import validator from "validator";
 import { Input } from "../components/Input";
 import { Page } from "../components/Page";
@@ -46,8 +46,8 @@ export const BasicForm = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    submitForm(
-      (values) => {
+    submitForm({
+      onSuccess: (values) => {
         console.log("values", values);
 
         toast({
@@ -57,7 +57,7 @@ export const BasicForm = () => {
           isClosable: true,
         });
       },
-      (errors) => {
+      onFailure: (errors) => {
         console.log("errors", errors);
 
         toast({
@@ -67,7 +67,7 @@ export const BasicForm = () => {
           isClosable: true,
         });
       },
-    );
+    });
   };
 
   return (
@@ -88,7 +88,7 @@ export const BasicForm = () => {
         }}
       >
         <Field name="firstName">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="First name"
               validation="Required"
@@ -99,14 +99,13 @@ export const BasicForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="lastName">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="Last name"
               validation="Required"
@@ -117,14 +116,13 @@ export const BasicForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}
         </Field>
 
         <Field name="emailAddress">
-          {({ error, onBlur, onChange, ref, valid, validating, value }) => (
+          {({ error, onBlur, onChange, ref, valid, value }) => (
             <Input
               label="Email address"
               validation="Must be valid"
@@ -135,7 +133,6 @@ export const BasicForm = () => {
               onChangeText={onChange}
               ref={ref}
               valid={valid}
-              validating={validating}
               value={value}
             />
           )}

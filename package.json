@@ -1,6 +1,6 @@
 {
   "name": "@swan-io/use-form",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "license": "MIT",
   "description": "A simple, fast and opinionated form library for React & React Native focusing on UX.",
   "author": "Mathieu Acthernoene <mathieu.acthernoene@swan.io>",

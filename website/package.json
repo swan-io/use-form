@@ -12,6 +12,7 @@
     "@chakra-ui/system": "^2.6.2",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@swan-io/boxed": "^2.0.0",
     "@swan-io/chicane": "^1.4.1",
     "@swan-io/use-form": "link:../",
     "card-validator": "^9.1.0",

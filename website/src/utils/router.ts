@@ -1,3 +1,4 @@
+import { Dict } from "@swan-io/boxed";
 import { createRouter } from "@swan-io/chicane";
 
 const routesObject = {
@@ -11,7 +12,7 @@ const routesObject = {
   InputMasking: "/input-masking",
 } as const;
 
-export const routes = Object.keys(routesObject) as (keyof typeof routesObject)[];
+export const routes = Dict.keys(routesObject);
 
 export const Router = createRouter(routesObject, {
   basePath: "/use-form",

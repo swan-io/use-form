@@ -1,11 +1,8 @@
 import { Future, Option } from "@swan-io/boxed";
 import { MutableRefObject, ReactElement } from "react";
 
-export type AnyRecord = Record<string, unknown>;
-export type EmptyRecord = Record<PropertyKey, never>;
-
-export type OptionalRecord<T extends AnyRecord> = {
-  [K in keyof T]: Option<T[K]>;
+export type OptionRecord<T> = {
+  [K in keyof T]-?: Option<T[K]>;
 };
 
 export type ValidatorResult<ErrorMessage = string> = ErrorMessage | void;
@@ -30,7 +27,7 @@ export type FieldState<Value, ErrorMessage = string> = {
   error: ErrorMessage | undefined;
 };
 
-export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
+export type FormConfig<Values extends Required<Values>, ErrorMessage = string> = {
   [N in keyof Values]: {
     initialValue: Values[N];
     strategy?: Strategy;
@@ -49,7 +46,7 @@ export type FormConfig<Values extends AnyRecord, ErrorMessage = string> = {
   };
 };
 
-export type Form<Values extends AnyRecord, ErrorMessage = string> = {
+export type Form<Values extends Required<Values>, ErrorMessage = string> = {
   formStatus: FormStatus;
 
   Field: (<N extends keyof Values>(props: {
@@ -97,7 +94,7 @@ export type Form<Values extends AnyRecord, ErrorMessage = string> = {
 
   resetForm: () => void;
   submitForm: (options?: {
-    onSuccess?: (values: OptionalRecord<Values>) => Future<unknown> | Promise<unknown> | void;
+    onSuccess?: (values: OptionRecord<Values>) => Future<unknown> | Promise<unknown> | void;
     onFailure?: (errors: Partial<Record<keyof Values, ErrorMessage>>) => void;
     focusOnFirstError?: boolean;
   }) => void;

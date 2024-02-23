@@ -1,4 +1,4 @@
-import { Future, Option } from "@swan-io/boxed";
+import { Dict, Future, Option } from "@swan-io/boxed";
 import {
   MutableRefObject,
   SetStateAction,
@@ -11,12 +11,11 @@ import {
 } from "react";
 import { identity, isPromise, noop } from "./helpers";
 import {
-  AnyRecord,
   FieldState,
   Form,
   FormConfig,
   FormStatus,
-  OptionalRecord,
+  OptionRecord,
   Strategy,
   ValidatorResult,
   Validity,
@@ -25,7 +24,7 @@ import {
 // For server-side rendering / react-native
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
+export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
   config: FormConfig<Values, ErrorMessage>,
 ): Form<Values, ErrorMessage> => {
   type Contract = Form<Values, ErrorMessage>;
@@ -268,7 +267,7 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
     };
 
     const resetForm: Contract["resetForm"] = () => {
-      Object.keys(arg.current).forEach((name) => resetField(name));
+      Dict.keys(arg.current).forEach((name) => resetField(name));
       formStatus.current = "untouched";
 
       forceUpdate();
@@ -306,9 +305,9 @@ export const useForm = <Values extends AnyRecord, ErrorMessage = string>(
 
       formStatus.current = "submitting";
 
-      const keys: Name[] = Object.keys(fields.current);
+      const keys: Name[] = Dict.keys(fields.current);
       const names = keys.filter((name) => fields.current[name].mounted);
-      const values = {} as OptionalRecord<Values>;
+      const values = {} as OptionRecord<Values>;
       const errors: Partial<Record<Name, ErrorMessage>> = {};
       const results: ValidatorResult<ErrorMessage>[] = [];
 

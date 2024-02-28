@@ -3,7 +3,6 @@ import {
   MutableRefObject,
   SetStateAction,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useReducer,
   useRef,
@@ -21,9 +20,6 @@ import {
   Validity,
 } from "./types";
 
-// For server-side rendering / react-native
-const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
-
 export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
   config: FormConfig<Values, ErrorMessage>,
 ): Form<Values, ErrorMessage> => {
@@ -32,12 +28,10 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
 
   const [, forceUpdate] = useReducer(() => [], []);
   const mounted = useRef(false);
-  const arg = useRef(config);
   const formStatus = useRef<FormStatus>("untouched");
 
-  useIsoLayoutEffect(() => {
-    arg.current = config;
-  });
+  const arg = useRef(config);
+  arg.current = config;
 
   useEffect(() => {
     mounted.current = true;
@@ -370,25 +364,27 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
     };
   }, []);
 
-  // Lazy initialization
-  if (!fields.current) {
-    fields.current = {} as (typeof fields)["current"];
+  const tmp = {} as (typeof fields)["current"];
 
-    for (const name in arg.current) {
-      if (Object.prototype.hasOwnProperty.call(arg.current, name)) {
-        fields.current[name] = {
-          callbacks: new Set(),
-          ref: { current: null },
-          mounted: false,
-          state: {
-            value: arg.current[name].initialValue,
-            talkative: false,
-            validity: { tag: "unknown" },
-          },
-        };
-      }
+  for (const name in arg.current) {
+    if (Object.prototype.hasOwnProperty.call(arg.current, name)) {
+      tmp[name] = fields.current?.[name] ?? {
+        callbacks: new Set(),
+        ref: { current: null },
+        mounted: false,
+        state: {
+          value: arg.current[name].initialValue,
+          talkative: false,
+          validity: { tag: "unknown" },
+        },
+      };
     }
+  }
 
+  fields.current = tmp;
+
+  // Lazy initialization
+  if (!field.current) {
     const Field: Contract["Field"] = ({ name, children }) => {
       const { subscribe, getSnapshot } = useMemo(
         () => ({

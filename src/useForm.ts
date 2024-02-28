@@ -364,10 +364,27 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
     };
   }, []);
 
-  // Lazy initialization
-  if (!fields.current) {
-    fields.current = {} as (typeof fields)["current"];
+  const tmp = {} as (typeof fields)["current"];
 
+  for (const name in arg.current) {
+    if (Object.prototype.hasOwnProperty.call(arg.current, name)) {
+      tmp[name] = fields.current?.[name] ?? {
+        callbacks: new Set(),
+        ref: { current: null },
+        mounted: false,
+        state: {
+          value: arg.current[name].initialValue,
+          talkative: false,
+          validity: { tag: "unknown" },
+        },
+      };
+    }
+  }
+
+  fields.current = tmp;
+
+  // Lazy initialization
+  if (!field.current) {
     const Field: Contract["Field"] = ({ name, children }) => {
       const { subscribe, getSnapshot } = useMemo(
         () => ({
@@ -449,27 +466,6 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
 
     FieldsListener.displayName = "FieldsListener";
     fieldsListener.current = FieldsListener;
-  }
-
-  for (const name in fields.current) {
-    if (Object.prototype.hasOwnProperty.call(fields.current, name) && arg.current[name] == null) {
-      delete fields.current[name]; // field has been removed from config
-    }
-  }
-
-  for (const name in arg.current) {
-    if (Object.prototype.hasOwnProperty.call(arg.current, name) && fields.current[name] == null) {
-      fields.current[name] = {
-        callbacks: new Set(),
-        ref: { current: null },
-        mounted: false,
-        state: {
-          value: arg.current[name].initialValue,
-          talkative: false,
-          validity: { tag: "unknown" },
-        },
-      };
-    }
   }
 
   return {

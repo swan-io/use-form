@@ -1,5 +1,6 @@
 .eslintrc.js
 dist/
+tsup.config.ts
 vite.config.mts
 vitest-setup.ts
 website/

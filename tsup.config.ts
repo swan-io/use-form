@@ -4,8 +4,8 @@ const commonOptions: Partial<Options> = {
   entry: { index: "src/index.ts" },
   tsconfig: "./tsconfig.build.json",
   target: "es2017",
-  treeshake: "safest",
   sourcemap: true,
+  treeshake: true,
 };
 
 export default defineConfig([

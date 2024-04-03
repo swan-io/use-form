@@ -15,7 +15,7 @@
   "sideEffects": false,
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"

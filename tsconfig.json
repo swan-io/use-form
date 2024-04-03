@@ -2,8 +2,8 @@
   "include": ["src", "__tests__"],
   "compilerOptions": {
     "module": "ESNext",
-    "target": "ES2018",
-    "lib": ["DOM", "DOM.Iterable", "ES2018"],
+    "target": "ES2017",
+    "lib": ["DOM", "DOM.Iterable", "ES2017"],
     "jsx": "react",
     "moduleResolution": "Node",
 

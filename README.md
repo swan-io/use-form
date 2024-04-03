@@ -89,6 +89,7 @@ const {
   Field,
   FieldsListener,
   getFieldValue,
+  getFieldRef,
   setFieldValue,
   setFieldError,
   focusField,
@@ -197,6 +198,14 @@ type getFieldValue = (
     sanitize?: boolean;
   },
 ) => Value;
+```
+
+#### getFieldRef
+
+Return the field stable `ref`.
+
+```tsx
+type getFieldRef = <T>(name: FieldName) => MutableRefObject<T>;
 ```
 
 #### setFieldValue

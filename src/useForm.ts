@@ -127,6 +127,11 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
       return sanitize ? getSanitize(name)(value) : value;
     };
 
+    const getFieldRef = <T>(name: Name) => {
+      const { ref } = fields.current[name];
+      return ref as MutableRefObject<T>;
+    };
+
     const focusField: Contract["focusField"] = (name) => {
       const { ref } = fields.current[name];
 
@@ -347,6 +352,7 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
 
     return {
       getFieldValue,
+      getFieldRef,
       setFieldValue,
       setFieldError,
       focusField,
@@ -475,6 +481,7 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
     FieldsListener: fieldsListener.current,
 
     getFieldValue: api.getFieldValue,
+    getFieldRef: api.getFieldRef,
     setFieldValue: api.setFieldValue,
     setFieldError: api.setFieldError,
     focusField: api.focusField,

@@ -73,6 +73,7 @@ export type Form<Values extends Required<Values>, ErrorMessage = string> = {
   };
 
   getFieldValue: <N extends keyof Values>(name: N, options?: { sanitize?: boolean }) => Values[N];
+  getFieldRef: <T>(name: keyof Values) => MutableRefObject<T>;
   setFieldValue: <N extends keyof Values>(
     name: N,
     value: Values[N],

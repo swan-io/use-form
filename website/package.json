@@ -10,26 +10,26 @@
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@chakra-ui/system": "^2.6.2",
-    "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
-    "@swan-io/boxed": "^2.0.0",
-    "@swan-io/chicane": "^1.4.1",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@swan-io/boxed": "^2.1.1",
+    "@swan-io/chicane": "^2.0.0",
     "@swan-io/use-form": "link:../",
     "card-validator": "^9.1.0",
-    "framer-motion": "^11.0.5",
+    "framer-motion": "^11.0.24",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rifm": "^0.12.1",
-    "ts-pattern": "^5.0.6",
+    "ts-pattern": "^5.1.0",
     "validator": "^13.11.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
+    "@types/node": "^20.12.4",
+    "@types/react": "^18.2.74",
+    "@types/react-dom": "^18.2.24",
     "@types/validator": "^13.11.9",
     "@vitejs/plugin-react-swc": "^3.6.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.1"
+    "typescript": "^5.4.3",
+    "vite": "^5.2.8"
   }
 }

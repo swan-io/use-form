@@ -38,7 +38,7 @@
     "test": "vitest --run",
     "test:watch": "vitest --watch",
     "typecheck": "tsc --noEmit",
-    "build": "tsup",
+    "build": "tsup && tsc -p tsconfig.build.json --emitDeclarationOnly",
     "prepack": "yarn typecheck && yarn lint && yarn test && yarn build"
   },
   "prettier": {

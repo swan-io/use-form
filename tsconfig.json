@@ -6,6 +6,7 @@
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "jsx": "react",
     "moduleResolution": "Node",
+    "outDir": "dist/",
 
     "allowJs": false,
     "declaration": true,

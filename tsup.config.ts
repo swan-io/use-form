@@ -1,22 +1,12 @@
-import { Options, defineConfig } from "tsup";
+import { defineConfig } from "tsup";
 
-const commonOptions: Partial<Options> = {
+export default defineConfig({
   entry: { index: "src/index.ts" },
-  tsconfig: "./tsconfig.build.json",
+  format: ["cjs", "esm"],
   target: "es2019",
+  tsconfig: "./tsconfig.build.json",
+  clean: true,
+  dts: false,
   sourcemap: true,
   treeshake: true,
-};
-
-export default defineConfig([
-  {
-    ...commonOptions,
-    clean: true,
-    format: "esm",
-  },
-  {
-    ...commonOptions,
-    dts: true,
-    format: "cjs",
-  },
-]);
+});

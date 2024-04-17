@@ -7,6 +7,7 @@ export type {
   Form,
   FormConfig,
   FormStatus,
+  OptionRecord,
   Strategy,
   Validator,
   ValidatorResult,

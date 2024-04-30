@@ -475,10 +475,10 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
 
-"@swan-io/boxed@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-2.2.1.tgz#adda3c08bad0215a90cfced371817484ef90ad50"
-  integrity sha512-jJiiVd9CzVPQUb8OuFeGddruTkbLBNCiL2RvN8Jt+Eul7EMkXB/gY4dUYffxyLMDnn2t3EaZahYQ+yHvtLxzDg==
+"@swan-io/boxed@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-2.3.0.tgz#aafa19432a3fa2c00d472be7832632619c4ed5ff"
+  integrity sha512-ubonCw2GLblwsA9rodcDnhLvCY+0d9g0KyMFyzKZa+vPumWQ8IZ6HFjdQT3Nm5yC+/RnSmJ20RMPwOn/06M8Vw==
 
 "@testing-library/dom@^9.0.0":
   version "9.3.4"
@@ -2592,6 +2592,7 @@ stop-iteration-iterator@^1.0.0:
     internal-slot "^1.0.4"
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==

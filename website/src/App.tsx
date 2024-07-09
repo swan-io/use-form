@@ -11,6 +11,7 @@ import { AsyncSubmissionForm } from "./forms/AsyncSubmissionForm";
 import { BasicForm } from "./forms/BasicForm";
 import { CheckboxesForm } from "./forms/CheckboxesForm";
 import { CreditCardForm } from "./forms/CreditCardForm";
+import { Dynamic } from "./forms/Dynamic";
 import { FieldsListenerForm } from "./forms/FieldsListenerForm";
 import { IBANForm } from "./forms/IBANForm";
 import { InputMaskingForm } from "./forms/InputMaskingForm";
@@ -76,6 +77,7 @@ export const App = () => {
             <Link to={Router.IBAN()}>IBAN</Link>
             <Link to={Router.CreditCard()}>Credit card</Link>
             <Link to={Router.InputMasking()}>Input masking</Link>
+            <Link to={Router.Dynamic()}>Dynamic fields</Link>
           </VStack>
         </Flex>
       )}
@@ -89,6 +91,7 @@ export const App = () => {
         .with({ name: "IBAN" }, () => <IBANForm />)
         .with({ name: "CreditCard" }, () => <CreditCardForm />)
         .with({ name: "InputMasking" }, () => <InputMaskingForm />)
+        .with({ name: "Dynamic" }, () => <Dynamic />)
         .with(P.nullish, () => <Page title="Not found" />)
         .exhaustive()}
     </Flex>

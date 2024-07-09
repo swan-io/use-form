@@ -233,7 +233,11 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
       names.forEach((name) => fields.current[name].callbacks.add(callback));
 
       return () => {
-        names.forEach((name) => fields.current[name].callbacks.delete(callback));
+        names.forEach((name) => {
+          if (fields.current[name] != null) {
+            fields.current[name].callbacks.delete(callback);
+          }
+        });
       };
     };
 
@@ -399,7 +403,9 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
             fields.current[name].callbacks.add(callback);
 
             return () => {
-              fields.current[name].callbacks.delete(callback);
+              if (fields.current[name] != null) {
+                fields.current[name].callbacks.delete(callback);
+              }
             };
           },
         }),
@@ -423,7 +429,9 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
 
         return () => {
           if (isFirstMounting) {
-            fields.current[name].mounted = false;
+            if (fields.current[name] != null) {
+              fields.current[name].mounted = false;
+            }
           }
         };
       }, [name]);

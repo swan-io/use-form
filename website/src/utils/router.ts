@@ -10,6 +10,7 @@ const routesObject = {
   IBAN: "/iban",
   CreditCard: "/credit-card",
   InputMasking: "/input-masking",
+  Dynamic: "/dynamic",
 } as const;
 
 export const routes = Dict.keys(routesObject);

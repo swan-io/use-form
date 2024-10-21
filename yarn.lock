@@ -475,10 +475,10 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
 
-"@swan-io/boxed@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-2.3.0.tgz#aafa19432a3fa2c00d472be7832632619c4ed5ff"
-  integrity sha512-ubonCw2GLblwsA9rodcDnhLvCY+0d9g0KyMFyzKZa+vPumWQ8IZ6HFjdQT3Nm5yC+/RnSmJ20RMPwOn/06M8Vw==
+"@swan-io/boxed@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-3.0.0.tgz#2118f0362461cd68d813a4286f15b59798074a90"
+  integrity sha512-E5so5kp40ZEwa/vQDxH9BevaKFrm6P4Gy84D2+q9tQeNcUQc2rrE3StH9tHLRCh+LcI5h9Nv3JMbpwpI3p8nQQ==
 
 "@testing-library/dom@^9.0.0":
   version "9.3.4"

@@ -1,6 +1,7 @@
 # @swan-io/use-form
 
 [![mit licence](https://img.shields.io/dub/l/vibe-d.svg?style=for-the-badge)](https://github.com/swan-io/use-form/blob/main/LICENSE)
+[![release](https://img.shields.io/github/v/release/swan-io/use-form?style=for-the-badge)](https://github.com/swan-io/use-form/releases)
 [![npm version](https://img.shields.io/npm/v/@swan-io/use-form?style=for-the-badge)](https://www.npmjs.org/package/@swan-io/use-form)
 [![bundlephobia](https://img.shields.io/bundlephobia/minzip/@swan-io/use-form?label=size&style=for-the-badge)](https://bundlephobia.com/result?p=@swan-io/use-form)
 

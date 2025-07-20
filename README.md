@@ -122,7 +122,7 @@ type fieldConfig = {
   // The chosen strategy. See "validation strategies" paragraph
   strategy: Strategy;
 
-  // Used to perform initial and current value comparaison
+  // Used to perform initial and current value comparison
   isEqual: (value1: Value, value2: Value) => boolean;
 
   // Will be run on value before validation and submission. Useful from trimming whitespaces

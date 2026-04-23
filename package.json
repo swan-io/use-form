@@ -54,13 +54,12 @@
     "@swan-io/boxed": "^3.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@testing-library/react": "^14.2.2",
     "@types/node": "^20.12.4",
     "@types/react": "^18.2.74",
-    "@typescript-eslint/eslint-plugin": "^7.5.0",
-    "@typescript-eslint/parser": "^7.5.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "jsdom": "^24.0.0",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^3.2.4",
@@ -68,6 +67,8 @@
     "react-dom": "^18.2.0",
     "tsup": "^8.5.1",
     "typescript": "^5.4.3",
+    "typescript-eslint": "^8.48.0",
+
     "vitest": "^1.4.0"
   }
 }

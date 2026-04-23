@@ -37,7 +37,7 @@ export default [
       ...typescriptRules,
 
       curly: "error",
-      "no-implicit-coercion": "error",
+      "no-implicit-coercion": "off",
       "no-param-reassign": "error",
       "object-shorthand": "error",
 
@@ -52,7 +52,6 @@ export default [
         "error",
         { argsIgnorePattern: "^_", ignoreRestSiblings: true },
       ],
-
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/no-base-to-string": "error",
       "@typescript-eslint/no-explicit-any": "error",
@@ -62,8 +61,6 @@ export default [
       "@typescript-eslint/no-unnecessary-type-arguments": "error",
       "@typescript-eslint/prefer-nullish-coalescing": "error",
       "@typescript-eslint/prefer-optional-chain": "error",
-
-      "no-implicit-coercion": "off"
     },
   },
 ];

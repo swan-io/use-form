@@ -1,10 +1,11 @@
 {
   "name": "use-form-website",
   "private": true,
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "build": "tsc && vite build && cp 404.html dist",
     "dev": "vite",
-    "serve": "yarn build && vite preview"
+    "serve": "pnpm build && vite preview"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",

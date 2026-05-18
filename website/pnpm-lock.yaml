@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@bloodyowl/boxed':
+        specifier: ^3.4.0
+        version: 3.4.0(typescript@5.9.3)
       '@chakra-ui/icons':
         specifier: ^2.1.1
         version: 2.2.4(@chakra-ui/react@2.10.9(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(framer-motion@11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
@@ -23,9 +26,6 @@ importers:
       '@emotion/styled':
         specifier: ^11.11.5
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6)
-      '@swan-io/boxed':
-        specifier: ^3.0.0
-        version: 3.2.1(typescript@5.9.3)
       '@swan-io/chicane':
         specifier: ^2.0.0
         version: 2.2.1(react@19.2.6)
@@ -122,6 +122,14 @@ packages:
   '@babel/types@7.29.0':
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
+
+  '@bloodyowl/boxed@3.4.0':
+    resolution: {integrity: sha512-SjA78UNak5c3wjOI4Aeul++sYK/gG0lIp91K+DRzwTgVzTJ/yy5wUoznRNMexvock3iiy7lfdXbz2n/zSa5iBQ==}
+    peerDependencies:
+      typescript: '>=5.0.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   '@chakra-ui/anatomy@2.2.2':
     resolution: {integrity: sha512-MV6D4VLRIHr4PkW4zMyqfrNS1mPlCTiCXwvYGtDFQYr+xHFfonhAuf9WjsSc0nyp2m0OdkSLnzmVKkZFLo25Tg==}
@@ -562,15 +570,6 @@ packages:
     resolution: {integrity: sha512-QVTUovf40zgTqlFVrKA1uXMVvU2QWEFWfAH8Wdc48IxLvrJMQVMBRjuQyUpzZCDkakImib9eVazbWlC6ksWtJw==}
     cpu: [x64]
     os: [win32]
-
-  '@swan-io/boxed@3.2.1':
-    resolution: {integrity: sha512-MQqSpe09PdjDjTR4HCPpUxO9XsacNguCkce1C2wm1eIb6ycWXQoV+biYvLEuI/LiMqB31KySdgY2YFwrVucLCw==}
-    deprecated: This package has been transferred to @bloodyowl/boxed
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
 
   '@swan-io/chicane@2.2.1':
     resolution: {integrity: sha512-KjUkAbv1y2IWmbv+ZTpJfPz/IGQZMxhTeqJf2rTaHc63Ts2+uuMhg35A4ayL1z1QTwAqD4DOll0SJOvk+aMAXw==}
@@ -1138,6 +1137,10 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
+  '@bloodyowl/boxed@3.4.0(typescript@5.9.3)':
+    optionalDependencies:
+      typescript: 5.9.3
+
   '@chakra-ui/anatomy@2.2.2': {}
 
   '@chakra-ui/anatomy@2.3.6': {}
@@ -1515,10 +1518,6 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.60.4':
     optional: true
-
-  '@swan-io/boxed@3.2.1(typescript@5.9.3)':
-    optionalDependencies:
-      typescript: 5.9.3
 
   '@swan-io/chicane@2.2.1(react@19.2.6)':
     dependencies:

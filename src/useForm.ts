@@ -1,4 +1,4 @@
-import { Dict, Future, Option } from "@swan-io/boxed";
+import { Dict, Future, Option } from "@bloodyowl/boxed";
 import {
   MutableRefObject,
   RefObject,

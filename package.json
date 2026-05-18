@@ -52,7 +52,7 @@
     "react": ">=19.0.0"
   },
   "dependencies": {
-    "@swan-io/boxed": "^3.0.0"
+    "@bloodyowl/boxed": "^3.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

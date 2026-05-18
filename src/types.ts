@@ -1,4 +1,4 @@
-import { Future, Option } from "@swan-io/boxed";
+import { Future, Option } from "@bloodyowl/boxed";
 import { MutableRefObject, ReactElement } from "react";
 
 export type OptionRecord<T> = {

@@ -13,6 +13,6 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: { "@swan-io/use-form": source },
-    dedupe: ["@swan-io/boxed", "react", "react-dom"],
+    dedupe: ["@bloodyowl/boxed", "react", "react-dom"],
   },
 });

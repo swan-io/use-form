@@ -1,4 +1,4 @@
-import { Dict } from "@swan-io/boxed";
+import { Dict } from "@bloodyowl/boxed";
 import { createRouter } from "@swan-io/chicane";
 
 const routesObject = {

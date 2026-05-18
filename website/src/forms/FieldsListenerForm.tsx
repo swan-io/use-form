@@ -1,6 +1,4 @@
-import { Button } from "@chakra-ui/button";
-import { Code, HStack, Spacer } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
+import { Button, Code, HStack, Spacer, useToast } from "@chakra-ui/react";
 import { useForm } from "@swan-io/use-form";
 import * as React from "react";
 import validator from "validator";
@@ -60,12 +58,7 @@ export const FieldsListenerForm = () => {
       onFailure: (errors) => {
         console.log("errors", errors);
 
-        toast({
-          title: "Submission failed",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
+        toast({ title: "Submission failed", status: "error", duration: 5000, isClosable: true });
       },
     });
   };

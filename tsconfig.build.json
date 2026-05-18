@@ -2,5 +2,8 @@
   "extends": "./tsconfig.json",
   "include": ["src"],
   "exclude": ["__tests__"],
-  "compilerOptions": { "noEmit": false }
+  "compilerOptions": {
+    "rootDir": "./src",
+    "noEmit": false
+  }
 }

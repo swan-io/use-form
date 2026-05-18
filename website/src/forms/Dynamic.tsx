@@ -1,6 +1,4 @@
-import { Button } from "@chakra-ui/button";
-import { HStack, Spacer } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
+import { Button, HStack, Spacer, useToast } from "@chakra-ui/react";
 import { useForm } from "@swan-io/use-form";
 import * as React from "react";
 import { Input } from "../components/Input";
@@ -50,12 +48,7 @@ export const Dynamic = () => {
       onFailure: (errors) => {
         console.log("errors", errors);
 
-        toast({
-          title: "Submission failed",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
+        toast({ title: "Submission failed", status: "error", duration: 5000, isClosable: true });
       },
     });
   };

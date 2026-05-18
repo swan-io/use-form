@@ -14,24 +14,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
-          cache: yarn
+          package-manager-cache: true
+          cache: pnpm
 
-      - run: yarn install --pure-lockfile
-      - run: yarn typecheck
-      - run: yarn test
-      - run: yarn build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
 
-      - name: Build docs
-        run: cd docs && yarn && yarn build
+      - name: Build website
+        run: cd website && pnpm install && pnpm build
 
-      - name: Deploy
+      - name: Deploy website
         if: "contains('refs/heads/main', github.ref)"
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build
+          publish_dir: ./website/dist

@@ -1,6 +1,6 @@
-import { Button } from "@chakra-ui/button";
-import { HStack, Spacer } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
+import { Button } from "@chakra-ui/react";
+import { HStack, Spacer } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useForm } from "@swan-io/use-form";
 import * as React from "react";
 import validator from "validator";

@@ -1,11 +1,11 @@
 {
   "include": ["src", "__tests__"],
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "nodenext",
     "target": "ES2019",
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "jsx": "react",
-    "moduleResolution": "Node",
+    "moduleResolution": "nodenext",
     "outDir": "dist/",
 
     "allowJs": false,
@@ -23,6 +23,8 @@
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+
+    "types": ["node"]
   }
 }

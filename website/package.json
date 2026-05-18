@@ -1,10 +1,11 @@
 {
   "name": "use-form-website",
   "private": true,
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "build": "tsc && vite build && cp 404.html dist",
     "dev": "vite",
-    "serve": "yarn build && vite preview"
+    "serve": "pnpm build && vite preview"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -17,16 +18,16 @@
     "@swan-io/use-form": "link:../",
     "card-validator": "^9.1.0",
     "framer-motion": "^11.0.24",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "rifm": "^0.12.1",
     "ts-pattern": "^5.1.0",
     "validator": "^13.15.35"
   },
   "devDependencies": {
-    "@types/node": "^20.12.4",
-    "@types/react": "^18.2.74",
-    "@types/react-dom": "^18.2.24",
+    "@types/node": "^25.8.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@types/validator": "^13.15.10",
     "@vitejs/plugin-react-swc": "^3.6.0",
     "typescript": "^5.4.3",

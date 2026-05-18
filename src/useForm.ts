@@ -1,6 +1,7 @@
 import { Dict, Future, Option } from "@swan-io/boxed";
 import {
   MutableRefObject,
+  RefObject,
   SetStateAction,
   useEffect,
   useMemo,
@@ -41,10 +42,11 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
     };
   }, []);
 
-  const fields = useRef() as MutableRefObject<{
+  // @ts-expect-error - set during first render in lazy initialization block below
+  const fields = useRef() as RefObject<{
     [N in Name]: {
       readonly callbacks: Set<() => void>;
-      readonly ref: MutableRefObject<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+      readonly ref: RefObject<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
       mounted: boolean;
       state: Readonly<{
         talkative: boolean;
@@ -53,9 +55,10 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
       }>;
     };
   }>;
-
-  const field = useRef() as MutableRefObject<Contract["Field"]>;
-  const fieldsListener = useRef() as MutableRefObject<Contract["FieldsListener"]>;
+  // @ts-expect-error - set during first render in lazy initialization block below
+  const field = useRef() as RefObject<Contract["Field"]>;
+  // @ts-expect-error - set during first render in lazy initialization block below
+  const fieldsListener = useRef() as RefObject<Contract["FieldsListener"]>;
 
   const api = useMemo(() => {
     const getIsEqual = (name: Name) => arg.current[name].isEqual ?? Object.is;

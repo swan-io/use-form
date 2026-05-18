@@ -1,4 +1,4 @@
-import { Flex, Heading, Spacer, Text } from "@chakra-ui/layout";
+import { Flex, Heading, Spacer, Text } from "@chakra-ui/react";
 import * as React from "react";
 
 export const Page = ({

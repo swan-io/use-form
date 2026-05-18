@@ -1,8 +1,5 @@
-import { Button } from "@chakra-ui/button";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { HStack, Spacer } from "@chakra-ui/layout";
-import { Link } from "@chakra-ui/react";
-import { useToast } from "@chakra-ui/toast";
+import { Button, HStack, Link, Spacer, useToast } from "@chakra-ui/react";
 import { useForm } from "@swan-io/use-form";
 import cardValidator from "card-validator";
 import * as React from "react";
@@ -62,12 +59,7 @@ export const CreditCardForm = () => {
       onFailure: (errors) => {
         console.log("errors", errors);
 
-        toast({
-          title: "Submission failed",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
+        toast({ title: "Submission failed", status: "error", duration: 5000, isClosable: true });
       },
     });
   };

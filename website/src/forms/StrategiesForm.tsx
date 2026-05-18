@@ -1,6 +1,4 @@
-import { Button } from "@chakra-ui/button";
-import { HStack, Spacer } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
+import { Button, HStack, Spacer, useToast } from "@chakra-ui/react";
 import { useForm } from "@swan-io/use-form";
 import * as React from "react";
 import { Input } from "../components/Input";
@@ -15,36 +13,11 @@ const validate = (value: string) => {
 
 export const StrategiesForm = () => {
   const { Field, resetForm, submitForm } = useForm({
-    onChange: {
-      strategy: "onChange",
-      initialValue: "",
-      sanitize,
-      validate,
-    },
-    onSuccess: {
-      strategy: "onSuccess",
-      initialValue: "",
-      sanitize,
-      validate,
-    },
-    onBlur: {
-      strategy: "onBlur",
-      initialValue: "",
-      sanitize,
-      validate,
-    },
-    onSuccessOrBlur: {
-      strategy: "onSuccessOrBlur",
-      initialValue: "",
-      sanitize,
-      validate,
-    },
-    onSubmit: {
-      strategy: "onSubmit",
-      initialValue: "",
-      sanitize,
-      validate,
-    },
+    onChange: { strategy: "onChange", initialValue: "", sanitize, validate },
+    onSuccess: { strategy: "onSuccess", initialValue: "", sanitize, validate },
+    onBlur: { strategy: "onBlur", initialValue: "", sanitize, validate },
+    onSuccessOrBlur: { strategy: "onSuccessOrBlur", initialValue: "", sanitize, validate },
+    onSubmit: { strategy: "onSubmit", initialValue: "", sanitize, validate },
   });
 
   const toast = useToast();
@@ -66,12 +39,7 @@ export const StrategiesForm = () => {
       onFailure: (errors) => {
         console.log("errors", errors);
 
-        toast({
-          title: "Submission failed",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
+        toast({ title: "Submission failed", status: "error", duration: 5000, isClosable: true });
       },
     });
   };

@@ -1,8 +1,5 @@
-import { Button } from "@chakra-ui/button";
-import { useDisclosure } from "@chakra-ui/hooks";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import { Flex, Text, VStack } from "@chakra-ui/layout";
-import { useBreakpointValue } from "@chakra-ui/media-query";
+import { Button, Flex, Text, VStack, useBreakpointValue, useDisclosure } from "@chakra-ui/react";
 import * as React from "react";
 import { P, match } from "ts-pattern";
 import { Link } from "./components/Link";

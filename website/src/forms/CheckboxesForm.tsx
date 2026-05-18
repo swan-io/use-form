@@ -1,7 +1,7 @@
-import { Button } from "@chakra-ui/button";
-import { Checkbox } from "@chakra-ui/checkbox";
-import { Code, HStack, Spacer } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
+import { Button } from "@chakra-ui/react";
+import { Checkbox } from "@chakra-ui/react";
+import { Code, HStack, Spacer } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useForm } from "@swan-io/use-form";
 import * as React from "react";
 import { Page } from "../components/Page";

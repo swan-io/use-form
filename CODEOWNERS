@@ -1,2 +1,3 @@
 * @swan-io/front @swan-io/staff-engineers @swan-io/engineering-productivity @swan-io/core-infra
+.github/ @swan-io/core-infra @swan-io/engineering-productivity
 CODEOWNERS @swan-io/security @swan-io/engineering-productivity

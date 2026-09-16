@@ -1,3 +1,4 @@
 * @swan-io/front @swan-io/staff-engineers @swan-io/engineering-productivity @swan-io/core-infra
-.github/**/*.yml .github/**/*.yaml @swan-io/core-infra @swan-io/engineering-productivity @swan-io/front
+.github/**/*.yml @swan-io/core-infra @swan-io/engineering-productivity @swan-io/front
+.github/**/*.yaml @swan-io/core-infra @swan-io/engineering-productivity @swan-io/front
 CODEOWNERS @swan-io/engineering-productivity

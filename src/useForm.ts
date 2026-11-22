@@ -458,7 +458,11 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
             names.forEach((name) => fields.current[name].callbacks.add(callback));
 
             return () => {
-              names.forEach((name) => fields.current[name].callbacks.delete(callback));
+              names.forEach((name) => {
+                if (fields.current[name] != null) {
+                  fields.current[name].callbacks.delete(callback);
+                }
+              });
             };
           },
         }),

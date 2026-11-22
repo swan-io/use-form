@@ -452,16 +452,37 @@ export const useForm = <Values extends Required<Values>, ErrorMessage = string>(
 
     const FieldsListener: Contract["FieldsListener"] = ({ names, children }) => {
       const { subscribe, getSnapshot } = useMemo(
-        () => ({
-          getSnapshot: () => JSON.stringify(names.map((name) => fields.current[name].state)),
-          subscribe: (callback: () => void): (() => void) => {
-            names.forEach((name) => fields.current[name].callbacks.add(callback));
+        () => {
+          // Field states are replaced on every update, never mutated: comparing them by reference
+          // (like `Field` does) catches changes that JSON can't see, e.g. in a Set, Map or File
+          let snapshot: unknown[] = [];
 
-            return () => {
-              names.forEach((name) => fields.current[name].callbacks.delete(callback));
-            };
-          },
-        }),
+          return {
+            getSnapshot: () => {
+              const states = names.map((name) => fields.current[name].state);
+
+              if (
+                states.length !== snapshot.length ||
+                states.some((state, index) => state !== snapshot[index])
+              ) {
+                snapshot = states;
+              }
+
+              return snapshot;
+            },
+            subscribe: (callback: () => void): (() => void) => {
+              names.forEach((name) => fields.current[name].callbacks.add(callback));
+
+              return () => {
+                names.forEach((name) => {
+                  if (fields.current[name] != null) {
+                    fields.current[name].callbacks.delete(callback);
+                  }
+                });
+              };
+            },
+          };
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [JSON.stringify(names)],
       );
